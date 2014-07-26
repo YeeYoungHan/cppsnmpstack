@@ -20,12 +20,13 @@
 
 #define _ASN_TYPE_H_
 
-#define ASN_TYPE_BOOL				0x01
-#define ASN_TYPE_INT				0x02
-#define ASN_TYPE_BIT_STR		0x03
-#define ASN_TYPE_OCTET_STR	0x04
-#define ASN_TYPE_NULL				0x05
-#define ASN_TYPE_OID				0x06
-#define ASN_TYPE_SEQUENCE		0x10
+#define ASN_TYPE_BOOL					0x01
+#define ASN_TYPE_INT					0x02
+#define ASN_TYPE_BIT_STR			0x03
+#define ASN_TYPE_OCTET_STR		0x04
+#define ASN_TYPE_NULL					0x05
+#define ASN_TYPE_OID					0x06
+#define ASN_TYPE_SEQUENCE			0x10
+#define ASN_TYPE_CONSTRUCTOR	0x20
 
 #endif
