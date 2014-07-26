@@ -1,7 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnmpParser", "SnmpParser\SnmpParser.vcproj", "{7109C656-FC24-4F32-89B5-A1E29F97660C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FDD2A48D-B0D1-4A24-862F-E10DE3D5F560} = {FDD2A48D-B0D1-4A24-862F-E10DE3D5F560}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnmpPlatform", "SnmpPlatform\SnmpPlatform.vcproj", "{FDD2A48D-B0D1-4A24-862F-E10DE3D5F560}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7109C656-FC24-4F32-89B5-A1E29F97660C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7109C656-FC24-4F32-89B5-A1E29F97660C}.Debug|Win32.Build.0 = Debug|Win32
+		{7109C656-FC24-4F32-89B5-A1E29F97660C}.Release|Win32.ActiveCfg = Release|Win32
+		{7109C656-FC24-4F32-89B5-A1E29F97660C}.Release|Win32.Build.0 = Release|Win32
+		{FDD2A48D-B0D1-4A24-862F-E10DE3D5F560}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FDD2A48D-B0D1-4A24-862F-E10DE3D5F560}.Debug|Win32.Build.0 = Debug|Win32
+		{FDD2A48D-B0D1-4A24-862F-E10DE3D5F560}.Release|Win32.ActiveCfg = Release|Win32
+		{FDD2A48D-B0D1-4A24-862F-E10DE3D5F560}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
