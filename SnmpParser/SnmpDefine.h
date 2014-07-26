@@ -16,25 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_MESSAGE_H_
-#define _SNMP_MESSAGE_H_
+#ifndef _SNMP_DEFINE_H_
+#define _SNMP_DEFINE_H_
 
-#include "SnmpPlatformDefine.h"
-#include <string>
+#define SNMP_VERSION_1	0
+#define SNMP_VERSION_2C	1
 
-class CSnmpMessage
-{
-public:
-	CSnmpMessage();
-	~CSnmpMessage();
-
-	uint8_t			m_cVersion;
-	std::string	m_strCommunity;
-	uint8_t			m_cCommand;
-	uint32_t		m_iRequestId;
-	uint32_t		m_iErrorStatus;
-	uint32_t		m_iErrorIndex;
-
-};
+#define SNMP_CMD_GET			0xA0
+#define SNMP_CMD_GET_NEXT	0xA1
+#define SNMP_CMD_RESPONSE	0xA2
 
 #endif
