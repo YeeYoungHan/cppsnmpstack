@@ -20,6 +20,7 @@
 #define _SNMP_MESSAGE_H_
 
 #include "SnmpPlatformDefine.h"
+#include "SnmpDefine.h"
 #include "AsnVariable.h"
 #include <string>
 
