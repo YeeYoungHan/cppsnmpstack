@@ -16,19 +16,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _ASN_TYPE_H_
+#ifndef _ASN_VARIABLE_H_
+#define _ASN_VARIABLE_H_
 
-#define _ASN_TYPE_H_
+#include "SnmpPlatformDefine.h"
+#include "AsnType.h"
+#include <string>
 
-#define ASN_TYPE_BOOL					0x01
-#define ASN_TYPE_INT					0x02
-#define ASN_TYPE_BIT_STR			0x03
-#define ASN_TYPE_OCTET_STR		0x04
-#define ASN_TYPE_NULL					0x05
-#define ASN_TYPE_OID					0x06
-#define ASN_TYPE_SEQUENCE			0x10
-#define ASN_TYPE_CONSTRUCTOR	0x20
+class CAsnVariable
+{
+public:
+	CAsnVariable();
+	~CAsnVariable();
 
-#define ASN_TYPE_COMPLEX			0x30
+	int ParsePacket( const char * pszPacket, int iPacketLen );
+	int MakePacket( char * pszPacket, int iPacketSize );
+
+	bool GetInt( uint32_t & iValue );
+	bool GetString( std::string & strValue );
+	bool GetOid( std::string & strValue );
+
+	bool SetInt( int iValue );
+	bool SetString( const char * pszValue );
+	bool SetOid( const char * pszValue );
+	void SetNull( );
+
+	void Clear( );
+
+	uint8_t	m_cType;
+	uint8_t	m_cLength;
+	void *  m_pValue;
+};
 
 #endif

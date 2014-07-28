@@ -25,3 +25,105 @@ CSnmpMessage::CSnmpMessage()
 CSnmpMessage::~CSnmpMessage()
 {
 }
+
+int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
+{
+	int iPos = 0, n;
+	CAsnVariable	clsVar;
+
+	m_cVersion = pszPacket[iPos++];
+
+	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	if( clsVar.GetString( m_strCommunity ) == false ) return -1;
+
+	m_cCommand = pszPacket[iPos++];
+	int iDataLen = pszPacket[iPos++];
+
+	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	if( clsVar.GetInt( m_iRequestId ) == false ) return -1;
+
+	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	if( clsVar.GetInt( m_iErrorStatus ) == false ) return -1;
+
+	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	if( clsVar.GetInt( m_iErrorIndex ) == false ) return -1;
+
+	++iPos;
+	int iComplexLen = pszPacket[iPos++];
+
+	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	if( clsVar.GetOid( m_strOid ) == false ) return -1;
+
+	n = m_clsVariable.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	return iPos;
+}
+
+int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
+{
+	int iPos = 0, n;
+	int arrPos[2];
+	CAsnVariable	clsVar;
+
+	pszPacket[iPos++] = m_cVersion;
+
+	clsVar.SetString( m_strCommunity.c_str() );
+	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	pszPacket[iPos++] = m_cCommand;
+	arrPos[0] = iPos;
+	++iPos;
+
+	clsVar.SetInt( m_iRequestId );
+	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	clsVar.SetInt( m_iErrorStatus );
+	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	clsVar.SetInt( m_iErrorIndex );
+	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
+	arrPos[1] = iPos;
+	++iPos;
+
+	clsVar.SetOid( m_strOid.c_str() );
+	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	n = m_clsVariable.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	pszPacket[arrPos[1]] = iPos - arrPos[1];
+	pszPacket[arrPos[0]] = iPos - arrPos[0];
+
+	return iPos;
+}
+

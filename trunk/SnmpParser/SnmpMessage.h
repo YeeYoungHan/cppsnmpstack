@@ -20,6 +20,7 @@
 #define _SNMP_MESSAGE_H_
 
 #include "SnmpPlatformDefine.h"
+#include "AsnVariable.h"
 #include <string>
 
 class CSnmpMessage
@@ -28,13 +29,17 @@ public:
 	CSnmpMessage();
 	~CSnmpMessage();
 
+	int ParsePacket( const char * pszPacket, int iPacketLen );
+	int MakePacket( char * pszPacket, int iPacketSize );
+
 	uint8_t			m_cVersion;
 	std::string	m_strCommunity;
 	uint8_t			m_cCommand;
 	uint32_t		m_iRequestId;
 	uint32_t		m_iErrorStatus;
 	uint32_t		m_iErrorIndex;
-
+	std::string	m_strOid;
+	CAsnVariable	m_clsVariable;
 };
 
 #endif
