@@ -73,13 +73,24 @@ int main( int argc, char * argv[] )
 		return 0;
 	}
 
-	if( clsResponse.m_clsVariable.m_cType == ASN_TYPE_OCTET_STR )
+	switch( clsResponse.m_clsVariable.m_cType )
 	{
-		std::string	strValue;
+	case ASN_TYPE_INT:
+		{
+			uint32_t iValue;
 
-		clsResponse.m_clsVariable.GetString( strValue );
+			clsResponse.m_clsVariable.GetInt( iValue );
+			printf( "[%u] (type=int)\n", iValue );
+		}
+		break;
+	case ASN_TYPE_OCTET_STR:
+		{
+			std::string	strValue;
 
-		printf( "[%s]\n", strValue.c_str() );
+			clsResponse.m_clsVariable.GetString( strValue );
+			printf( "[%s] (type=octet_string)\n", strValue.c_str() );
+		}
+		break;
 	}
 
 	return 0;
