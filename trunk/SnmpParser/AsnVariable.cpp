@@ -141,7 +141,7 @@ int CAsnVariable::MakePacket( char * pszPacket, int iPacketSize )
 {
 	int iPos = 0;
 
-	if( m_pValue == NULL ) return -1;
+	if( m_pValue == NULL && m_cType != ASN_TYPE_NULL ) return -1;
 
 	pszPacket[iPos++] = m_cType;
 
@@ -193,17 +193,17 @@ int CAsnVariable::MakePacket( char * pszPacket, int iPacketSize )
 			{
 				if( pszValue[i] == '.' )
 				{
-					cValue = atoi( pszValue );
+					cValue = atoi( szValue );
 
 					++iNumPos;
 
 					if( iNumPos == 1 )
 					{
-						pszPacket[iPos] = cValue / 40;
+						pszPacket[iPos] = cValue * 40;
 					}
 					else if( iNumPos == 2 )
 					{
-						pszPacket[iPos] |= cValue % 40;
+						pszPacket[iPos] |= cValue;
 						++iPos;
 					}
 					else
@@ -223,7 +223,7 @@ int CAsnVariable::MakePacket( char * pszPacket, int iPacketSize )
 
 			if( szValue[0] != '\0' )
 			{
-				cValue = atoi( pszValue );
+				cValue = atoi( szValue );
 				pszPacket[iPos] = cValue;
 				++iPos;
 			}
@@ -239,7 +239,7 @@ int CAsnVariable::MakePacket( char * pszPacket, int iPacketSize )
 		break;
 	}
 
-	return 0;
+	return iPos;
 }
 
 bool CAsnVariable::SetInt( int iValue )

@@ -31,7 +31,15 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 	int iPos = 0, n;
 	CAsnVariable	clsVar;
 
-	m_cVersion = pszPacket[iPos++];
+	iPos += 2;
+
+	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
+
+	uint32_t iVersion;
+	if( clsVar.GetInt( iVersion ) == false ) return -1;
+	m_cVersion = iVersion;
 
 	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
@@ -63,6 +71,9 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 	++iPos;
 	int iComplexLen = pszPacket[iPos++];
 
+	++iPos;
+	iComplexLen = pszPacket[iPos++];
+
 	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
@@ -79,10 +90,16 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 {
 	int iPos = 0, n;
-	int arrPos[2];
+	int arrPos[3];
 	CAsnVariable	clsVar;
 
-	pszPacket[iPos++] = m_cVersion;
+	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
+	++iPos;
+
+	clsVar.SetInt( m_cVersion );
+	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	if( n == -1 ) return -1;
+	iPos += n;
 
 	clsVar.SetString( m_strCommunity.c_str() );
 	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
@@ -112,6 +129,10 @@ int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 	arrPos[1] = iPos;
 	++iPos;
 
+	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
+	arrPos[2] = iPos;
+	++iPos;
+
 	clsVar.SetOid( m_strOid.c_str() );
 	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
 	if( n == -1 ) return -1;
@@ -121,8 +142,10 @@ int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	pszPacket[arrPos[1]] = iPos - arrPos[1];
-	pszPacket[arrPos[0]] = iPos - arrPos[0];
+	pszPacket[arrPos[2]] = iPos - arrPos[2] - 1;
+	pszPacket[arrPos[1]] = iPos - arrPos[1] - 1;
+	pszPacket[arrPos[0]] = iPos - arrPos[0] - 1;
+	pszPacket[1] = iPos - 2;
 
 	return iPos;
 }
