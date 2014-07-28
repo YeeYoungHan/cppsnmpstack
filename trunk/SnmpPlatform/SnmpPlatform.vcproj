@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="1"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -82,7 +82,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
-			CharacterSet="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -149,7 +149,27 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Directory.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FileUtility.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Log.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpMutex.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SnmpUdp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeUtility.cpp"
 				>
 			</File>
 		</Filter>
@@ -159,7 +179,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\Directory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FileUtility.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Log.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MemoryDebug.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpMutex.h"
 				>
 			</File>
 			<File
@@ -168,6 +204,10 @@
 			</File>
 			<File
 				RelativePath=".\SnmpUdp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeUtility.h"
 				>
 			</File>
 		</Filter>
