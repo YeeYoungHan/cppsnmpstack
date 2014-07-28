@@ -91,6 +91,9 @@ int main( int argc, char * argv[] )
 			printf( "[%s] (type=octet_string)\n", strValue.c_str() );
 		}
 		break;
+	case ASN_TYPE_NO_SUCH_OBJECT:
+		printf( "(type=no_such_object)\n" );
+		break;
 	}
 
 	return 0;

@@ -29,6 +29,7 @@
 #define ASN_TYPE_SEQUENCE			0x10
 #define ASN_TYPE_CONSTRUCTOR	0x20
 
-#define ASN_TYPE_COMPLEX			0x30
+#define ASN_TYPE_COMPLEX				0x30
+#define ASN_TYPE_NO_SUCH_OBJECT	0x80
 
 #endif

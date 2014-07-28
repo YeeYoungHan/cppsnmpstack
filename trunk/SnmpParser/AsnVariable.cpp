@@ -102,6 +102,9 @@ int CAsnVariable::ParsePacket( const char * pszPacket, int iPacketLen )
 			m_cLength = iValueLen;
 		}
 		break;
+	case ASN_TYPE_NULL:
+	case ASN_TYPE_NO_SUCH_OBJECT:
+		break;
 	default:
 		CLog::Print( LOG_ERROR, "%s type(%d) is not defined", __FUNCTION__, m_cType );
 		break;
@@ -141,14 +144,13 @@ int CAsnVariable::MakePacket( char * pszPacket, int iPacketSize )
 {
 	int iPos = 0;
 
-	if( m_pValue == NULL && m_cType != ASN_TYPE_NULL ) return -1;
-
 	pszPacket[iPos++] = m_cType;
 
 	switch( m_cType )
 	{
 	case ASN_TYPE_INT:
 		{
+			if( m_pValue == NULL ) return -1;
 			int iValue = *(int *)(m_pValue);
 
 			if( iValue <= 0xFF )
@@ -175,12 +177,15 @@ int CAsnVariable::MakePacket( char * pszPacket, int iPacketSize )
 		}
 		break;
 	case ASN_TYPE_OCTET_STR:
+		if( m_pValue == NULL ) return -1;
 		pszPacket[iPos++] = m_cLength;
 		memcpy( pszPacket + iPos, m_pValue, m_cLength );
 		iPos += m_cLength;
 		break;
 	case ASN_TYPE_OID:
 		{
+			if( m_pValue == NULL ) return -1;
+
 			char * pszValue = (char *)m_pValue;
 			char szValue[11];
 			int	 iValuePos = 0, iNumPos = 0;
@@ -232,6 +237,7 @@ int CAsnVariable::MakePacket( char * pszPacket, int iPacketSize )
 		}
 		break;
 	case ASN_TYPE_NULL:
+	case ASN_TYPE_NO_SUCH_OBJECT:
 		pszPacket[iPos++] = 0;
 		break;
 	default:
