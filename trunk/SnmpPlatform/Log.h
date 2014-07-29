@@ -31,7 +31,7 @@
 #define DEFAULT_LOG_FOLDER_SIZE			3145728000UL
 
 /** 
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 로그 레벨 관련 ENUM
  *	CLog 에서 사용하는 ENUM 이다.
  */
@@ -52,7 +52,7 @@ enum EnumLogLevel
 };
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 로그 메시지를 프로그램에서 처리하고 싶은 경우에 사용한다.
  */
 class ILogCallBack
@@ -64,7 +64,7 @@ public:
 };
 
 /** 
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 로그 관련 클래스
  */
 class CLog
