@@ -18,3 +18,12 @@
 
 #include "AsnType.h"
 
+bool CAsnType::GetInt( uint32_t & iValue )
+{
+	return false;
+}
+
+bool CAsnType::GetString( std::string & strValue )
+{
+	return false;
+}

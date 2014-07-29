@@ -138,3 +138,10 @@ CAsnType * CAsnInt::Copy( )
 	pclsValue->m_iValue = m_iValue;
 	return pclsValue;
 }
+
+bool CAsnInt::GetInt( uint32_t & iValue )
+{
+	iValue = m_iValue;
+
+	return true;
+}

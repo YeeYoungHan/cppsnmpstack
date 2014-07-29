@@ -36,6 +36,8 @@ public:
 	virtual int MakePacket( char * pszPacket, int iPacketSize );
 	virtual CAsnType * Copy( );
 
+	virtual bool GetString( std::string & strValue );
+
 	std::string m_strValue;
 
 private:

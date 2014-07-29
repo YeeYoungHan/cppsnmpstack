@@ -36,6 +36,8 @@ public:
 	virtual int MakePacket( char * pszPacket, int iPacketSize );
 	virtual CAsnType * Copy( );
 
+	virtual bool GetInt( uint32_t & iValue );
+
 	uint32_t	m_iValue;
 };
 

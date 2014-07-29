@@ -84,3 +84,10 @@ CAsnType * CAsnString::Copy( )
 
 	return pclsValue;
 }
+
+bool CAsnString::GetString( std::string & strValue )
+{
+	strValue = m_strValue;
+
+	return true;
+}

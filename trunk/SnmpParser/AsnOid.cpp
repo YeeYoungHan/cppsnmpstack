@@ -144,6 +144,13 @@ CAsnType * CAsnOid::Copy( )
 	return pclsValue;
 }
 
+bool CAsnOid::GetString( std::string & strValue )
+{
+	strValue = m_strValue;
+
+	return true;
+}
+
 void CAsnOid::SetOidEntry( char * pszPacket, int iPacketSize, int iValue, int & iPos )
 {
 	if( iValue < 0x80 )
