@@ -113,15 +113,6 @@ int CAsnVariable::ParsePacket( const char * pszPacket, int iPacketLen )
 	return iPos;
 }
 
-bool CAsnVariable::GetInt( uint32_t & iValue )
-{
-	if( m_cType != ASN_TYPE_INT ) return false;
-
-	iValue = *(int *)m_pValue;
-
-	return true;
-}
-
 bool CAsnVariable::GetString( std::string & strValue )
 {
 	if( m_cType != ASN_TYPE_OCTET_STR ) return false;
@@ -246,19 +237,6 @@ int CAsnVariable::MakePacket( char * pszPacket, int iPacketSize )
 	}
 
 	return iPos;
-}
-
-bool CAsnVariable::SetInt( int iValue )
-{
-	Clear( );
-	m_cType = ASN_TYPE_INT;
-
-	m_pValue = malloc( 4 );
-	if( m_pValue == NULL ) return false;
-	int * piValue = (int *)m_pValue;
-
-	*piValue = iValue;
-	return true;
 }
 
 bool CAsnVariable::SetString( const char * pszValue )

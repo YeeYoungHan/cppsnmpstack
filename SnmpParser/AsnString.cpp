@@ -16,34 +16,42 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _ASN_VARIABLE_H_
-#define _ASN_VARIABLE_H_
+#include "AsnString.h"
 
-#include "SnmpPlatformDefine.h"
-#include "AsnType.h"
-#include <string>
-
-class CAsnVariable
+CAsnString::CAsnString()
 {
-public:
-	CAsnVariable();
-	~CAsnVariable();
+	m_cType = ASN_TYPE_OCTET_STR;
+}
 
-	int ParsePacket( const char * pszPacket, int iPacketLen );
-	int MakePacket( char * pszPacket, int iPacketSize );
+CAsnString::~CAsnString()
+{
+}
 
-	bool GetString( std::string & strValue );
-	bool GetOid( std::string & strValue );
+int CAsnString::ParsePacket( const char * pszPacket, int iPacketLen )
+{
+	int			iPos = 0;
+	uint8_t	cLength;
 
-	bool SetString( const char * pszValue );
-	bool SetOid( const char * pszValue );
-	void SetNull( );
+	m_strValue.clear();
 
-	void Clear( );
+	m_cType = pszPacket[iPos++];
+	cLength = pszPacket[iPos++];
+	m_strValue.append( pszPacket + iPos, cLength );
 
-	uint8_t	m_cType;
-	uint8_t	m_cLength;
-	void *  m_pValue;
-};
+	iPos += cLength;
 
-#endif
+	return iPos;
+}
+
+int CAsnString::MakePacket( char * pszPacket, int iPacketSize )
+{
+	int			iPos = 0;
+	uint8_t	cLength = m_strValue.length();
+
+	pszPacket[iPos++] = m_cType;
+	pszPacket[iPos++] = cLength;
+	memcpy( pszPacket + iPos, m_strValue.c_str(), cLength );
+	iPos += cLength;
+
+	return iPos;
+}
