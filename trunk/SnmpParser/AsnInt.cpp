@@ -20,6 +20,7 @@
 
 CAsnInt::CAsnInt() : m_iValue(0)
 {
+	m_cType = ASN_TYPE_INT;
 }
 
 CAsnInt::~CAsnInt()

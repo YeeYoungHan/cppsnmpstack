@@ -50,23 +50,23 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 	m_cCommand = pszPacket[iPos++];
 	int iDataLen = pszPacket[iPos++];
 
-	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	n = clsInt.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	if( clsVar.GetInt( m_iRequestId ) == false ) return -1;
+	m_iRequestId = clsInt.m_iValue;
 
-	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	n = clsInt.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	if( clsVar.GetInt( m_iErrorStatus ) == false ) return -1;
+	m_iErrorStatus = clsInt.m_iValue;
 
-	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	n = clsInt.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	if( clsVar.GetInt( m_iErrorIndex ) == false ) return -1;
+	m_iErrorIndex = clsInt.m_iValue;
 
 	++iPos;
 	int iComplexLen = pszPacket[iPos++];
@@ -91,13 +91,14 @@ int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 {
 	int iPos = 0, n;
 	int arrPos[3];
+	CAsnInt	clsInt;
 	CAsnVariable	clsVar;
 
 	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
 	++iPos;
 
-	clsVar.SetInt( m_cVersion );
-	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	clsInt.m_iValue = m_cVersion;
+	n = clsInt.MakePacket( pszPacket + iPos, iPacketSize - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
@@ -110,18 +111,18 @@ int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 	arrPos[0] = iPos;
 	++iPos;
 
-	clsVar.SetInt( m_iRequestId );
-	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	clsInt.m_iValue = m_iRequestId;
+	n = clsInt.MakePacket( pszPacket + iPos, iPacketSize - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	clsVar.SetInt( m_iErrorStatus );
-	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	clsInt.m_iValue = m_iErrorStatus;
+	n = clsInt.MakePacket( pszPacket + iPos, iPacketSize - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	clsVar.SetInt( m_iErrorIndex );
-	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	clsInt.m_iValue = m_iErrorIndex;
+	n = clsInt.MakePacket( pszPacket + iPos, iPacketSize - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
