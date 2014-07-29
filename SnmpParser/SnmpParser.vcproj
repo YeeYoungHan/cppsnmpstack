@@ -214,14 +214,6 @@
 				RelativePath=".\AsnType.h"
 				>
 			</File>
-			<File
-				RelativePath=".\AsnVariable.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\AsnVariable.h"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"

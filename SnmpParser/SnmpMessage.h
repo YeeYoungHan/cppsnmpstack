@@ -21,8 +21,7 @@
 
 #include "SnmpPlatformDefine.h"
 #include "SnmpDefine.h"
-#include "AsnVariable.h"
-#include <string>
+#include "AsnComplex.h"
 
 class CSnmpMessage
 {
