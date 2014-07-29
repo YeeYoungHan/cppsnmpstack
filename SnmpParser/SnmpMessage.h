@@ -37,6 +37,8 @@ public:
 	int MakePacket( char * pszPacket, int iPacketSize );
 	void Clear();
 
+	bool MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
+
 	uint8_t			m_cVersion;
 	std::string	m_strCommunity;
 	uint8_t			m_cCommand;
