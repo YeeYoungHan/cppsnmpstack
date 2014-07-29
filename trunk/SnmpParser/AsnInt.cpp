@@ -109,8 +109,8 @@ int CAsnInt::MakePacket( char * pszPacket, int iPacketSize )
 	{
 		pszPacket[iPos++] = 3;
 
-		uint32_t iValue = htons( m_iValue );
-		memcpy( pszPacket + iPos, ((char *)&iValue) + 1, 2 );
+		uint32_t iValue = htonl( m_iValue );
+		memcpy( pszPacket + iPos, ((char *)&iValue) + 1, 3 );
 		iPos += 3;
 	}
 	else
