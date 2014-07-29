@@ -75,7 +75,6 @@ int main( int argc, char * argv[] )
 
 	switch( clsResponse.m_clsVariable.m_cType )
 	{
-	/*
 	case ASN_TYPE_INT:
 		{
 			uint32_t iValue;
@@ -84,7 +83,6 @@ int main( int argc, char * argv[] )
 			printf( "[%u] (type=int)\n", iValue );
 		}
 		break;
-	*/
 	case ASN_TYPE_OCTET_STR:
 		{
 			std::string	strValue;

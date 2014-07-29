@@ -19,31 +19,30 @@
 #ifndef _ASN_VARIABLE_H_
 #define _ASN_VARIABLE_H_
 
-#include "SnmpPlatformDefine.h"
 #include "AsnType.h"
 #include <string>
 
-class CAsnVariable
+class CAsnVariable : public CAsnType
 {
 public:
 	CAsnVariable();
 	~CAsnVariable();
 
-	int ParsePacket( const char * pszPacket, int iPacketLen );
-	int MakePacket( char * pszPacket, int iPacketSize );
+	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
+	virtual int MakePacket( char * pszPacket, int iPacketSize );
 
+	bool GetInt( uint32_t & iValue );
 	bool GetString( std::string & strValue );
 	bool GetOid( std::string & strValue );
 
+	bool SetInt( uint32_t iValue );
 	bool SetString( const char * pszValue );
 	bool SetOid( const char * pszValue );
 	void SetNull( );
 
 	void Clear( );
 
-	uint8_t	m_cType;
-	uint8_t	m_cLength;
-	void *  m_pValue;
+	CAsnType * m_pclsValue;
 };
 
 #endif
