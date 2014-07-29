@@ -50,7 +50,6 @@ int CAsnOid::ParsePacket( const char * pszPacket, int iPacketLen )
 	memset( szValue, 0, sizeof(szValue) );
 	
 	iValueLen = snprintf( szValue, sizeof(szValue), "%d.%d", pszPacket[iPos] / 40, pszPacket[iPos] % 40 );
-	++iPos;
 
 	for( int i = 1; i < cLength; ++i )
 	{
@@ -65,9 +64,8 @@ int CAsnOid::ParsePacket( const char * pszPacket, int iPacketLen )
 	}
 
 	m_strValue = szValue;
-	iPos += cLength;
 
-	return iPos;
+	return 2 + cLength;
 }
 
 /**
