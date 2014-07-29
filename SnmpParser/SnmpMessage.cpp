@@ -17,6 +17,7 @@
  */
 
 #include "SnmpMessage.h"
+#include "AsnInt.h"
 
 CSnmpMessage::CSnmpMessage()
 {
@@ -29,17 +30,16 @@ CSnmpMessage::~CSnmpMessage()
 int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	int iPos = 0, n;
+	CAsnInt		clsInt;
 	CAsnVariable	clsVar;
 
 	iPos += 2;
 
-	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	n = clsInt.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	uint32_t iVersion;
-	if( clsVar.GetInt( iVersion ) == false ) return -1;
-	m_cVersion = iVersion;
+	m_cVersion = clsInt.m_iValue;
 
 	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
