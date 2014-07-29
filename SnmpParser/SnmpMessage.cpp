@@ -19,6 +19,7 @@
 #include "SnmpMessage.h"
 #include "AsnInt.h"
 #include "AsnString.h"
+#include "AsnOid.h"
 
 CSnmpMessage::CSnmpMessage()
 {
@@ -33,6 +34,7 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 	int iPos = 0, n;
 	CAsnInt		clsInt;
 	CAsnString	clsStr;
+	CAsnOid			clsOid;
 	CAsnVariable	clsVar;
 
 	iPos += 2;
@@ -76,11 +78,11 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 	++iPos;
 	iComplexLen = pszPacket[iPos++];
 
-	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	n = clsOid.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	if( clsVar.GetOid( m_strOid ) == false ) return -1;
+	m_strOid = clsOid.m_strValue;
 
 	n = m_clsVariable.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
@@ -95,6 +97,7 @@ int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 	int arrPos[3];
 	CAsnInt	clsInt;
 	CAsnString	clsStr;
+	CAsnOid			clsOid;
 	CAsnVariable	clsVar;
 
 	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
@@ -137,8 +140,8 @@ int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 	arrPos[2] = iPos;
 	++iPos;
 
-	clsVar.SetOid( m_strOid.c_str() );
-	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	clsOid.m_strValue = m_strOid;
+	n = clsOid.MakePacket( pszPacket + iPos, iPacketSize - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
