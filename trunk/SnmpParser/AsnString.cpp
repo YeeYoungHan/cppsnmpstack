@@ -17,6 +17,7 @@
  */
 
 #include "AsnString.h"
+#include "MemoryDebug.h"
 
 CAsnString::CAsnString()
 {

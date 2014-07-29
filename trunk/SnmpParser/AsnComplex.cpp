@@ -23,6 +23,7 @@
 #include "AsnNull.h"
 #include "SnmpDefine.h"
 #include "Log.h"
+#include "MemoryDebug.h"
 
 CAsnComplex::CAsnComplex()
 {

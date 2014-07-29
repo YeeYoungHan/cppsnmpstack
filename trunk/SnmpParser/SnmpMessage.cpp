@@ -22,6 +22,7 @@
 #include "AsnOid.h"
 #include "AsnNull.h"
 #include "AsnComplex.h"
+#include "MemoryDebug.h"
 
 CSnmpMessage::CSnmpMessage() : m_pclsValue(NULL)
 {

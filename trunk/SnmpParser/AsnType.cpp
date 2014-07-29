@@ -17,6 +17,7 @@
  */
 
 #include "AsnType.h"
+#include "MemoryDebug.h"
 
 /**
  * @ingroup SnmpParser

@@ -18,6 +18,7 @@
 
 #include "AsnOid.h"
 #include <list>
+#include "MemoryDebug.h"
 
 typedef std::list< int > INT_LIST;
 
