@@ -17,6 +17,7 @@
  */
 
 #include "AsnNull.h"
+#include "MemoryDebug.h"
 
 CAsnNull::CAsnNull()
 {

@@ -17,11 +17,8 @@
  */
 
 #include "SnmpUdp.h"
-#include "AsnInt.h"
-#include "AsnString.h"
-#include "AsnOid.h"
-#include "AsnNull.h"
 #include "SnmpStack.h"
+#include "MemoryDebug.h"
 
 int main( int argc, char * argv[] )
 {
@@ -30,6 +27,10 @@ int main( int argc, char * argv[] )
 		printf( "[Usage] %s {ip} {mib}\n", argv[0] );
 		return -1;
 	}
+
+#ifdef WIN32
+	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
+#endif
 
 	const char * pszDestIp = argv[1];
 	const char * pszMib = argv[2];
