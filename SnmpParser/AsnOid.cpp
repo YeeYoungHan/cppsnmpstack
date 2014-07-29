@@ -17,6 +17,9 @@
  */
 
 #include "AsnOid.h"
+#include <list>
+
+typedef std::list< int > INT_LIST;
 
 CAsnOid::CAsnOid(void)
 {
@@ -39,7 +42,7 @@ int CAsnOid::ParsePacket( const char * pszPacket, int iPacketLen )
 	int			iPos = 0;
 	uint8_t	cLength;
 	char	szValue[512];
-	int	iValueLen = 0;
+	int		iValueLen = 0, iNum;
 
 	m_cType = pszPacket[iPos++];
 	cLength = pszPacket[iPos++];
@@ -51,10 +54,18 @@ int CAsnOid::ParsePacket( const char * pszPacket, int iPacketLen )
 
 	for( int i = 1; i < cLength; ++i )
 	{
-		iValueLen += snprintf( szValue + iValueLen, sizeof(szValue) - iValueLen, ".%d", pszPacket[iPos++] );
+		iNum = 0;
+		for( int j = 0; j < 4; ++j, ++i )
+		{
+			iNum = ( iNum << ( j * 7 ) ) | ( pszPacket[i+2] & 0x7F );
+			if( ( pszPacket[i+2] & 0x80 ) == 0 ) break;
+		}
+
+		iValueLen += snprintf( szValue + iValueLen, sizeof(szValue) - iValueLen, ".%d", iNum );
 	}
 
 	m_strValue = szValue;
+	iPos += cLength;
 
 	return iPos;
 }
@@ -71,8 +82,8 @@ int CAsnOid::MakePacket( char * pszPacket, int iPacketSize )
 	int iPos = 0;
 	const char * pszValue = m_strValue.c_str();
 	char szValue[11];
-	int	 iValuePos = 0, iNumPos = 0;
-	uint8_t cValue, cLength = m_strValue.length();
+	int	 iValuePos = 0, iNumPos = 0, iValue;
+	uint8_t cLength = m_strValue.length();
 
 	pszPacket[iPos++] = m_cType;
 
@@ -83,23 +94,22 @@ int CAsnOid::MakePacket( char * pszPacket, int iPacketSize )
 	{
 		if( pszValue[i] == '.' )
 		{
-			cValue = atoi( szValue );
+			iValue = atoi( szValue );
 
 			++iNumPos;
 
 			if( iNumPos == 1 )
 			{
-				pszPacket[iPos] = cValue * 40;
+				pszPacket[iPos] = iValue * 40;
 			}
 			else if( iNumPos == 2 )
 			{
-				pszPacket[iPos] |= cValue;
+				pszPacket[iPos] |= iValue;
 				++iPos;
 			}
 			else
 			{
-				pszPacket[iPos] = cValue;
-				++iPos;
+				SetOidEntry( pszPacket, iPacketSize, iValue, iPos );
 			}
 
 			iValuePos = 0;
@@ -113,9 +123,8 @@ int CAsnOid::MakePacket( char * pszPacket, int iPacketSize )
 
 	if( szValue[0] != '\0' )
 	{
-		cValue = atoi( szValue );
-		pszPacket[iPos] = cValue;
-		++iPos;
+		iValue = atoi( szValue );
+		SetOidEntry( pszPacket, iPacketSize, iValue, iPos );
 	}
 
 	pszPacket[1] = iPos - 2;
@@ -135,5 +144,35 @@ CAsnType * CAsnOid::Copy( )
 
 	pclsValue->m_strValue = m_strValue;
 	return pclsValue;
+}
 
+void CAsnOid::SetOidEntry( char * pszPacket, int iPacketSize, int iValue, int & iPos )
+{
+	if( iValue < 0x80 )
+	{
+		pszPacket[iPos++] = iValue;
+	}
+	else
+	{
+		INT_LIST	clsList;
+		INT_LIST::reverse_iterator itList;
+
+		while( iValue > 0 )
+		{
+			if( clsList.size() > 0 )
+			{
+				clsList.push_back( ( iValue % 0x80 ) | 0x80 );
+			}
+			else
+			{
+				clsList.push_back( iValue % 0x80 );
+			}
+			iValue = iValue / 0x80;
+		}
+
+		for( itList = clsList.rbegin(); itList != clsList.rend(); ++itList )
+		{
+			pszPacket[iPos++] = *itList;
+		}
+	}
 }
