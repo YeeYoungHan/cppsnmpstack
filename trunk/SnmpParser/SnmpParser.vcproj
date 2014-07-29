@@ -167,11 +167,27 @@
 			Name="ASN"
 			>
 			<File
+				RelativePath=".\AsnComplex.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AsnComplex.h"
+				>
+			</File>
+			<File
 				RelativePath=".\AsnInt.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\AsnInt.h"
+				>
+			</File>
+			<File
+				RelativePath=".\AsnNull.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AsnNull.h"
 				>
 			</File>
 			<File
