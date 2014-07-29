@@ -43,15 +43,7 @@ int main( int argc, char * argv[] )
 	int  iPacketLen;
 	uint16_t	sPort;
 
-	clsRequest.m_cVersion = SNMP_VERSION_2C;
-	clsRequest.m_strCommunity = "public";
-	clsRequest.m_cCommand = SNMP_CMD_GET;
-
-	clsRequest.m_iRequestId = 32594;
-	clsRequest.m_iErrorStatus = 0;
-	clsRequest.m_iErrorIndex = 0;
-	clsRequest.m_strOid = pszMib;
-	clsRequest.m_pclsValue = new CAsnNull();
+	clsRequest.MakeGetRequest( "public", 32594, pszMib );
 
 	iPacketLen = clsRequest.MakePacket( szPacket, sizeof(szPacket) );
 	if( iPacketLen == -1 )

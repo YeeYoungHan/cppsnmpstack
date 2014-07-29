@@ -20,6 +20,7 @@
 #include "AsnInt.h"
 #include "AsnString.h"
 #include "AsnOid.h"
+#include "AsnNull.h"
 #include "AsnComplex.h"
 
 CSnmpMessage::CSnmpMessage() : m_pclsValue(NULL)
@@ -199,9 +200,29 @@ FUNC_ERROR:
  */
 void CSnmpMessage::Clear()
 {
+	m_iErrorStatus = 0;
+	m_iErrorIndex = 0;
+
 	if( m_pclsValue )
 	{
 		delete m_pclsValue;
 		m_pclsValue = NULL;
 	}
+}
+
+bool CSnmpMessage::MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid )
+{
+	if( pszCommunity == NULL || pszOid == NULL ) return false;
+
+	Clear();
+
+	m_cVersion = SNMP_VERSION_2C;
+	m_strCommunity = pszCommunity;
+	m_cCommand = SNMP_CMD_GET;
+	m_iRequestId = iRequestId;
+	m_strOid = pszOid;
+	m_pclsValue = new CAsnNull();
+	if( m_pclsValue == NULL ) return false;
+
+	return true;
 }
