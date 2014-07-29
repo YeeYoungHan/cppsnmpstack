@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SIP_UDP_H_
-#define _SIP_UDP_H_
+#ifndef _SNMP_UDP_H_
+#define _SNMP_UDP_H_
 
 #include <string>
 

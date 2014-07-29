@@ -165,6 +165,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SnmpTcp.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SnmpUdp.cpp"
 				>
 			</File>
@@ -200,6 +204,10 @@
 			</File>
 			<File
 				RelativePath=".\SnmpPlatformDefine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpTcp.h"
 				>
 			</File>
 			<File
