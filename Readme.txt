@@ -16,8 +16,17 @@ C++ SNMP stack 프로젝트
 
 2. 폴더 설명
 
+ * SnmpGet
+   - SnmpStack 과 SnmpParser 라이브러리를 이용한 SNMP get 프로그램
+
+ * SnmpStack
+   - SNMP 메시지 전송/수신 라이브러리
+
  * SnmpParser
    - SNMP 메시지 파서/생성 라이브러리
+
+ * SnmpPlatform
+   - OS 독립적으로 개발하기 위한 라이브러리
 
 3. 컴파일 방법
 
