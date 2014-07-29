@@ -33,6 +33,10 @@
 #define ASN_TYPE_COMPLEX				0x30
 #define ASN_TYPE_NO_SUCH_OBJECT	0x80
 
+/**
+ * @ingroup SnmpParser
+ * @brief ASN 타입 클래스의 root 클래스
+ */
 class CAsnType
 {
 public:

@@ -26,4 +26,9 @@
 #define SNMP_CMD_GET_NEXT	0xA1
 #define SNMP_CMD_RESPONSE	0xA2
 
+/**
+ * @defgroup SnmpParser SnmpParser
+ * SNMP 메시지 생성/파서 라이브러리
+ */
+
 #endif

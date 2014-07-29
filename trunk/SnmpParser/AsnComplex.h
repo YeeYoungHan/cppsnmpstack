@@ -24,6 +24,10 @@
 
 typedef std::list< CAsnType * > ASN_TYPE_LIST;
 
+/**
+ * @ingroup SnmpParser
+ * @brief ASN 복합 타입 클래스
+ */
 class CAsnComplex : public CAsnType
 {
 public:

@@ -21,6 +21,10 @@
 
 #include "AsnType.h"
 
+/**
+ * @ingroup SnmpParser
+ * @brief ASN 정수 타입 클래스
+ */
 class CAsnInt : public CAsnType
 {
 public:
