@@ -31,6 +31,13 @@ CSnmpMessage::~CSnmpMessage()
 	Clear();
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷을 파싱하여서 내부 변수에 패킷 데이터를 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketLen	패킷 길이
+ * @returns 성공하면 파싱한 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
 int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	CAsnComplex clsComplex;
@@ -135,6 +142,13 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 	return n;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 내부 변수를 패킷에 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketSize 패킷 크기
+ * @returns 성공하면 저장된 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
 int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 {
 	CAsnComplex clsComplex;
@@ -179,6 +193,10 @@ FUNC_ERROR:
 	return -1;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 내부 변수를 초기화시킨다.
+ */
 void CSnmpMessage::Clear()
 {
 	if( m_pclsValue )

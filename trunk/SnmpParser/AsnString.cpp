@@ -27,6 +27,13 @@ CAsnString::~CAsnString()
 {
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷을 파싱하여서 내부 변수에 패킷 데이터를 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketLen	패킷 길이
+ * @returns 성공하면 파싱한 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
 int CAsnString::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	int			iPos = 0;
@@ -43,6 +50,13 @@ int CAsnString::ParsePacket( const char * pszPacket, int iPacketLen )
 	return iPos;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 내부 변수를 패킷에 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketSize 패킷 크기
+ * @returns 성공하면 저장된 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
 int CAsnString::MakePacket( char * pszPacket, int iPacketSize )
 {
 	int			iPos = 0;
@@ -56,6 +70,11 @@ int CAsnString::MakePacket( char * pszPacket, int iPacketSize )
 	return iPos;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 복사한 객체를 리턴한다.
+ * @returns 복사한 객체를 리턴한다.
+ */
 CAsnType * CAsnString::Copy( )
 {
 	CAsnString * pclsValue = new CAsnString();

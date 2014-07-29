@@ -27,6 +27,13 @@ CAsnNull::~CAsnNull()
 {
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷을 파싱하여서 내부 변수에 패킷 데이터를 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketLen	패킷 길이
+ * @returns 성공하면 파싱한 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
 int CAsnNull::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	m_cType = pszPacket[0];
@@ -34,6 +41,13 @@ int CAsnNull::ParsePacket( const char * pszPacket, int iPacketLen )
 	return 2;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 내부 변수를 패킷에 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketSize 패킷 크기
+ * @returns 성공하면 저장된 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
 int CAsnNull::MakePacket( char * pszPacket, int iPacketSize )
 {
 	pszPacket[0] = m_cType;
@@ -42,6 +56,11 @@ int CAsnNull::MakePacket( char * pszPacket, int iPacketSize )
 	return 2;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 복사한 객체를 리턴한다.
+ * @returns 복사한 객체를 리턴한다.
+ */
 CAsnType * CAsnNull::Copy( )
 {
 	CAsnNull * pclsValue = new CAsnNull();
