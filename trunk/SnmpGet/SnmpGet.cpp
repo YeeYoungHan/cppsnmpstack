@@ -16,12 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpMessage.h"
 #include "SnmpUdp.h"
 #include "AsnInt.h"
 #include "AsnString.h"
 #include "AsnOid.h"
 #include "AsnNull.h"
+#include "SnmpStack.h"
 
 int main( int argc, char * argv[] )
 {
@@ -33,43 +33,15 @@ int main( int argc, char * argv[] )
 
 	const char * pszDestIp = argv[1];
 	const char * pszMib = argv[2];
+	CSnmpMessage clsRequest, clsResponse;
 
 	InitNetwork();
 
-	Socket hSocket = UdpSocket();
-
-	CSnmpMessage clsRequest;
-	char szPacket[1500], szIp[16];
-	int  iPacketLen;
-	uint16_t	sPort;
-
 	clsRequest.MakeGetRequest( "public", 32594, pszMib );
 
-	iPacketLen = clsRequest.MakePacket( szPacket, sizeof(szPacket) );
-	if( iPacketLen == -1 )
+	if( CSnmpStack::SendRequest( pszDestIp, 161, clsRequest, clsResponse ) == false )
 	{
-		printf( "clsRequest.MakePacket error\n" );
-		return 0;
-	}
-
-	if( UdpSend( hSocket, szPacket, iPacketLen, pszDestIp, 161 ) == false )
-	{
-		printf( "UdpSend\n" );
-		return 0;
-	}
-
-	iPacketLen = sizeof(szPacket);
-	if( UdpRecv( hSocket, (char *)szPacket, &iPacketLen, szIp, sizeof(szIp), &sPort ) == false )
-	{
-		printf( "UdpRecv\n" );
-		return 0;
-	}
-
-	CSnmpMessage clsResponse;
-
-	if( clsResponse.ParsePacket( szPacket, iPacketLen ) == -1 )
-	{
-		printf( "clsResponse.ParsePacket error\n" );
+		printf( "CSnmpStack::SendRequest error\n" );
 		return 0;
 	}
 
