@@ -210,6 +210,14 @@ void CSnmpMessage::Clear()
 	}
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMP GET 요청 메시지를 생성한다.
+ * @param pszCommunity	community 문자열
+ * @param iRequestId		요청 아이디
+ * @param pszOid				OID 문자열
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpMessage::MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid )
 {
 	if( pszCommunity == NULL || pszOid == NULL ) return false;
