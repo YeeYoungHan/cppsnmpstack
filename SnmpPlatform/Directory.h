@@ -35,7 +35,7 @@
 typedef std::list< std::string > FILE_LIST;
 
 /** 
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 디렉토리 관련 연산을 수행하는 클래스
  */
 class CDirectory

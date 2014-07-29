@@ -77,6 +77,6 @@ typedef char int8_t;
 #endif
 
 /**
- * @defgroup SipPlatform SipPlatform
- * SIP stack 프로젝트에서 사용되는 OS independent 라이브러리
+ * @defgroup SnmpPlatform SnmpPlatform
+ * SNMP stack 프로젝트에서 사용되는 OS independent 라이브러리
  */

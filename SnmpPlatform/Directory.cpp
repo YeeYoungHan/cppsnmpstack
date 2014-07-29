@@ -29,7 +29,7 @@
 #include "MemoryDebug.h"
 
 /** 
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 디렉토리를 생성한다. 
  *	
  *	이미 디렉토리가 생성되어 있으면 아무런 동작을 하지 않는다.
@@ -121,7 +121,7 @@ int CDirectory::Create( const char * szDirName )
 }
 
 /** 
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 사용자가 입력한 path 가 디렉토리인지를 점검한다.
  * @param	szDirName	[in] 디렉토리 이름
  * @return	입력된 path 가 디렉토리이면 0 을 리턴한다.
@@ -176,7 +176,7 @@ int CDirectory::IsDirectory( const char * szDirName )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 파일 경로에 파일 이름을 추가한다.
  * @param strFileName 파일 경로
  * @param pszAppend		추가할 파일 이름
@@ -193,7 +193,7 @@ void CDirectory::AppendName( std::string & strFileName, const char * pszAppend )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 폴더에 존재하는 모든 파일/폴더 리스트를 가져온다.
  * @param pszDirName	폴더 경로
  * @param clsFileList 파일/폴더 리스트를 저장할 변수
@@ -251,7 +251,7 @@ bool CDirectory::List( const char * pszDirName, FILE_LIST & clsFileList )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 폴더에 존재하는 모든 파일 리스트를 가져온다.
  * @param pszDirName	폴더 경로
  * @param clsFileList 파일 리스트를 저장할 변수
@@ -318,7 +318,7 @@ bool CDirectory::FileList( const char * pszDirName, FILE_LIST & clsFileList )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 프로그램을 시작한 폴더를 가져온다.
  * @returns 프로그램을 시작한 폴더 경로를 리턴한다.
  */
@@ -352,7 +352,7 @@ char * CDirectory::GetProgramDirectory( )
 #define MAX_INT	4294967296L
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 폴더 크기를 가져온다.
  * @param pszDirName 폴더 fulll path
  * @returns 폴더 크기를 리턴한다.
@@ -437,7 +437,7 @@ int64_t CDirectory::GetSize( const char * pszDirName )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 폴더에 포함된 파일들을 모두 삭제한다.
  * @param pszDirName 폴더 full path
  */
