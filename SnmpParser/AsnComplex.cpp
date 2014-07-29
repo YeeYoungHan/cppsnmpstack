@@ -34,6 +34,13 @@ CAsnComplex::~CAsnComplex()
 	Clear();
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷을 파싱하여서 내부 변수에 패킷 데이터를 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketLen	패킷 길이
+ * @returns 성공하면 파싱한 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
 int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	int			iPos = 0, n;
@@ -91,6 +98,13 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 	return iPos;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 내부 변수를 패킷에 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketSize 패킷 크기
+ * @returns 성공하면 저장된 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
 int CAsnComplex::MakePacket( char * pszPacket, int iPacketSize )
 {
 	int iPos = 0, n;
@@ -111,6 +125,11 @@ int CAsnComplex::MakePacket( char * pszPacket, int iPacketSize )
 	return iPos;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 복사한 객체를 리턴한다.
+ * @returns 복사한 객체를 리턴한다.
+ */
 CAsnType * CAsnComplex::Copy( )
 {
 	CAsnComplex * pclsValue = new CAsnComplex();
@@ -135,6 +154,12 @@ CAsnType * CAsnComplex::Copy( )
 	return pclsValue;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief CAsnInt 변수를 리스트에 추가한다.
+ * @param iValue 정수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CAsnComplex::AddInt( uint32_t iValue )
 {
 	CAsnInt * pclsValue = new CAsnInt();
@@ -146,6 +171,12 @@ bool CAsnComplex::AddInt( uint32_t iValue )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief CAsnString 변수를 리스트에 추가한다.
+ * @param pszValue 문자열
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CAsnComplex::AddString( const char * pszValue )
 {
 	if( pszValue == NULL ) return false;
@@ -159,6 +190,12 @@ bool CAsnComplex::AddString( const char * pszValue )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief CAsnOid 변수를 리스트에 추가한다.
+ * @param pszValue OID 문자열
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CAsnComplex::AddOid( const char * pszValue )
 {
 	if( pszValue == NULL ) return false;
@@ -172,6 +209,11 @@ bool CAsnComplex::AddOid( const char * pszValue )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief CAsnNull 변수를 리스트에 추가한다.
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CAsnComplex::AddNull( )
 {
 	CAsnNull * pclsValue = new CAsnNull();
@@ -182,6 +224,12 @@ bool CAsnComplex::AddNull( )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief CAsnComplex 변수를 리스트에 추가한다.
+ * @param pclsValue CAsnComplex 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CAsnComplex::AddComplex( CAsnComplex * pclsValue )
 {
 	if( pclsValue == NULL ) return false;
@@ -191,6 +239,12 @@ bool CAsnComplex::AddComplex( CAsnComplex * pclsValue )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief CAsnType 변수를 리스트에 추가한다.
+ * @param pclsValue CAsnType 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CAsnComplex::AddValue( CAsnType * pclsValue )
 {
 	if( pclsValue == NULL ) return false;
@@ -200,6 +254,10 @@ bool CAsnComplex::AddValue( CAsnType * pclsValue )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 자료구조에 저장된 데이터를 삭제한다.
+ */
 void CAsnComplex::Clear()
 {
 	ASN_TYPE_LIST::iterator	itList;
