@@ -139,6 +139,12 @@ CAsnType * CAsnInt::Copy( )
 	return pclsValue;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 정수값을 가져온다.
+ * @param iValue 정수를 저장할 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CAsnInt::GetInt( uint32_t & iValue )
 {
 	iValue = m_iValue;
