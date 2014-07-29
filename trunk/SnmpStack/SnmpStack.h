@@ -19,11 +19,15 @@
 #ifndef _SNMP_STACK_H_
 #define _SNMP_STACK_H_
 
+#include "SnmpMessage.h"
+
 class CSnmpStack
 {
 public:
 	CSnmpStack();
 	~CSnmpStack();
+
+	static bool SendRequest( const char * pszDestIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse );
 };
 
 #endif
