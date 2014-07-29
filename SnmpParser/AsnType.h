@@ -20,6 +20,7 @@
 #define _ASN_TYPE_H_
 
 #include "SnmpPlatformDefine.h"
+#include <string>
 
 #define ASN_TYPE_BOOL					0x01
 #define ASN_TYPE_INT					0x02
@@ -48,6 +49,9 @@ public:
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen ) = 0;
 	virtual int MakePacket( char * pszPacket, int iPacketSize ) = 0;
 	virtual CAsnType * Copy( ) = 0;
+
+	virtual bool GetInt( uint32_t & iValue );
+	virtual bool GetString( std::string & strValue );
 };
 
 #endif
