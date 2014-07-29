@@ -144,6 +144,12 @@ CAsnType * CAsnOid::Copy( )
 	return pclsValue;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief OID 문자열을 가져온다.
+ * @param strValue OID 문자열을 저장할 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CAsnOid::GetString( std::string & strValue )
 {
 	strValue = m_strValue;
