@@ -98,7 +98,7 @@ done:
 #endif
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 호스트 이름으로 IP 주소를 검색한다.
  * @param szHostName	호스트 이름
  * @param szIp				IP 주소를 저장할 변수
@@ -117,7 +117,7 @@ bool GetIpByName( const char * szHostName, char * szIp, int iLen )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief TCP 서버에 연결한다.
  * @param pszIp			TCP 서버 IP 주소
  * @param iPort			TCP 서버 포트 번호
@@ -173,7 +173,7 @@ Socket TcpConnect( const char * pszIp, int iPort, int iTimeout )
 }
 
 /** 
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 네트워크 전송 함수
  * @param	fd			소켓 핸들
  * @param	szBuf		전송 버퍼
@@ -198,7 +198,7 @@ int TcpSend( Socket fd, const char * szBuf, int iBufLen )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief timeout 을 가진 TCP 수신 메소드
  * @param fd			소켓 핸들
  * @param szBuf		수신 버퍼
@@ -225,7 +225,7 @@ int TcpRecv( Socket fd, char * szBuf, int iBufLen, int iSecond )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 수신 버퍼가 가득 찰 때까지 데이터를 수신한다.
  * @param fd			소켓 핸들
  * @param szBuf		수신 버퍼
@@ -260,7 +260,7 @@ int TcpRecvSize( Socket fd, char * szBuf, int iBufLen, int iSecond )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief TCP 서버 소켓을 생성한다.
  * @param	iPort			TCP 포트 번호
  * @param	iListenQ	queue number to listen
@@ -315,7 +315,7 @@ Socket TcpListen( int iPort, int iListenQ, const char * pszIp )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief TCP accept wrapper function
  * @param hListenFd TCP 서버 소켓
  * @param pszIp			연결된 클라이언트 IP 주소가 저장될 변수
@@ -346,7 +346,7 @@ Socket TcpAccept( Socket hListenFd, char * pszIp, int iIpSize, int * piPort )
 }
 
 /**
- * @ingroup SipPlatform
+ * @ingroup SnmpPlatform
  * @brief 소켓의 로컬 IP 주소와 포트 번호를 리턴한다.
  * @param hSocket 소켓
  * @param strIp		로컬 IP 주소 저장 변수
