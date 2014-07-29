@@ -21,6 +21,10 @@
 
 #include "AsnType.h"
 
+/**
+ * @ingroup SnmpParser
+ * @brief ASN NULL 타입 클래스
+ */
 class CAsnNull : public CAsnType
 {
 public:

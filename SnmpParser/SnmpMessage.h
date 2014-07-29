@@ -23,6 +23,10 @@
 #include "SnmpDefine.h"
 #include "AsnComplex.h"
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMP 패킷 생성/파서 클래스
+ */
 class CSnmpMessage
 {
 public:

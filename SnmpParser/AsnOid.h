@@ -22,6 +22,10 @@
 #include "AsnType.h"
 #include <string>
 
+/**
+ * @ingroup SnmpParser
+ * @brief ASN OID 타입 클래스
+ */
 class CAsnOid : public CAsnType
 {
 public:
