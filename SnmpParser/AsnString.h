@@ -26,10 +26,11 @@ class CAsnString : public CAsnType
 {
 public:
 	CAsnString();
-	~CAsnString();
+	virtual ~CAsnString();
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
 	virtual int MakePacket( char * pszPacket, int iPacketSize );
+	virtual CAsnType * Copy( );
 
 	std::string m_strValue;
 };

@@ -108,3 +108,13 @@ int CAsnOid::MakePacket( char * pszPacket, int iPacketSize )
 
 	return iPos;
 }
+
+CAsnType * CAsnOid::Copy( )
+{
+	CAsnOid * pclsValue = new CAsnOid();
+	if( pclsValue == NULL ) return NULL;
+
+	pclsValue->m_strValue = m_strValue;
+	return pclsValue;
+
+}

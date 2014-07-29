@@ -42,6 +42,7 @@ public:
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen ) = 0;
 	virtual int MakePacket( char * pszPacket, int iPacketSize ) = 0;
+	virtual CAsnType * Copy( ) = 0;
 };
 
 #endif

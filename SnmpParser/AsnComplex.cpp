@@ -3,6 +3,7 @@
 #include "AsnString.h"
 #include "AsnOid.h"
 #include "AsnNull.h"
+#include "SnmpDefine.h"
 #include "Log.h"
 
 CAsnComplex::CAsnComplex()
@@ -18,7 +19,7 @@ CAsnComplex::~CAsnComplex()
 int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	int			iPos = 0, n;
-	uint8_t	cLength;
+	uint8_t	cType, cLength;
 	CAsnType	* pclsValue = NULL;
 
 	Clear();
@@ -28,7 +29,9 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 
 	for( uint8_t i = 0; i < cLength; )
 	{
-		switch( pszPacket[iPos] )
+		cType = pszPacket[iPos];
+
+		switch( cType )
 		{
 		case ASN_TYPE_INT:
 			pclsValue = new CAsnInt();
@@ -44,10 +47,13 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 			pclsValue = new CAsnNull();
 			break;
 		case ASN_TYPE_COMPLEX:
+		case SNMP_CMD_GET:
+		case SNMP_CMD_GET_NEXT:
+		case SNMP_CMD_RESPONSE:
 			pclsValue = new CAsnComplex();
 			break;
 		default:
-			CLog::Print( LOG_ERROR, "%s type(%u) is not defined", __FUNCTION__, pszPacket[iPos] );
+			CLog::Print( LOG_ERROR, "%s type(%02x) is not defined", __FUNCTION__, cType );
 			return -1;
 		}
 
@@ -59,6 +65,7 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 			return -1;
 		}
 		iPos += n;
+		i += n;
 
 		m_clsList.push_back( pclsValue );
 	}
@@ -84,6 +91,30 @@ int CAsnComplex::MakePacket( char * pszPacket, int iPacketSize )
 	pszPacket[1] = iPos - 2;
 
 	return iPos;
+}
+
+CAsnType * CAsnComplex::Copy( )
+{
+	CAsnComplex * pclsValue = new CAsnComplex();
+	if( pclsValue == NULL ) return NULL;
+
+	pclsValue->m_cType = m_cType;
+
+	ASN_TYPE_LIST::iterator	itList;
+
+	for( itList = m_clsList.begin(); itList != m_clsList.end(); ++itList )
+	{
+		CAsnType * pclsEntry = (*itList)->Copy();
+		if( pclsEntry == NULL )
+		{
+			delete pclsValue;
+			return NULL;
+		}
+
+		pclsValue->m_clsList.push_back( pclsEntry );
+	}
+
+	return pclsValue;
 }
 
 bool CAsnComplex::AddInt( uint32_t iValue )
