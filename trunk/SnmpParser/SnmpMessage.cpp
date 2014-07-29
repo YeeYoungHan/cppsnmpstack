@@ -18,6 +18,7 @@
 
 #include "SnmpMessage.h"
 #include "AsnInt.h"
+#include "AsnString.h"
 
 CSnmpMessage::CSnmpMessage()
 {
@@ -31,6 +32,7 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	int iPos = 0, n;
 	CAsnInt		clsInt;
+	CAsnString	clsStr;
 	CAsnVariable	clsVar;
 
 	iPos += 2;
@@ -41,11 +43,11 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 
 	m_cVersion = clsInt.m_iValue;
 
-	n = clsVar.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	n = clsStr.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	if( clsVar.GetString( m_strCommunity ) == false ) return -1;
+	m_strCommunity = clsStr.m_strValue;
 
 	m_cCommand = pszPacket[iPos++];
 	int iDataLen = pszPacket[iPos++];
@@ -92,6 +94,7 @@ int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 	int iPos = 0, n;
 	int arrPos[3];
 	CAsnInt	clsInt;
+	CAsnString	clsStr;
 	CAsnVariable	clsVar;
 
 	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
@@ -102,8 +105,8 @@ int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 	if( n == -1 ) return -1;
 	iPos += n;
 
-	clsVar.SetString( m_strCommunity.c_str() );
-	n = clsVar.MakePacket( pszPacket + iPos, iPacketSize - iPos );
+	clsStr.m_strValue = m_strCommunity.c_str();
+	n = clsStr.MakePacket( pszPacket + iPos, iPacketSize - iPos );
 	if( n == -1 ) return -1;
 	iPos += n;
 
