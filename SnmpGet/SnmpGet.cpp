@@ -31,9 +31,13 @@ int main( int argc, char * argv[] )
 		return -1;
 	}
 
+	const char * pszDestIp = argv[1];
+	const char * pszMib = argv[2];
+
 	InitNetwork();
 
 	Socket hSocket = UdpSocket();
+
 	CSnmpMessage clsRequest;
 	char szPacket[1500], szIp[16];
 	int  iPacketLen;
@@ -46,7 +50,7 @@ int main( int argc, char * argv[] )
 	clsRequest.m_iRequestId = 32594;
 	clsRequest.m_iErrorStatus = 0;
 	clsRequest.m_iErrorIndex = 0;
-	clsRequest.m_strOid = argv[2];
+	clsRequest.m_strOid = pszMib;
 	clsRequest.m_pclsValue = new CAsnNull();
 
 	iPacketLen = clsRequest.MakePacket( szPacket, sizeof(szPacket) );
@@ -56,7 +60,7 @@ int main( int argc, char * argv[] )
 		return 0;
 	}
 
-	if( UdpSend( hSocket, szPacket, iPacketLen, argv[1], 161 ) == false )
+	if( UdpSend( hSocket, szPacket, iPacketLen, pszDestIp, 161 ) == false )
 	{
 		printf( "UdpSend\n" );
 		return 0;
