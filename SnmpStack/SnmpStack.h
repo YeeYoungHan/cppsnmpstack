@@ -21,13 +21,22 @@
 
 #include "SnmpMessage.h"
 
+/**
+ * @defgroup SnmpStack SnmpStack
+ * SNMP 메시지 전송/수신 라이브러리
+ */
+
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 메시지 전송/수신 클래스
+ */
 class CSnmpStack
 {
 public:
 	CSnmpStack();
 	~CSnmpStack();
 
-	static bool SendRequest( const char * pszDestIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse );
+	static bool SendRequest( const char * pszDestIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse, int iTimeout = 2 );
 };
 
 #endif
