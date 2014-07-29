@@ -16,56 +16,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_MUTEX_H_
-#define _SNMP_MUTEX_H_
+#ifndef _SNMP_TCP_H_
+#define _SNMP_TCP_H_
+
+#include "SnmpUdp.h"
+
+bool GetIpByName( const char * szHostName, char * szIp, int iLen );
+Socket TcpConnect( const char * pszIp, int iPort, int iTimeout = 0 );
+int TcpSend( Socket fd, const char * szBuf, int iBufLen );
+int TcpRecv( Socket fd, char * szBuf, int iBufLen, int iSecond );
+int TcpRecvSize( Socket fd, char * szBuf, int iBufLen, int iSecond );
+Socket TcpListen( int iPort, int iListenQ, const char * pszIp = NULL );
+Socket TcpAccept( Socket hListenFd, char * pszIp, int iIpSize, int * piPort );
+bool GetLocalIpPort( Socket hSocket, std::string & strIp, int & iPort );
 
 #ifdef WIN32
-#include <windows.h>
-#else
-#include <pthread.h>
+int pipe( Socket filedes[2] );
 #endif
-
-/** 
- * @ingroup SnmpPlatform
- * @brief mutex 기능을 수행하는 클래스
- */
-class CSnmpMutex
-{
-public:
-	CSnmpMutex();
-	~CSnmpMutex();
-	
-	bool acquire();
-	bool release();
-
-protected:
-#ifdef WIN32
-	CRITICAL_SECTION m_sttMutex;
-#else
-	pthread_mutex_t	 m_sttMutex;
-#endif
-};
-
-/** 
- * @ingroup SnmpPlatform
- * @brief mutex 기능 및 wait/signal 기능을 수행하는 클래스. 리눅스에 최적화되어 있고 윈도우에는 최적화되어 있지 않음.
- */
-class CSnmpMutexSignal : public CSnmpMutex
-{
-public:
-	CSnmpMutexSignal();
-	~CSnmpMutexSignal();
-	
-	bool wait();
-	bool signal();
-	bool broadcast();
-
-private:
-#ifdef WIN32
-	HANDLE						m_sttCond;
-#else
-	pthread_cond_t		m_sttCond;
-#endif
-};
 
 #endif
