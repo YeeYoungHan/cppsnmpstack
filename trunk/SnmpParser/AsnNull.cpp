@@ -2,6 +2,7 @@
 
 CAsnNull::CAsnNull()
 {
+	m_cType = ASN_TYPE_NULL;
 }
 
 CAsnNull::~CAsnNull()

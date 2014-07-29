@@ -20,6 +20,7 @@
 #include "AsnInt.h"
 #include "AsnString.h"
 #include "AsnOid.h"
+#include "AsnComplex.h"
 
 CSnmpMessage::CSnmpMessage()
 {
@@ -93,67 +94,40 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 
 int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 {
-	int iPos = 0, n;
-	int arrPos[3];
-	CAsnInt	clsInt;
-	CAsnString	clsStr;
-	CAsnOid			clsOid;
-	CAsnVariable	clsVar;
+	CAsnComplex clsComplex;
+	CAsnComplex *pclsCommand = NULL, *pclsBodyFrame = NULL, *pclsBody = NULL;
 
-	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
-	++iPos;
+	if( clsComplex.AddInt( m_cVersion ) == false ) return -1;
+	if( clsComplex.AddString( m_strCommunity.c_str() ) == false ) return -1;
 
-	clsInt.m_iValue = m_cVersion;
-	n = clsInt.MakePacket( pszPacket + iPos, iPacketSize - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
+	pclsCommand = new CAsnComplex();
+	if( pclsCommand == NULL ) return -1;
 
-	clsStr.m_strValue = m_strCommunity.c_str();
-	n = clsStr.MakePacket( pszPacket + iPos, iPacketSize - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
+	pclsCommand->m_cType = m_cCommand;
+	if( pclsCommand->AddInt( m_iRequestId ) == false ) goto FUNC_ERROR;
+	if( pclsCommand->AddInt( m_iErrorStatus ) == false ) goto FUNC_ERROR;
+	if( pclsCommand->AddInt( m_iErrorIndex ) == false ) goto FUNC_ERROR;
 
-	pszPacket[iPos++] = m_cCommand;
-	arrPos[0] = iPos;
-	++iPos;
+	pclsBodyFrame = new CAsnComplex();
+	if( pclsBodyFrame == NULL ) goto FUNC_ERROR;
 
-	clsInt.m_iValue = m_iRequestId;
-	n = clsInt.MakePacket( pszPacket + iPos, iPacketSize - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
+	pclsBody = new CAsnComplex();
+	if( pclsBody == NULL ) goto FUNC_ERROR;
 
-	clsInt.m_iValue = m_iErrorStatus;
-	n = clsInt.MakePacket( pszPacket + iPos, iPacketSize - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
+	if( pclsBody->AddOid( m_strOid.c_str() ) == false ) goto FUNC_ERROR;
+	if( pclsBody->AddValue( m_pclsValue ) == false ) goto FUNC_ERROR;
 
-	clsInt.m_iValue = m_iErrorIndex;
-	n = clsInt.MakePacket( pszPacket + iPos, iPacketSize - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
+	pclsBodyFrame->AddComplex( pclsBody );
+	pclsCommand->AddComplex( pclsBodyFrame );
+	clsComplex.AddComplex( pclsCommand );
 
-	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
-	arrPos[1] = iPos;
-	++iPos;
+	return clsComplex.MakePacket( pszPacket, iPacketSize );
 
-	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
-	arrPos[2] = iPos;
-	++iPos;
+FUNC_ERROR:
+	if( pclsCommand ) delete pclsCommand;
+	if( pclsBodyFrame ) delete pclsBodyFrame;
+	if( pclsBody ) delete pclsBody;
 
-	clsOid.m_strValue = m_strOid;
-	n = clsOid.MakePacket( pszPacket + iPos, iPacketSize - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
-
-	n = m_clsVariable.MakePacket( pszPacket + iPos, iPacketSize - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
-
-	pszPacket[arrPos[2]] = iPos - arrPos[2] - 1;
-	pszPacket[arrPos[1]] = iPos - arrPos[1] - 1;
-	pszPacket[arrPos[0]] = iPos - arrPos[0] - 1;
-	pszPacket[1] = iPos - 2;
-
-	return iPos;
+	return -1;
 }
 

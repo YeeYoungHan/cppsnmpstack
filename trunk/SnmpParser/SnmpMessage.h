@@ -41,6 +41,7 @@ public:
 	uint32_t		m_iErrorIndex;
 	std::string	m_strOid;
 	CAsnVariable	m_clsVariable;
+	CAsnType    * m_pclsValue;
 };
 
 #endif
