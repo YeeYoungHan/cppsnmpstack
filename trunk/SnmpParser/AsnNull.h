@@ -7,10 +7,11 @@ class CAsnNull : public CAsnType
 {
 public:
 	CAsnNull();
-	~CAsnNull();
+	virtual ~CAsnNull();
 
-	int ParsePacket( const char * pszPacket, int iPacketLen );
-	int MakePacket( char * pszPacket, int iPacketSize );
+	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
+	virtual int MakePacket( char * pszPacket, int iPacketSize );
+	virtual CAsnType * Copy( );
 };
 
 #endif

@@ -26,10 +26,11 @@ class CAsnOid : public CAsnType
 {
 public:
 	CAsnOid();
-	~CAsnOid();
+	virtual ~CAsnOid();
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
 	virtual int MakePacket( char * pszPacket, int iPacketSize );
+	virtual CAsnType * Copy( );
 
 	std::string m_strValue;
 };

@@ -55,3 +55,13 @@ int CAsnString::MakePacket( char * pszPacket, int iPacketSize )
 
 	return iPos;
 }
+
+CAsnType * CAsnString::Copy( )
+{
+	CAsnString * pclsValue = new CAsnString();
+	if( pclsValue == NULL ) return NULL;
+
+	pclsValue->m_strValue = m_strValue;
+
+	return pclsValue;
+}

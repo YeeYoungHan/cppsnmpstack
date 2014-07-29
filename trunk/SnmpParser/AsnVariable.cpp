@@ -75,6 +75,11 @@ int CAsnVariable::ParsePacket( const char * pszPacket, int iPacketLen )
 	return iPos;
 }
 
+CAsnType * CAsnVariable::Copy( )
+{
+	return NULL;
+}
+
 bool CAsnVariable::GetInt( uint32_t & iValue )
 {
 	if( m_pclsValue == NULL || m_pclsValue->m_cType != ASN_TYPE_INT ) return false;

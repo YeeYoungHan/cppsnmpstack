@@ -10,10 +10,11 @@ class CAsnComplex : public CAsnType
 {
 public:
 	CAsnComplex();
-	~CAsnComplex();
+	virtual ~CAsnComplex();
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
 	virtual int MakePacket( char * pszPacket, int iPacketSize );
+	virtual CAsnType * Copy( );
 
 	bool AddInt( uint32_t iValue );
 	bool AddString( const char * pszValue );

@@ -22,74 +22,117 @@
 #include "AsnOid.h"
 #include "AsnComplex.h"
 
-CSnmpMessage::CSnmpMessage()
+CSnmpMessage::CSnmpMessage() : m_pclsValue(NULL)
 {
 }
 
 CSnmpMessage::~CSnmpMessage()
 {
+	Clear();
 }
 
 int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 {
-	int iPos = 0, n;
-	CAsnInt		clsInt;
-	CAsnString	clsStr;
-	CAsnOid			clsOid;
-	CAsnVariable	clsVar;
+	CAsnComplex clsComplex;
+	ASN_TYPE_LIST::iterator	itRoot;
+	uint8_t cType = 0;
+	int n;
 
-	iPos += 2;
-
-	n = clsInt.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
+	n = clsComplex.ParsePacket( pszPacket, iPacketLen );
 	if( n == -1 ) return -1;
-	iPos += n;
 
-	m_cVersion = clsInt.m_iValue;
+	for( itRoot = clsComplex.m_clsList.begin(); itRoot != clsComplex.m_clsList.end(); ++itRoot )
+	{
+		++cType;
 
-	n = clsStr.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
+		if( cType == 1 )
+		{
+			if( (*itRoot)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itRoot);
+				m_cVersion = pclsValue->m_iValue;
+			}
+		}
+		else if( cType == 2 )
+		{
+			if( (*itRoot)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itRoot);
+				m_strCommunity = pclsValue->m_strValue;
+			}
+		}
+		else if( cType == 3 )
+		{
+			break;
+		}
+	}
 
-	m_strCommunity = clsStr.m_strValue;
+	if( cType == 3 )
+	{
+		m_cCommand = (*itRoot)->m_cType;
+		CAsnComplex * pclsCmd = (CAsnComplex *)(*itRoot);
+		ASN_TYPE_LIST::iterator	itCmd;
+		cType = 0;
 
-	m_cCommand = pszPacket[iPos++];
-	int iDataLen = pszPacket[iPos++];
+		for( itCmd = pclsCmd->m_clsList.begin(); itCmd != pclsCmd->m_clsList.end(); ++itCmd )
+		{
+			++cType;
 
-	n = clsInt.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
+			if( cType == 1 )
+			{
+				if( (*itCmd)->m_cType == ASN_TYPE_INT )
+				{
+					CAsnInt * pclsValue = (CAsnInt *)(*itCmd);
+					m_iRequestId = pclsValue->m_iValue;
+				}
+			}
+			else if( cType == 2 )
+			{
+				if( (*itCmd)->m_cType == ASN_TYPE_INT )
+				{
+					CAsnInt * pclsValue = (CAsnInt *)(*itCmd);
+					m_iErrorStatus = pclsValue->m_iValue;
+				}
+			}
+			else if( cType == 3 )
+			{
+				if( (*itCmd)->m_cType == ASN_TYPE_INT )
+				{
+					CAsnInt * pclsValue = (CAsnInt *)(*itCmd);
+					m_iErrorIndex = pclsValue->m_iValue;
+				}
+			}
+			else if( cType == 4 )
+			{
+				break;
+			}
+		}
 
-	m_iRequestId = clsInt.m_iValue;
+		if( cType == 4 )
+		{
+			CAsnComplex * pclsBodyFrame = (CAsnComplex *)(*itCmd);
+			CAsnComplex * pclsBody = (CAsnComplex *)(*pclsBodyFrame->m_clsList.begin());
+			ASN_TYPE_LIST::iterator	itBody;
+			cType = 0;
 
-	n = clsInt.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
+			for( itBody = pclsBody->m_clsList.begin(); itBody != pclsBody->m_clsList.end(); ++itBody )
+			{
+				++cType;
 
-	m_iErrorStatus = clsInt.m_iValue;
+				if( cType == 1 )
+				{
+					CAsnOid * pclsValue = (CAsnOid *)(*itBody);
+					m_strOid = pclsValue->m_strValue;
+				}
+				else if( cType == 2 )
+				{
+					m_pclsValue = (*itBody)->Copy();
+				}
+			}
+		}
+	}
 
-	n = clsInt.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
-
-	m_iErrorIndex = clsInt.m_iValue;
-
-	++iPos;
-	int iComplexLen = pszPacket[iPos++];
-
-	++iPos;
-	iComplexLen = pszPacket[iPos++];
-
-	n = clsOid.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
-
-	m_strOid = clsOid.m_strValue;
-
-	n = m_clsVariable.ParsePacket( pszPacket + iPos, iPacketLen - iPos );
-	if( n == -1 ) return -1;
-	iPos += n;
-
-	return iPos;
+	return n;
 }
 
 int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
@@ -115,7 +158,12 @@ int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 	if( pclsBody == NULL ) goto FUNC_ERROR;
 
 	if( pclsBody->AddOid( m_strOid.c_str() ) == false ) goto FUNC_ERROR;
-	if( pclsBody->AddValue( m_pclsValue ) == false ) goto FUNC_ERROR;
+
+	{
+		CAsnType * pclsValue = m_pclsValue->Copy();
+		if( pclsValue == NULL ) goto FUNC_ERROR;
+		if( pclsBody->AddValue( pclsValue ) == false ) goto FUNC_ERROR;
+	}
 
 	pclsBodyFrame->AddComplex( pclsBody );
 	pclsCommand->AddComplex( pclsBodyFrame );
@@ -131,3 +179,11 @@ FUNC_ERROR:
 	return -1;
 }
 
+void CSnmpMessage::Clear()
+{
+	if( m_pclsValue )
+	{
+		delete m_pclsValue;
+		m_pclsValue = NULL;
+	}
+}

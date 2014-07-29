@@ -89,3 +89,12 @@ int CAsnInt::MakePacket( char * pszPacket, int iPacketSize )
 
 	return iPos;
 }
+
+CAsnType * CAsnInt::Copy( )
+{
+	CAsnInt * pclsValue = new CAsnInt();
+	if( pclsValue == NULL ) return NULL;
+
+	pclsValue->m_iValue = m_iValue;
+	return pclsValue;
+}

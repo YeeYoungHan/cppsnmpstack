@@ -18,6 +18,9 @@
 
 #include "SnmpMessage.h"
 #include "SnmpUdp.h"
+#include "AsnInt.h"
+#include "AsnString.h"
+#include "AsnOid.h"
 #include "AsnNull.h"
 
 int main( int argc, char * argv[] )
@@ -74,27 +77,28 @@ int main( int argc, char * argv[] )
 		return 0;
 	}
 
-	switch( clsResponse.m_clsVariable.m_cType )
+	if( clsResponse.m_pclsValue )
 	{
-	case ASN_TYPE_INT:
+		switch( clsResponse.m_pclsValue->m_cType )
 		{
-			uint32_t iValue;
-
-			clsResponse.m_clsVariable.GetInt( iValue );
-			printf( "[%u] (type=int)\n", iValue );
+		case ASN_TYPE_INT:
+			{
+				CAsnInt * pclsValue = (CAsnInt *)clsResponse.m_pclsValue;
+				uint32_t iValue = pclsValue->m_iValue;
+				printf( "[%u] (type=int)\n", iValue );
+			}
+			break;
+		case ASN_TYPE_OCTET_STR:
+			{
+				CAsnString * pclsValue = (CAsnString *)clsResponse.m_pclsValue;
+				std::string	strValue = pclsValue->m_strValue;
+				printf( "[%s] (type=octet_string)\n", strValue.c_str() );
+			}
+			break;
+		case ASN_TYPE_NO_SUCH_OBJECT:
+			printf( "(type=no_such_object)\n" );
+			break;
 		}
-		break;
-	case ASN_TYPE_OCTET_STR:
-		{
-			std::string	strValue;
-
-			clsResponse.m_clsVariable.GetString( strValue );
-			printf( "[%s] (type=octet_string)\n", strValue.c_str() );
-		}
-		break;
-	case ASN_TYPE_NO_SUCH_OBJECT:
-		printf( "(type=no_such_object)\n" );
-		break;
 	}
 
 	return 0;

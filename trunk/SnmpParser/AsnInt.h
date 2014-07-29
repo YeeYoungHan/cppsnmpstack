@@ -25,10 +25,11 @@ class CAsnInt : public CAsnType
 {
 public:
 	CAsnInt();
-	~CAsnInt();
+	virtual ~CAsnInt();
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
 	virtual int MakePacket( char * pszPacket, int iPacketSize );
+	virtual CAsnType * Copy( );
 
 	uint32_t	m_iValue;
 };

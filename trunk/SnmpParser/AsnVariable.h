@@ -26,10 +26,11 @@ class CAsnVariable : public CAsnType
 {
 public:
 	CAsnVariable();
-	~CAsnVariable();
+	virtual ~CAsnVariable();
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
 	virtual int MakePacket( char * pszPacket, int iPacketSize );
+	virtual CAsnType * Copy( );
 
 	bool GetInt( uint32_t & iValue );
 	bool GetString( std::string & strValue );

@@ -32,6 +32,7 @@ public:
 
 	int ParsePacket( const char * pszPacket, int iPacketLen );
 	int MakePacket( char * pszPacket, int iPacketSize );
+	void Clear();
 
 	uint8_t			m_cVersion;
 	std::string	m_strCommunity;
@@ -40,7 +41,6 @@ public:
 	uint32_t		m_iErrorStatus;
 	uint32_t		m_iErrorIndex;
 	std::string	m_strOid;
-	CAsnVariable	m_clsVariable;
 	CAsnType    * m_pclsValue;
 };
 

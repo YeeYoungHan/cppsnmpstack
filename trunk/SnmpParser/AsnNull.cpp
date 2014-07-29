@@ -23,3 +23,13 @@ int CAsnNull::MakePacket( char * pszPacket, int iPacketSize )
 
 	return 2;
 }
+
+CAsnType * CAsnNull::Copy( )
+{
+	CAsnNull * pclsValue = new CAsnNull();
+	if( pclsValue == NULL ) return NULL;
+
+	pclsValue->m_cType = m_cType;
+
+	return pclsValue;
+}
