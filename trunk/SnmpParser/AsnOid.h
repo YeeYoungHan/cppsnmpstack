@@ -37,6 +37,9 @@ public:
 	virtual CAsnType * Copy( );
 
 	std::string m_strValue;
+
+private:
+	static void SetOidEntry( char * pszPacket, int iPacketSize, int iValue, int & iPos );
 };
 
 #endif
