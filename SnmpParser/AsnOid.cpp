@@ -17,6 +17,7 @@
  */
 
 #include "AsnOid.h"
+#include <stdlib.h>
 #include <list>
 #include "MemoryDebug.h"
 

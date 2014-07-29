@@ -17,6 +17,7 @@
  */
 
 #include "AsnInt.h"
+#include "SnmpUdp.h"
 #include "MemoryDebug.h"
 
 CAsnInt::CAsnInt() : m_iValue(0)
