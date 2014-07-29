@@ -59,7 +59,8 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 		switch( cType )
 		{
 		case ASN_TYPE_INT:
-			pclsValue = new CAsnInt();
+		case ASN_TYPE_COUNTER_32:
+			pclsValue = new CAsnInt( cType );
 			break;
 		case ASN_TYPE_OCTET_STR:
 			pclsValue = new CAsnString();

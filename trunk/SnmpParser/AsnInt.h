@@ -29,6 +29,7 @@ class CAsnInt : public CAsnType
 {
 public:
 	CAsnInt();
+	CAsnInt( uint8_t cType );
 	virtual ~CAsnInt();
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
