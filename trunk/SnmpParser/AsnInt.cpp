@@ -55,15 +55,23 @@ int CAsnInt::ParsePacket( const char * pszPacket, int iPacketLen )
 	{
 		int16_t sValue;
 
-		memcpy( &sValue, pszPacket + iPos, 2 );
+		memcpy( &sValue, pszPacket + iPos, cLength );
 		m_iValue = ntohs( sValue );
 		iPos += 2;
+	}
+	else if( cLength == 3 )
+	{
+		int32_t iValue = 0;
+
+		memcpy( ((char *)&iValue) + 1, pszPacket + iPos, cLength );
+		m_iValue = ntohl( iValue );
+		iPos += 3;
 	}
 	else if( cLength == 4 )
 	{
 		int32_t iValue;
 
-		memcpy( &iValue, pszPacket + iPos, 2 );
+		memcpy( &iValue, pszPacket + iPos, cLength );
 		m_iValue = ntohl( iValue );
 		iPos += 4;
 	}
@@ -96,6 +104,14 @@ int CAsnInt::MakePacket( char * pszPacket, int iPacketSize )
 		int16_t sValue = htons( m_iValue );
 		memcpy( pszPacket + iPos, &sValue, 2 );
 		iPos += 2;
+	}
+	else if( m_iValue <= 0xFFFFFF )
+	{
+		pszPacket[iPos++] = 3;
+
+		uint32_t iValue = htons( m_iValue );
+		memcpy( pszPacket + iPos, ((char *)&iValue) + 1, 2 );
+		iPos += 3;
 	}
 	else
 	{
