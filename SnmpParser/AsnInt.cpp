@@ -23,6 +23,11 @@ CAsnInt::CAsnInt() : m_iValue(0)
 	m_cType = ASN_TYPE_INT;
 }
 
+CAsnInt::CAsnInt( uint8_t cType ) : m_iValue(0)
+{
+	m_cType = cType;
+}
+
 CAsnInt::~CAsnInt()
 {
 }

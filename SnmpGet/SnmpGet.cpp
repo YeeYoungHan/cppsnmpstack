@@ -82,6 +82,7 @@ int main( int argc, char * argv[] )
 		switch( clsResponse.m_pclsValue->m_cType )
 		{
 		case ASN_TYPE_INT:
+		case ASN_TYPE_COUNTER_32:
 			{
 				CAsnInt * pclsValue = (CAsnInt *)clsResponse.m_pclsValue;
 				uint32_t iValue = pclsValue->m_iValue;
