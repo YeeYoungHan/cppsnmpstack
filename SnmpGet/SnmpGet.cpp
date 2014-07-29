@@ -18,6 +18,7 @@
 
 #include "SnmpMessage.h"
 #include "SnmpUdp.h"
+#include "AsnNull.h"
 
 int main( int argc, char * argv[] )
 {
@@ -43,7 +44,7 @@ int main( int argc, char * argv[] )
 	clsRequest.m_iErrorStatus = 0;
 	clsRequest.m_iErrorIndex = 0;
 	clsRequest.m_strOid = argv[2];
-	clsRequest.m_clsVariable.SetNull();
+	clsRequest.m_pclsValue = new CAsnNull();
 
 	iPacketLen = clsRequest.MakePacket( szPacket, sizeof(szPacket) );
 	if( iPacketLen == -1 )

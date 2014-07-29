@@ -15,6 +15,13 @@ public:
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
 	virtual int MakePacket( char * pszPacket, int iPacketSize );
 
+	bool AddInt( uint32_t iValue );
+	bool AddString( const char * pszValue );
+	bool AddOid( const char * pszValue );
+	bool AddNull( );
+	bool AddComplex( CAsnComplex * pclsValue );
+	bool AddValue( CAsnType * pclsValue );
+
 	void Clear();
 
 	ASN_TYPE_LIST m_clsList;

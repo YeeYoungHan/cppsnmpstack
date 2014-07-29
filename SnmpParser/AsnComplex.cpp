@@ -7,6 +7,7 @@
 
 CAsnComplex::CAsnComplex()
 {
+	m_cType = ASN_TYPE_COMPLEX;
 }
 
 CAsnComplex::~CAsnComplex()
@@ -18,7 +19,9 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	int			iPos = 0, n;
 	uint8_t	cLength;
-	CAsnType	* pclsValue;
+	CAsnType	* pclsValue = NULL;
+
+	Clear();
 
 	m_cType = pszPacket[iPos++];
 	cLength = pszPacket[iPos++];
@@ -45,7 +48,7 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 			break;
 		default:
 			CLog::Print( LOG_ERROR, "%s type(%u) is not defined", __FUNCTION__, pszPacket[iPos] );
-			break;
+			return -1;
 		}
 
 		if( pclsValue == NULL ) return -1;
@@ -55,11 +58,12 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 			delete pclsValue;
 			return -1;
 		}
+		iPos += n;
 
 		m_clsList.push_back( pclsValue );
 	}
 
-	return 0;
+	return iPos;
 }
 
 int CAsnComplex::MakePacket( char * pszPacket, int iPacketSize )
@@ -67,7 +71,7 @@ int CAsnComplex::MakePacket( char * pszPacket, int iPacketSize )
 	int iPos = 0, n;
 	ASN_TYPE_LIST::iterator	itList;
 	
-	pszPacket[iPos++] = ASN_TYPE_COMPLEX;
+	pszPacket[iPos++] = m_cType;
 	++iPos;
 
 	for( itList = m_clsList.begin(); itList != m_clsList.end(); ++itList )
@@ -77,9 +81,74 @@ int CAsnComplex::MakePacket( char * pszPacket, int iPacketSize )
 		iPos += n;
 	}
 
-	pszPacket[1] = iPos - 1;
+	pszPacket[1] = iPos - 2;
 
-	return 0;
+	return iPos;
+}
+
+bool CAsnComplex::AddInt( uint32_t iValue )
+{
+	CAsnInt * pclsValue = new CAsnInt();
+	if( pclsValue == NULL ) return false;
+
+	pclsValue->m_iValue = iValue;
+	m_clsList.push_back( pclsValue );
+
+	return true;
+}
+
+bool CAsnComplex::AddString( const char * pszValue )
+{
+	if( pszValue == NULL ) return false;
+
+	CAsnString * pclsValue = new CAsnString();
+	if( pclsValue == NULL ) return false;
+
+	pclsValue->m_strValue = pszValue;
+	m_clsList.push_back( pclsValue );
+
+	return true;
+}
+
+bool CAsnComplex::AddOid( const char * pszValue )
+{
+	if( pszValue == NULL ) return false;
+
+	CAsnOid * pclsValue = new CAsnOid();
+	if( pclsValue == NULL ) return false;
+
+	pclsValue->m_strValue = pszValue;
+	m_clsList.push_back( pclsValue );
+
+	return true;
+}
+
+bool CAsnComplex::AddNull( )
+{
+	CAsnNull * pclsValue = new CAsnNull();
+	if( pclsValue == NULL ) return false;
+
+	m_clsList.push_back( pclsValue );
+
+	return true;
+}
+
+bool CAsnComplex::AddComplex( CAsnComplex * pclsValue )
+{
+	if( pclsValue == NULL ) return false;
+
+	m_clsList.push_back( pclsValue );
+
+	return true;
+}
+
+bool CAsnComplex::AddValue( CAsnType * pclsValue )
+{
+	if( pclsValue == NULL ) return false;
+
+	m_clsList.push_back( pclsValue );
+
+	return true;
 }
 
 void CAsnComplex::Clear()
