@@ -16,21 +16,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_DEFINE_H_
-#define _SNMP_DEFINE_H_
+#include "SnmpTransactionList.h"
 
-#define SNMP_VERSION_1	0
-#define SNMP_VERSION_2C	1
+CSnmpTransactionList::CSnmpTransactionList()
+{
+}
 
-#define SNMP_CMD_GET			0xA0
-#define SNMP_CMD_GET_NEXT	0xA1
-#define SNMP_CMD_RESPONSE	0xA2
+CSnmpTransactionList::~CSnmpTransactionList()
+{
+}
 
-#define SNMP_MAX_PACKET_SIZE	1480
+bool CSnmpTransactionList::Insert( CSnmpMessage * pclsRequest )
+{
+	return true;
+}
 
-/**
- * @defgroup SnmpParser SnmpParser
- * SNMP 메시지 생성/파서 라이브러리
- */
+void CSnmpTransactionList::Execute( struct timeval * psttTime )
+{
 
-#endif
+}
+
+void CSnmpTransactionList::DeleteAll( )
+{
+
+}

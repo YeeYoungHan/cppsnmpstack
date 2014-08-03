@@ -16,21 +16,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_DEFINE_H_
-#define _SNMP_DEFINE_H_
+#ifndef _SNMP_TRANSACTION_LIST_H_
+#define _SNMP_TRANSACTION_LIST_H_
 
-#define SNMP_VERSION_1	0
-#define SNMP_VERSION_2C	1
+#include "SnmpTransaction.h"
+#include "SnmpMutex.h"
+#include <map>
 
-#define SNMP_CMD_GET			0xA0
-#define SNMP_CMD_GET_NEXT	0xA1
-#define SNMP_CMD_RESPONSE	0xA2
+// key = m_iRequestId
+typedef std::map< uint32_t, CSnmpTransaction * > SNMP_TRANSACTION_MAP;
 
-#define SNMP_MAX_PACKET_SIZE	1480
+class CSnmpTransactionList
+{
+public:
+	CSnmpTransactionList();
+	~CSnmpTransactionList();
 
-/**
- * @defgroup SnmpParser SnmpParser
- * SNMP 메시지 생성/파서 라이브러리
- */
+	bool Insert( CSnmpMessage * pclsRequest );
+	void Execute( struct timeval * psttTime );
+	void DeleteAll( );
+
+private:
+	SNMP_TRANSACTION_MAP	m_clsMap;
+	CSnmpMutex						m_clsMutex;
+};
 
 #endif
