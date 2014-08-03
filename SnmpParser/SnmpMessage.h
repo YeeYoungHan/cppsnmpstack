@@ -35,6 +35,7 @@ public:
 
 	int ParsePacket( const char * pszPacket, int iPacketLen );
 	int MakePacket( char * pszPacket, int iPacketSize );
+	bool MakePacket( );
 	void Clear();
 
 	bool MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
@@ -47,6 +48,9 @@ public:
 	uint32_t		m_iErrorIndex;
 	std::string	m_strOid;
 	CAsnType    * m_pclsValue;
+
+	char				* m_pszPacket;
+	int					m_iPacketLen;
 };
 
 #endif

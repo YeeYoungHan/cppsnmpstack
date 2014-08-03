@@ -16,21 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_DEFINE_H_
-#define _SNMP_DEFINE_H_
+#include "SnmpTransaction.h"
 
-#define SNMP_VERSION_1	0
-#define SNMP_VERSION_2C	1
+CSnmpTransaction::CSnmpTransaction() : m_pclsRequest(NULL), m_iReSendCount(0)
+{
+	memset( &m_sttSendTime, 0, sizeof(m_sttSendTime) );
+	memset( &m_sttEndTime, 0, sizeof(m_sttEndTime) );
+}
 
-#define SNMP_CMD_GET			0xA0
-#define SNMP_CMD_GET_NEXT	0xA1
-#define SNMP_CMD_RESPONSE	0xA2
-
-#define SNMP_MAX_PACKET_SIZE	1480
-
-/**
- * @defgroup SnmpParser SnmpParser
- * SNMP 메시지 생성/파서 라이브러리
- */
-
-#endif
+CSnmpTransaction::~CSnmpTransaction()
+{
+}

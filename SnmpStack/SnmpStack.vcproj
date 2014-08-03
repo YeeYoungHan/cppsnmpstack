@@ -158,6 +158,42 @@
 				RelativePath=".\SnmpStack.h"
 				>
 			</File>
+			<File
+				RelativePath=".\SnmpStackDefine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpStackSetup.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpStackSetup.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="¾²·¹µå"
+			>
+		</Filter>
+		<Filter
+			Name="Transaction"
+			>
+			<File
+				RelativePath=".\SnmpTransaction.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpTransaction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpTransactionList.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpTransactionList.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

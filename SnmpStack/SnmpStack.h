@@ -19,12 +19,14 @@
 #ifndef _SNMP_STACK_H_
 #define _SNMP_STACK_H_
 
-#include "SnmpMessage.h"
-
 /**
  * @defgroup SnmpStack SnmpStack
  * SNMP 메시지 전송/수신 라이브러리
  */
+
+#include "SnmpMessage.h"
+#include "SnmpStackSetup.h"
+#include "SnmpUdp.h"
 
 /**
  * @ingroup SnmpStack
@@ -36,7 +38,13 @@ public:
 	CSnmpStack();
 	~CSnmpStack();
 
+	bool Start( CSnmpStackSetup & clsSetup );
+	bool Stop( );
+
 	static bool SendRequest( const char * pszDestIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse, int iTimeout = 2 );
+
+	CSnmpStackSetup m_clsSetup;
+	Socket					m_hSocket;
 };
 
 #endif

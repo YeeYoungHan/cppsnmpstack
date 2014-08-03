@@ -17,6 +17,7 @@
  */
 
 #include "SnmpPlatformDefine.h"
+#include "SnmpStackDefine.h"
 #include "SnmpStack.h"
 #include "SnmpUdp.h"
 #include "Log.h"
@@ -28,6 +29,36 @@ CSnmpStack::CSnmpStack()
 
 CSnmpStack::~CSnmpStack()
 {
+}
+
+bool CSnmpStack::Start( CSnmpStackSetup & clsSetup )
+{
+	InitNetwork();
+
+	m_clsSetup = clsSetup;
+
+	if( m_clsSetup.m_iLocalPort == 0 )
+	{
+		m_hSocket = UdpSocket();
+	}
+	else
+	{
+		m_hSocket = UdpListen( m_clsSetup.m_iLocalPort, NULL );
+	}
+
+	if( m_hSocket == INVALID_SOCKET )
+	{
+		CLog::Print( LOG_ERROR, "%s udp socket create error(%d)", __FUNCTION__, GetError() );
+		return false;
+	}
+
+	return true;
+}
+
+bool CSnmpStack::Stop( )
+{
+
+	return true;
 }
 
 /**
@@ -42,7 +73,7 @@ CSnmpStack::~CSnmpStack()
  */
 bool CSnmpStack::SendRequest( const char * pszDestIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse, int iTimeout )
 {
-	char szPacket[1500], szIp[16];
+	char szPacket[SNMP_MAX_PACKET_SIZE], szIp[16];
 	int  iPacketLen, n;
 	uint16_t	sPort;
 	pollfd sttPoll[1];

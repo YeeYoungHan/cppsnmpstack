@@ -24,7 +24,7 @@
 #include "AsnComplex.h"
 #include "MemoryDebug.h"
 
-CSnmpMessage::CSnmpMessage() : m_pclsValue(NULL)
+CSnmpMessage::CSnmpMessage() : m_pclsValue(NULL), m_pszPacket(NULL), m_iPacketLen(0)
 {
 }
 
@@ -195,6 +195,20 @@ FUNC_ERROR:
 	return -1;
 }
 
+bool CSnmpMessage::MakePacket( )
+{
+	if( m_pszPacket == NULL )
+	{
+		m_pszPacket = (char *)malloc( SNMP_MAX_PACKET_SIZE );
+		if( m_pszPacket == NULL ) return false;
+	}
+
+	m_iPacketLen = MakePacket( m_pszPacket, SNMP_MAX_PACKET_SIZE );
+	if( m_iPacketLen == -1 ) return false;
+
+	return true;
+}
+
 /**
  * @ingroup SnmpParser
  * @brief 내부 변수를 초기화시킨다.
@@ -208,6 +222,12 @@ void CSnmpMessage::Clear()
 	{
 		delete m_pclsValue;
 		m_pclsValue = NULL;
+	}
+
+	if( m_pszPacket )
+	{
+		free( m_pszPacket );
+		m_pszPacket = NULL;
 	}
 }
 
