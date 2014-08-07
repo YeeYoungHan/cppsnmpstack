@@ -18,7 +18,12 @@
 
 #include "SnmpUdp.h"
 #include "SnmpStack.h"
+#include "CallBack.h"
 #include "MemoryDebug.h"
+
+#ifndef USE_BLOCKING_METHOD
+CSnmpMutexSignal gclsMutex;
+#endif
 
 int main( int argc, char * argv[] )
 {
@@ -38,6 +43,7 @@ int main( int argc, char * argv[] )
 
 	InitNetwork();
 
+#ifdef USE_BLOCKING_METHOD
 	clsRequest.MakeGetRequest( "public", 32594, pszMib );
 
 	if( CSnmpStack::SendRequest( pszDestIp, 161, clsRequest, clsResponse ) == false )
@@ -64,6 +70,30 @@ int main( int argc, char * argv[] )
 			printf( "(type=no_such_object)\n" );
 		}
 	}
+#else
+	CSnmpStack clsStack;
+	CSnmpStackSetup clsSetup;
+	CCallBack clsCallBack;
+
+	if( clsStack.Start( clsSetup, &clsCallBack ) == false )
+	{
+		printf( "clsStack.Start() error\n" );
+	}
+
+	CSnmpMessage * pclsRequest = new CSnmpMessage();
+	if( pclsRequest )
+	{
+		if( pclsRequest->MakeGetRequest( "public", 32594, pszMib ) )
+		{
+			if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
+			{
+				gclsMutex.wait();
+			}
+		}
+	}
+
+	clsStack.Stop();
+#endif
 
 	return 0;
 }

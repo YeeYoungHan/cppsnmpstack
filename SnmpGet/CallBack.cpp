@@ -16,40 +16,45 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_TRANSACTION_LIST_H_
-#define _SNMP_TRANSACTION_LIST_H_
-
-#include "SnmpTransaction.h"
+#include "CallBack.h"
 #include "SnmpMutex.h"
-#include <map>
 
-class CSnmpStack;
-
-// key = m_iRequestId
-typedef std::map< uint32_t, CSnmpTransaction * > SNMP_TRANSACTION_MAP;
-
-class CSnmpTransactionList
-{
-public:
-	CSnmpTransactionList();
-	~CSnmpTransactionList();
-
-	void SetSnmpStack( CSnmpStack * pclsStack );
-
-	bool Insert( CSnmpMessage * pclsRequest );
-	bool Delete( CSnmpMessage * pclsRequest );
-
-	bool Select( uint32_t iRequestId, CSnmpTransaction ** ppclsTransaction );
-	bool Delete( uint32_t iRequestId );
-	void Release( CSnmpTransaction * pclsTransaction );
-
-	void Execute( struct timeval * psttTime );
-	void DeleteAll( );
-
-private:
-	SNMP_TRANSACTION_MAP	m_clsMap;
-	CSnmpMutex						m_clsMutex;
-	CSnmpStack						* m_pclsStack;
-};
-
+#ifndef USE_BLOCKING_METHOD
+extern CSnmpMutexSignal gclsMutex;
 #endif
+
+CCallBack::CCallBack()
+{
+}
+
+CCallBack::~CCallBack()
+{
+}
+
+void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse )
+{
+	if( pclsResponse == NULL )
+	{
+		printf( "timeout\n" );
+	}
+	else if( pclsResponse->m_pclsValue )
+	{
+		uint32_t iValue;
+		std::string strValue;
+
+		if( pclsResponse->m_pclsValue->GetInt( iValue ) )
+		{
+			printf( "[%u] (type=int)\n", iValue );
+		}
+		else if( pclsResponse->m_pclsValue->GetString( strValue ) )
+		{
+			printf( "[%s] (type=string)\n", strValue.c_str() );
+		}
+		else
+		{
+			printf( "(type=no_such_object)\n" );
+		}
+	}
+
+	gclsMutex.signal();
+}
