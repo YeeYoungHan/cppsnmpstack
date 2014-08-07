@@ -17,13 +17,22 @@
  */
 
 #include "SnmpTransaction.h"
+#include "TimeUtility.h"
 
-CSnmpTransaction::CSnmpTransaction() : m_pclsRequest(NULL), m_iReSendCount(0)
+CSnmpTransaction::CSnmpTransaction() : m_pclsRequest(NULL), m_iReSendCount(0), m_iUseCount(1)
 {
 	memset( &m_sttSendTime, 0, sizeof(m_sttSendTime) );
-	memset( &m_sttEndTime, 0, sizeof(m_sttEndTime) );
 }
 
 CSnmpTransaction::~CSnmpTransaction()
 {
+}
+
+bool CSnmpTransaction::IsTimeout( struct timeval * psttTime, int iTimeout )
+{
+	int iMiliSecond = DiffTimeval( &m_sttSendTime, psttTime );
+
+	if( iMiliSecond >= iTimeout ) return true;
+
+	return false;
 }

@@ -161,6 +161,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ServerUtility.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SnmpMutex.cpp"
 				>
 			</File>
@@ -196,6 +200,10 @@
 			</File>
 			<File
 				RelativePath=".\MemoryDebug.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ServerUtility.h"
 				>
 			</File>
 			<File

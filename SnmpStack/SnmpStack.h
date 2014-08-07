@@ -24,9 +24,10 @@
  * SNMP 메시지 전송/수신 라이브러리
  */
 
-#include "SnmpMessage.h"
 #include "SnmpStackSetup.h"
+#include "SnmpTransactionList.h"
 #include "SnmpUdp.h"
+#include "SnmpStackCallBack.h"
 
 /**
  * @ingroup SnmpStack
@@ -38,13 +39,19 @@ public:
 	CSnmpStack();
 	~CSnmpStack();
 
-	bool Start( CSnmpStackSetup & clsSetup );
+	bool Start( CSnmpStackSetup & clsSetup, ISnmpStackCallBack * pclsCallBack );
 	bool Stop( );
 
-	static bool SendRequest( const char * pszDestIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse, int iTimeout = 2 );
+	bool SendRequest( const char * pszIp, int iPort, CSnmpMessage * pclsRequest );
+
+	static bool SendRequest( const char * pszIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse, int iTimeout = 2 );
 
 	CSnmpStackSetup m_clsSetup;
 	Socket					m_hSocket;
+
+	ISnmpStackCallBack	* m_pclsCallBack;
+
+	CSnmpTransactionList	m_clsTransactionList;
 };
 
 #endif

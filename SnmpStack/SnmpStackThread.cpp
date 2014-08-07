@@ -16,44 +16,45 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_MESSAGE_H_
-#define _SNMP_MESSAGE_H_
-
 #include "SnmpPlatformDefine.h"
-#include "SnmpDefine.h"
-#include "AsnComplex.h"
+#include "SnmpThread.h"
+#include "ServerUtility.h"
+#include "TimeUtility.h"
 
-/**
- * @ingroup SnmpParser
- * @brief SNMP 패킷 생성/파서 클래스
- */
-class CSnmpMessage
+static bool gbStop = false;
+static bool gbRun = false;
+
+THREAD_API SnmpStackThread( LPVOID lpParameter )
 {
-public:
-	CSnmpMessage();
-	~CSnmpMessage();
+	CSnmpStack * pclsSnmpStack = (CSnmpStack *)lpParameter;
+	struct timeval sttTime;
 
-	int ParsePacket( const char * pszPacket, int iPacketLen );
-	int MakePacket( char * pszPacket, int iPacketSize );
-	bool MakePacket( );
-	void Clear();
+	gbRun = true;
 
-	bool MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
+	while( gbStop == false )
+	{
+		gettimeofday( &sttTime, NULL );
+		pclsSnmpStack->m_clsTransactionList.Execute( &sttTime );
 
-	uint8_t			m_cVersion;
-	std::string	m_strCommunity;
-	uint8_t			m_cCommand;
-	uint32_t		m_iRequestId;
-	uint32_t		m_iErrorStatus;
-	uint32_t		m_iErrorIndex;
-	std::string	m_strOid;
-	CAsnType    * m_pclsValue;
+		MiliSleep( 100 );
+	}
 
-	char				* m_pszPacket;
-	int					m_iPacketLen;
+	gbRun = false;
 
-	std::string	m_strDestIp;
-	int					m_iDestPort;
-};
+	return 0;
+}
 
-#endif
+bool StartSnmpStackThread( CSnmpStack * pclsSnmpStack )
+{
+	return StartThread( "SnmpStackThread", SnmpStackThread, pclsSnmpStack );
+}
+
+void StopSnmpStackThread( )
+{
+	gbStop = true;
+}
+
+bool IsSnmpStackThreadRun( )
+{
+	return gbRun;
+}

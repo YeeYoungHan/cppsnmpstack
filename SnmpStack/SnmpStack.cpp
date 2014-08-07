@@ -20,6 +20,7 @@
 #include "SnmpStackDefine.h"
 #include "SnmpStack.h"
 #include "SnmpUdp.h"
+#include "SnmpThread.h"
 #include "Log.h"
 #include "MemoryDebug.h"
 
@@ -31,7 +32,7 @@ CSnmpStack::~CSnmpStack()
 {
 }
 
-bool CSnmpStack::Start( CSnmpStackSetup & clsSetup )
+bool CSnmpStack::Start( CSnmpStackSetup & clsSetup, ISnmpStackCallBack * pclsCallBack )
 {
 	InitNetwork();
 
@@ -52,11 +53,39 @@ bool CSnmpStack::Start( CSnmpStackSetup & clsSetup )
 		return false;
 	}
 
+	m_pclsCallBack = pclsCallBack;
+
+	if( StartSnmpStackThread( this ) == false ||
+			StartSnmpUdpThread( this ) == false )
+	{
+		goto FUNC_ERROR;
+	}
+
 	return true;
+
+FUNC_ERROR:
+	Stop();
+
+	return false;
 }
 
 bool CSnmpStack::Stop( )
 {
+
+	closesocket( m_hSocket );
+
+	return true;
+}
+
+bool CSnmpStack::SendRequest( const char * pszIp, int iPort, CSnmpMessage * pclsRequest )
+{
+	if( pclsRequest->MakePacket() == false ) return false;
+	pclsRequest->m_strDestIp = pszIp;
+	pclsRequest->m_iDestPort = iPort;
+
+	if( m_clsTransactionList.Insert( pclsRequest ) == false ) return false;
+
+	UdpSend( m_hSocket, pclsRequest->m_pszPacket, pclsRequest->m_iPacketLen, pclsRequest->m_strDestIp.c_str(), pclsRequest->m_iDestPort );
 
 	return true;
 }
@@ -64,14 +93,14 @@ bool CSnmpStack::Stop( )
 /**
  * @ingroup SnmpStack
  * @brief SNMP 서버로 SNMP 요청 메시지를 전송한 후, 이에 대한 SNMP 응답 메시지를 수신한다.
- * @param pszDestIp		SNMP 서버 IP 주소
+ * @param pszIp				SNMP 서버 IP 주소
  * @param iPort				SNMP 서버 포트
  * @param clsRequest	SNMP 요청 메시지
  * @param clsResponse SNMP 응답 메시지 저장 변수
  * @param iTimeout		최대 수신 대기 시간 (초단위)
  * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
  */
-bool CSnmpStack::SendRequest( const char * pszDestIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse, int iTimeout )
+bool CSnmpStack::SendRequest( const char * pszIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse, int iTimeout )
 {
 	char szPacket[SNMP_MAX_PACKET_SIZE], szIp[16];
 	int  iPacketLen, n;
@@ -93,7 +122,7 @@ bool CSnmpStack::SendRequest( const char * pszDestIp, int iPort, CSnmpMessage & 
 		goto FUNC_END;
 	}
 
-	if( UdpSend( hSocket, szPacket, iPacketLen, pszDestIp, iPort ) == false )
+	if( UdpSend( hSocket, szPacket, iPacketLen, pszIp, iPort ) == false )
 	{
 		CLog::Print( LOG_ERROR, "%s UdpSend error(%d)", __FUNCTION__, GetError() );
 		goto FUNC_END;
