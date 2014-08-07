@@ -16,8 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
+#include "SnmpPlatformDefine.h"
 #include "CallBack.h"
 #include "SnmpMutex.h"
+#include "MemoryDebug.h"
 
 #ifndef USE_BLOCKING_METHOD
 extern CSnmpMutexSignal gclsMutex;

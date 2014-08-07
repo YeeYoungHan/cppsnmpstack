@@ -20,6 +20,7 @@
 #include "SnmpThread.h"
 #include "ServerUtility.h"
 #include "TimeUtility.h"
+#include "MemoryDebug.h"
 
 static bool gbStop = false;
 static bool gbRun = false;
