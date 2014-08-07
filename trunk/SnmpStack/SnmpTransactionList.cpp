@@ -143,6 +143,7 @@ void CSnmpTransactionList::Execute( struct timeval * psttTime )
 			continue;
 		}
 
+		itMap->second->m_sttSendTime = *psttTime;
 		UdpSend( m_pclsStack->m_hSocket, itMap->second->m_pclsRequest->m_pszPacket, itMap->second->m_pclsRequest->m_iPacketLen
 			, itMap->second->m_pclsRequest->m_strDestIp.c_str(), itMap->second->m_pclsRequest->m_iDestPort );
 		++itMap->second->m_iReSendCount;
