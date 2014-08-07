@@ -21,6 +21,7 @@
 #include "SnmpStack.h"
 #include "SnmpUdp.h"
 #include "SnmpThread.h"
+#include "TimeUtility.h"
 #include "Log.h"
 #include "MemoryDebug.h"
 
@@ -72,6 +73,15 @@ FUNC_ERROR:
 
 bool CSnmpStack::Stop( )
 {
+	StopSnmpStackThread();
+	StopSnmpUdpThread();
+
+	for( int i = 0; i < 500; ++i )
+	{
+		if( IsSnmpStackThreadRun() == false && IsSnmpUdpThreadRun() == false ) break;
+
+		MiliSleep(20);
+	}
 
 	closesocket( m_hSocket );
 

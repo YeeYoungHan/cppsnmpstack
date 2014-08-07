@@ -22,6 +22,11 @@
 #include "SnmpStack.h"
 
 bool StartSnmpStackThread( CSnmpStack * pclsSnmpStack );
+void StopSnmpStackThread( );
+bool IsSnmpStackThreadRun( );
+
 bool StartSnmpUdpThread( CSnmpStack * pclsSnmpStack );
+void StopSnmpUdpThread( );
+bool IsSnmpUdpThreadRun( );
 
 #endif
