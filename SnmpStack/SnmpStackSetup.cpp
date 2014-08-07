@@ -16,7 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
+#include "SnmpPlatformDefine.h"
 #include "SnmpStackSetup.h"
+#include "MemoryDebug.h"
 
 CSnmpStackSetup::CSnmpStackSetup() : m_iLocalPort(0), m_iReSendPeriod(1000), m_iReSendMaxCount(5) 
 {
