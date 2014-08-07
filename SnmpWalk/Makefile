@@ -1,8 +1,8 @@
-# Makefile for SnmpGet
+# Makefile for SnmpWalk
 #
 # programmer : yee young han ( websearch@naver.com )
 #            : http://blog.naver.com/websearch
-# start date : 2014/07/29
+# start date : 2014/08/07
 
 include ../Makefile.mk
 
@@ -16,11 +16,11 @@ LIB=-L../SnmpStack -lsnmpstack \
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< $(INC)
 
-all: SnmpGet.exe
+all: SnmpWalk.exe
 
-SRV_OBJ=SnmpGet.o CallBack.o
+SRV_OBJ=SnmpWalk.o CallBack.o
 
-SnmpGet.exe: $(SRV_OBJ)
+SnmpWalk.exe: $(SRV_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SRV_OBJ) $(INC) $(LIB)
 
 clean:
