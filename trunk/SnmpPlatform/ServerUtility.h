@@ -16,36 +16,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_TRANSACTION_LIST_H_
-#define _SNMP_TRANSACTION_LIST_H_
+#ifndef _SERVER_UTILITY_H_
+#define _SERVER_UTILITY_H_
 
-#include "SnmpTransaction.h"
-#include "SnmpMutex.h"
-#include <map>
+#ifdef WIN32
+#include <windows.h>
+#endif
 
-class CSnmpStack;
+#include <vector>
+#include <string>
 
-// key = m_iRequestId
-typedef std::map< uint32_t, CSnmpTransaction * > SNMP_TRANSACTION_MAP;
+void SetCoreDumpEnable();
+bool Fork( bool bIsFork );
+bool ChangeExecuteUser( const char * pszUserId );
 
-class CSnmpTransactionList
-{
-public:
-	CSnmpTransactionList();
-	~CSnmpTransactionList();
-
-	void SetSnmpStack( CSnmpStack * pclsStack );
-
-	bool Insert( CSnmpMessage * pclsRequest );
-	bool Delete( CSnmpMessage * pclsRequest );
-
-	void Execute( struct timeval * psttTime );
-	void DeleteAll( );
-
-private:
-	SNMP_TRANSACTION_MAP	m_clsMap;
-	CSnmpMutex						m_clsMutex;
-	CSnmpStack						* m_pclsStack;
-};
+#ifdef WIN32
+bool StartThread( const char * pszName, LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter );
+#else
+bool StartThread( const char * pszName, void *(*lpStartAddress)(void*), void * lpParameter );
+#endif
 
 #endif

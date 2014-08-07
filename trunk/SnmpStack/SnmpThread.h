@@ -16,44 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_MESSAGE_H_
-#define _SNMP_MESSAGE_H_
+#ifndef _SNMP_THREAD_H_
+#define _SNMP_THREAD_H_
 
-#include "SnmpPlatformDefine.h"
-#include "SnmpDefine.h"
-#include "AsnComplex.h"
+#include "SnmpStack.h"
 
-/**
- * @ingroup SnmpParser
- * @brief SNMP 패킷 생성/파서 클래스
- */
-class CSnmpMessage
-{
-public:
-	CSnmpMessage();
-	~CSnmpMessage();
-
-	int ParsePacket( const char * pszPacket, int iPacketLen );
-	int MakePacket( char * pszPacket, int iPacketSize );
-	bool MakePacket( );
-	void Clear();
-
-	bool MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
-
-	uint8_t			m_cVersion;
-	std::string	m_strCommunity;
-	uint8_t			m_cCommand;
-	uint32_t		m_iRequestId;
-	uint32_t		m_iErrorStatus;
-	uint32_t		m_iErrorIndex;
-	std::string	m_strOid;
-	CAsnType    * m_pclsValue;
-
-	char				* m_pszPacket;
-	int					m_iPacketLen;
-
-	std::string	m_strDestIp;
-	int					m_iDestPort;
-};
+bool StartSnmpStackThread( CSnmpStack * pclsSnmpStack );
+bool StartSnmpUdpThread( CSnmpStack * pclsSnmpStack );
 
 #endif

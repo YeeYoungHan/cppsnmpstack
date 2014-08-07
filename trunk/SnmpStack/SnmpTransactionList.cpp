@@ -16,7 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpTransactionList.h"
+#include "SnmpPlatformDefine.h"
+#include "TimeUtility.h"
+#include "SnmpStack.h"
+#include "MemoryDebug.h"
 
 CSnmpTransactionList::CSnmpTransactionList()
 {
@@ -26,17 +29,94 @@ CSnmpTransactionList::~CSnmpTransactionList()
 {
 }
 
+void CSnmpTransactionList::SetSnmpStack( CSnmpStack * pclsStack )
+{
+	m_pclsStack = pclsStack;
+}
+
 bool CSnmpTransactionList::Insert( CSnmpMessage * pclsRequest )
 {
-	return true;
+	bool bRes = false;
+	SNMP_TRANSACTION_MAP::iterator	itMap;
+
+	m_clsMutex.acquire();
+	itMap = m_clsMap.find( pclsRequest->m_iRequestId );
+	if( itMap == m_clsMap.end() )
+	{
+		CSnmpTransaction * pclsTransaction = new CSnmpTransaction();
+		if( pclsTransaction )
+		{
+			pclsTransaction->m_pclsRequest = pclsRequest;
+			gettimeofday( &pclsTransaction->m_sttSendTime, NULL );
+
+			m_clsMap.insert( SNMP_TRANSACTION_MAP::value_type( pclsRequest->m_iRequestId, pclsTransaction ) );
+			
+			bRes = true;
+		}
+	}
+	m_clsMutex.release();
+
+	return bRes;
 }
+
+bool CSnmpTransactionList::Delete( CSnmpMessage * pclsRequest )
+{
+	bool bRes = false;
+	SNMP_TRANSACTION_MAP::iterator	itMap;
+
+	m_clsMutex.acquire();
+	itMap = m_clsMap.find( pclsRequest->m_iRequestId );
+	if( itMap != m_clsMap.end() )
+	{
+		delete itMap->second;
+		m_clsMap.erase( itMap );
+		bRes = true;
+	}
+	m_clsMutex.release();
+
+	return bRes;
+}
+
+typedef std::list< int > REQUEST_ID_LIST;
 
 void CSnmpTransactionList::Execute( struct timeval * psttTime )
 {
+	SNMP_TRANSACTION_MAP::iterator	itMap;
+	REQUEST_ID_LIST clsIdList;
+	REQUEST_ID_LIST::iterator	itList;
 
+	m_clsMutex.acquire();
+	for( itMap = m_clsMap.begin(); itMap != m_clsMap.end(); ++itMap )
+	{
+		if( itMap->second->IsTimeout( psttTime, m_pclsStack->m_clsSetup.m_iReSendPeriod ) == false ) continue;
+
+		if( itMap->second->m_iReSendCount >= m_pclsStack->m_clsSetup.m_iReSendMaxCount )
+		{
+			clsIdList.push_back( itMap->first );
+			continue;
+		}
+
+		UdpSend( m_pclsStack->m_hSocket, itMap->second->m_pclsRequest->m_pszPacket, itMap->second->m_pclsRequest->m_iPacketLen
+			, itMap->second->m_pclsRequest->m_strDestIp.c_str(), itMap->second->m_pclsRequest->m_iDestPort );
+		++itMap->second->m_iReSendCount;
+	}
+	m_clsMutex.release();
+
+	for( itList = clsIdList.begin(); itList != clsIdList.end(); ++itList )
+	{
+		
+	}
 }
 
 void CSnmpTransactionList::DeleteAll( )
 {
+	SNMP_TRANSACTION_MAP::iterator	itMap;
 
+	m_clsMutex.acquire();
+	for( itMap = m_clsMap.begin(); itMap != m_clsMap.end(); ++itMap )
+	{
+		delete itMap->second;
+	}
+	m_clsMap.clear();
+	m_clsMutex.release();
 }

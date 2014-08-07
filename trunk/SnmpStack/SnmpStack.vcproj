@@ -159,6 +159,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SnmpStackCallBack.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SnmpStackDefine.h"
 				>
 			</File>
@@ -174,6 +178,18 @@
 		<Filter
 			Name="¾²·¹µå"
 			>
+			<File
+				RelativePath=".\SnmpStackThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpThread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpUdpThread.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Transaction"

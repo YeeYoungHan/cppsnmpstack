@@ -204,7 +204,12 @@ bool CSnmpMessage::MakePacket( )
 	}
 
 	m_iPacketLen = MakePacket( m_pszPacket, SNMP_MAX_PACKET_SIZE );
-	if( m_iPacketLen == -1 ) return false;
+	if( m_iPacketLen == -1 ) 
+	{
+		free( m_pszPacket );
+		m_pszPacket = NULL;
+		return false;
+	}
 
 	return true;
 }

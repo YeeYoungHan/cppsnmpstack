@@ -27,11 +27,13 @@ public:
 	CSnmpTransaction();
 	~CSnmpTransaction();
 
+	bool IsTimeout( struct timeval * psttTime, int iTimeout );
+
 	CSnmpMessage * m_pclsRequest;
 
 	struct timeval m_sttSendTime;
-	struct timeval m_sttEndTime;
 	int m_iReSendCount;
+	int m_iUseCount;
 };
 
 #endif
