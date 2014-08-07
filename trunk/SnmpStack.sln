@@ -21,6 +21,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnmpStack", "SnmpStack\Snmp
 		{FDD2A48D-B0D1-4A24-862F-E10DE3D5F560} = {FDD2A48D-B0D1-4A24-862F-E10DE3D5F560}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnmpWalk", "SnmpWalk\SnmpWalk.vcproj", "{6A8AF535-AC4E-4ED4-8EB2-E5D2C4CA8FDA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7109C656-FC24-4F32-89B5-A1E29F97660C} = {7109C656-FC24-4F32-89B5-A1E29F97660C}
+		{FDD2A48D-B0D1-4A24-862F-E10DE3D5F560} = {FDD2A48D-B0D1-4A24-862F-E10DE3D5F560}
+		{1708ED8F-4954-4B6D-98FA-C5FD0563323B} = {1708ED8F-4954-4B6D-98FA-C5FD0563323B}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -43,6 +50,10 @@ Global
 		{1708ED8F-4954-4B6D-98FA-C5FD0563323B}.Debug|Win32.Build.0 = Debug|Win32
 		{1708ED8F-4954-4B6D-98FA-C5FD0563323B}.Release|Win32.ActiveCfg = Release|Win32
 		{1708ED8F-4954-4B6D-98FA-C5FD0563323B}.Release|Win32.Build.0 = Release|Win32
+		{6A8AF535-AC4E-4ED4-8EB2-E5D2C4CA8FDA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6A8AF535-AC4E-4ED4-8EB2-E5D2C4CA8FDA}.Debug|Win32.Build.0 = Debug|Win32
+		{6A8AF535-AC4E-4ED4-8EB2-E5D2C4CA8FDA}.Release|Win32.ActiveCfg = Release|Win32
+		{6A8AF535-AC4E-4ED4-8EB2-E5D2C4CA8FDA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
