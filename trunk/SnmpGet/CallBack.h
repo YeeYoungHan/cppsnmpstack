@@ -16,40 +16,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_TRANSACTION_LIST_H_
-#define _SNMP_TRANSACTION_LIST_H_
+#ifndef _CALLBACK_H_
+#define _CALLBACK_H_
 
-#include "SnmpTransaction.h"
-#include "SnmpMutex.h"
-#include <map>
+#include "SnmpStackCallBack.h"
 
-class CSnmpStack;
-
-// key = m_iRequestId
-typedef std::map< uint32_t, CSnmpTransaction * > SNMP_TRANSACTION_MAP;
-
-class CSnmpTransactionList
+class CCallBack : public ISnmpStackCallBack
 {
 public:
-	CSnmpTransactionList();
-	~CSnmpTransactionList();
+	CCallBack();
+	virtual ~CCallBack();
 
-	void SetSnmpStack( CSnmpStack * pclsStack );
-
-	bool Insert( CSnmpMessage * pclsRequest );
-	bool Delete( CSnmpMessage * pclsRequest );
-
-	bool Select( uint32_t iRequestId, CSnmpTransaction ** ppclsTransaction );
-	bool Delete( uint32_t iRequestId );
-	void Release( CSnmpTransaction * pclsTransaction );
-
-	void Execute( struct timeval * psttTime );
-	void DeleteAll( );
-
-private:
-	SNMP_TRANSACTION_MAP	m_clsMap;
-	CSnmpMutex						m_clsMutex;
-	CSnmpStack						* m_pclsStack;
+	virtual void RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse );
 };
 
 #endif

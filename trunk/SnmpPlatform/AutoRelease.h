@@ -16,40 +16,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_TRANSACTION_LIST_H_
-#define _SNMP_TRANSACTION_LIST_H_
+#ifndef _AUTO_RELEASE_H_
+#define _AUTO_RELEASE_H_
 
-#include "SnmpTransaction.h"
-#include "SnmpMutex.h"
-#include <map>
+#include <stdio.h>
 
-class CSnmpStack;
-
-// key = m_iRequestId
-typedef std::map< uint32_t, CSnmpTransaction * > SNMP_TRANSACTION_MAP;
-
-class CSnmpTransactionList
+/**
+ * @brief 객체가 삭제될 때에 Release 메소드를 호출하는 클래스
+ * @param T_MAP		맵 자료구조 클래스
+ * @param T_DATA	맵 자료구조의 데이터 클래스
+ */
+template< class T_MAP, class T_DATA >
+class CAutoRelease
 {
+	T_MAP		* m_pclsMap;
+
 public:
-	CSnmpTransactionList();
-	~CSnmpTransactionList();
+	T_DATA	* m_pclsData;
 
-	void SetSnmpStack( CSnmpStack * pclsStack );
+	CAutoRelease( T_MAP & clsMap ) : m_pclsData(NULL)
+	{
+		m_pclsMap = &clsMap;
+	}
 
-	bool Insert( CSnmpMessage * pclsRequest );
-	bool Delete( CSnmpMessage * pclsRequest );
-
-	bool Select( uint32_t iRequestId, CSnmpTransaction ** ppclsTransaction );
-	bool Delete( uint32_t iRequestId );
-	void Release( CSnmpTransaction * pclsTransaction );
-
-	void Execute( struct timeval * psttTime );
-	void DeleteAll( );
-
-private:
-	SNMP_TRANSACTION_MAP	m_clsMap;
-	CSnmpMutex						m_clsMutex;
-	CSnmpStack						* m_pclsStack;
+	~CAutoRelease()
+	{
+		if( m_pclsData )
+		{
+			m_pclsMap->Release( m_pclsData );
+		}
+	}
 };
 
 #endif

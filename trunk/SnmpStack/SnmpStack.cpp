@@ -26,6 +26,7 @@
 
 CSnmpStack::CSnmpStack()
 {
+	m_clsTransactionList.SetSnmpStack( this );
 }
 
 CSnmpStack::~CSnmpStack()

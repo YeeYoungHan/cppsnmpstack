@@ -19,6 +19,7 @@
 #include "SnmpPlatformDefine.h"
 #include "TimeUtility.h"
 #include "SnmpStack.h"
+#include "AutoRelease.h"
 #include "MemoryDebug.h"
 
 CSnmpTransactionList::CSnmpTransactionList()
@@ -61,20 +62,65 @@ bool CSnmpTransactionList::Insert( CSnmpMessage * pclsRequest )
 
 bool CSnmpTransactionList::Delete( CSnmpMessage * pclsRequest )
 {
+	return Delete( pclsRequest->m_iRequestId );
+}
+
+bool CSnmpTransactionList::Select( uint32_t iRequestId, CSnmpTransaction ** ppclsTransaction )
+{
 	bool bRes = false;
 	SNMP_TRANSACTION_MAP::iterator	itMap;
 
 	m_clsMutex.acquire();
-	itMap = m_clsMap.find( pclsRequest->m_iRequestId );
+	itMap = m_clsMap.find( iRequestId );
 	if( itMap != m_clsMap.end() )
 	{
-		delete itMap->second;
-		m_clsMap.erase( itMap );
+		++itMap->second->m_iUseCount;
+		*ppclsTransaction = itMap->second;
 		bRes = true;
 	}
 	m_clsMutex.release();
 
 	return bRes;
+}
+
+bool CSnmpTransactionList::Delete( uint32_t iRequestId )
+{
+	bool bRes = false;
+	SNMP_TRANSACTION_MAP::iterator	itMap;
+
+	m_clsMutex.acquire();
+	itMap = m_clsMap.find( iRequestId );
+	if( itMap != m_clsMap.end() )
+	{
+		--itMap->second->m_iUseCount;
+		if( itMap->second->m_iUseCount == 0 )
+		{
+			delete itMap->second;
+			m_clsMap.erase( itMap );
+		}
+		bRes = true;
+	}
+	m_clsMutex.release();
+
+	return bRes;
+}
+
+void CSnmpTransactionList::Release( CSnmpTransaction * pclsTransaction )
+{
+	m_clsMutex.acquire();
+	--pclsTransaction->m_iUseCount;
+	if( pclsTransaction->m_iUseCount == 0 )
+	{
+		SNMP_TRANSACTION_MAP::iterator	itMap;
+		
+		itMap = m_clsMap.find( pclsTransaction->m_pclsRequest->m_iRequestId );
+		if( itMap != m_clsMap.end() )
+		{
+			delete itMap->second;
+			m_clsMap.erase( itMap );
+		}
+	}
+	m_clsMutex.release();
 }
 
 typedef std::list< int > REQUEST_ID_LIST;
@@ -84,6 +130,7 @@ void CSnmpTransactionList::Execute( struct timeval * psttTime )
 	SNMP_TRANSACTION_MAP::iterator	itMap;
 	REQUEST_ID_LIST clsIdList;
 	REQUEST_ID_LIST::iterator	itList;
+	bool bDelete = false;
 
 	m_clsMutex.acquire();
 	for( itMap = m_clsMap.begin(); itMap != m_clsMap.end(); ++itMap )
@@ -104,19 +151,46 @@ void CSnmpTransactionList::Execute( struct timeval * psttTime )
 
 	for( itList = clsIdList.begin(); itList != clsIdList.end(); ++itList )
 	{
-		
+		bDelete = false;
+
+		{
+			CAutoRelease< CSnmpTransactionList, CSnmpTransaction > clsData( *this );
+
+			if( Select( *itList, &clsData.m_pclsData ) )
+			{
+				m_pclsStack->m_pclsCallBack->RecvResponse( clsData.m_pclsData->m_pclsRequest, NULL );
+				bDelete = true;
+			}
+		}
+
+		if( bDelete )
+		{
+			Delete( *itList );
+		}
 	}
 }
 
 void CSnmpTransactionList::DeleteAll( )
 {
-	SNMP_TRANSACTION_MAP::iterator	itMap;
+	SNMP_TRANSACTION_MAP::iterator	itMap, itNext;
 
 	m_clsMutex.acquire();
 	for( itMap = m_clsMap.begin(); itMap != m_clsMap.end(); ++itMap )
 	{
-		delete itMap->second;
+LOOP_START:
+		--itMap->second->m_iUseCount;
+		if( itMap->second->m_iUseCount == 0 )
+		{
+			itNext = itMap;
+			++itNext;
+
+			delete itMap->second;
+			m_clsMap.erase( itMap );
+
+			if( itNext == m_clsMap.end() ) break;
+			itMap = itNext;
+			goto LOOP_START;
+		}
 	}
-	m_clsMap.clear();
 	m_clsMutex.release();
 }

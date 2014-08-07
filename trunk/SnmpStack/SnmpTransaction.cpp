@@ -16,8 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
+#include "SnmpPlatformDefine.h"
 #include "SnmpTransaction.h"
 #include "TimeUtility.h"
+#include "MemoryDebug.h"
 
 CSnmpTransaction::CSnmpTransaction() : m_pclsRequest(NULL), m_iReSendCount(0), m_iUseCount(1)
 {
@@ -26,6 +28,11 @@ CSnmpTransaction::CSnmpTransaction() : m_pclsRequest(NULL), m_iReSendCount(0), m
 
 CSnmpTransaction::~CSnmpTransaction()
 {
+	if( m_pclsRequest )
+	{
+		delete m_pclsRequest;
+		m_pclsRequest = NULL;
+	}
 }
 
 bool CSnmpTransaction::IsTimeout( struct timeval * psttTime, int iTimeout )
