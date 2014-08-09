@@ -21,20 +21,15 @@
 #include <openssl/hmac.h>
 #include <string.h>
 
-static bool TestKey()
+bool GetKey( const char * pszPassWord, unsigned char * pszKey )
 {
-	char * pszPassWord = "apassword";
 	int iPassWordLen = strlen(pszPassWord);
 
 	int iInputLen = 1024 * 1024;
 	int iIndex = 0;
 	char szBuf[64];
 
-	unsigned char szResult[16];
-	unsigned int iResultLen = sizeof(szResult);
-
-	char szKey[33];
-	int iKeyLen = 0;
+	unsigned int iResultLen = 16;
 
 	EVP_MD_CTX * psttCtx = EVP_MD_CTX_create();
 	EVP_DigestInit( psttCtx, EVP_md5() );
@@ -52,7 +47,41 @@ static bool TestKey()
 		iInputLen -= 64;
 	}
 	
-	EVP_DigestFinal( psttCtx, (unsigned char *)szResult, &iResultLen );
+	EVP_DigestFinal( psttCtx, (unsigned char *)pszKey, &iResultLen );
+	EVP_MD_CTX_destroy( psttCtx );
+
+	return true;
+}
+
+bool GetAuthKey( unsigned char * pszKey, unsigned char * pszEngineId, int iEngineIdLen, unsigned char * pszAuthKey )
+{
+	char szBuf[255];
+	int iBufLen = 0;
+	unsigned int iResultLen = 16;
+
+	memcpy( szBuf, pszKey, 16 );
+	iBufLen += 16;
+	memcpy( szBuf + iBufLen, pszEngineId, iEngineIdLen );
+	iBufLen += iEngineIdLen;
+	memcpy( szBuf + iBufLen, pszKey, 16 );
+	iBufLen += 16;
+
+	EVP_MD_CTX * psttCtx = EVP_MD_CTX_create();
+	EVP_DigestInit( psttCtx, EVP_md5() );
+	EVP_DigestUpdate( psttCtx, szBuf, iBufLen );
+	EVP_DigestFinal( psttCtx, (unsigned char *)pszAuthKey, &iResultLen );
+	EVP_MD_CTX_destroy( psttCtx );
+
+	return true;
+}
+
+static bool TestKey( )
+{
+	unsigned char szResult[16];
+	char szKey[33];
+	int iKeyLen = 0;
+
+	GetKey( "apassword", szResult );
 
 	for( int i = 0; i < 16; ++i )
 	{
@@ -68,9 +97,44 @@ static bool TestKey()
 	return true;
 }
 
+static bool TestHmac( )
+{
+	const char * pszHexPacket = "3074020103300f02020522020300ffe3040105020103042f302d040d80001f88809b26630b890ed3530201090202031804057573657231040c0000000000000000000000000400302d040d80001f88809b26630b890ed3530400a01a02022cf1020100020100300e300c06082b060102010101000500";
+	const char * pszEngineId = "80001f88809b26630b890ed353";
+	int iHexLen = strlen(pszHexPacket);
+	unsigned char szPacket[1500], szEngineId[51];
+	int iValue, iIndex = 0, iEngineIdLen = 0;
+
+	memset( szPacket, 0, sizeof(szPacket) );
+
+	for( int i = 0; i < iHexLen; i += 2 )
+	{
+		sscanf( pszHexPacket + i, "%02x", &iValue );
+		szPacket[iIndex++] = iValue;
+	}
+
+	iHexLen = strlen( pszEngineId );
+	for( int i = 0; i < iHexLen; i += 2 )
+	{
+		sscanf( pszEngineId + i, "%02x", &iValue );
+		szEngineId[iEngineIdLen++] = iValue;
+	}
+
+	unsigned char szKey[16], szAuthKey[16], szResult[512];
+	unsigned int iResultSize = sizeof(szResult);
+
+	GetKey( "apassword", szKey );
+	GetAuthKey( szKey, szEngineId, iEngineIdLen, szAuthKey );
+
+	HMAC( EVP_md5(), szAuthKey, 16, szPacket, iIndex, szResult, &iResultSize );
+
+	return true;
+}
+
 bool TestAuthenticationParameters()
 {
 	if( TestKey() == false ) return false;
+	if( TestHmac() == false ) return false;
 
 	return true;
 }
