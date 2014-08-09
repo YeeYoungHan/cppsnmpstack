@@ -20,6 +20,7 @@
 #include "TestSnmpParser.h"
 #include <openssl/hmac.h>
 #include <string.h>
+#include "MemoryDebug.h"
 
 bool GetKey( const char * pszPassWord, unsigned char * pszKey )
 {
