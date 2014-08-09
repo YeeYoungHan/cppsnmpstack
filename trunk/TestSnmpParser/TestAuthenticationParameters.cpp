@@ -90,7 +90,7 @@ static bool TestKey( )
 
 	if( strcmp( szKey, "9bcf0656023951f83ff7c8585a1f0684" ) )
 	{
-		printf( "authentication key create error\n" );
+		printf( "auth key create error\n" );
 		return false;
 	}
 
@@ -127,6 +127,20 @@ static bool TestHmac( )
 	GetAuthKey( szKey, szEngineId, iEngineIdLen, szAuthKey );
 
 	HMAC( EVP_md5(), szAuthKey, 16, szPacket, iIndex, szResult, &iResultSize );
+
+	char szHmac[33];
+	int iHmacLen = 0;
+
+	for( int i = 0; i < 12; ++i )
+	{
+		iHmacLen += snprintf( szHmac + iHmacLen, sizeof(szHmac) - iHmacLen, "%02x", szResult[i] );
+	}
+
+	if( strcmp( szHmac, "01eff216f0f319f0fde104aa" ) )
+	{
+		printf( "hmac create error\n" );
+		return false;
+	}
 
 	return true;
 }
