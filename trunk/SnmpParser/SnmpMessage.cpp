@@ -50,41 +50,58 @@ CSnmpMessage::~CSnmpMessage()
 int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	CAsnComplex clsComplex;
-	ASN_TYPE_LIST::iterator	itRoot;
+	ASN_TYPE_LIST::iterator	itList;
 	uint8_t cType = 0;
 	int n;
 
 	n = clsComplex.ParsePacket( pszPacket, iPacketLen );
 	if( n == -1 ) return -1;
 
-	for( itRoot = clsComplex.m_clsList.begin(); itRoot != clsComplex.m_clsList.end(); ++itRoot )
+	for( itList = clsComplex.m_clsList.begin(); itList != clsComplex.m_clsList.end(); ++itList )
 	{
 		++cType;
 
 		if( cType == 1 )
 		{
-			if( (*itRoot)->m_cType == ASN_TYPE_INT )
+			if( (*itList)->m_cType == ASN_TYPE_INT )
 			{
-				CAsnInt * pclsValue = (CAsnInt *)(*itRoot);
+				CAsnInt * pclsValue = (CAsnInt *)(*itList);
 				m_cVersion = pclsValue->m_iValue;
 			}
 			else
 			{
+				CLog::Print( LOG_ERROR, "%s version type(%d) is not int", __FUNCTION__, (*itList)->m_cType );
 				return -1;
 			}
 		}
 		else if( cType == 2 )
 		{
-			if( (*itRoot)->m_cType == ASN_TYPE_OCTET_STR )
+			if( m_cVersion != SNMP_VERSION_3 )
 			{
-				CAsnString * pclsValue = (CAsnString *)(*itRoot);
-				m_strCommunity = pclsValue->m_strValue;
-			}
-			else if( (*itRoot)->m_cType == ASN_TYPE_COMPLEX )
-			{
-				// msgGlobalData
-				if( SetMsgGlobalData( (CAsnComplex *)*itRoot ) == false )
+				if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
 				{
+					CAsnString * pclsValue = (CAsnString *)(*itList);
+					m_strCommunity = pclsValue->m_strValue;
+				}
+				else
+				{
+					CLog::Print( LOG_ERROR, "%s community type(%d) is not octet string", __FUNCTION__, (*itList)->m_cType );
+					return -1;
+				}
+			}
+			else
+			{
+				if( (*itList)->m_cType == ASN_TYPE_COMPLEX )
+				{
+					// msgGlobalData
+					if( SetMsgGlobalData( (CAsnComplex *)*itList ) == false )
+					{
+						return -1;
+					}
+				}
+				else
+				{
+					CLog::Print( LOG_ERROR, "%s msgGlobalData type(%d) is not complex", __FUNCTION__, (*itList)->m_cType );
 					return -1;
 				}
 			}
@@ -93,7 +110,7 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 		{
 			if( m_cVersion != SNMP_VERSION_3 )
 			{
-				if( SetCommand( (CAsnComplex *)(*itRoot) ) == false )
+				if( SetCommand( (CAsnComplex *)(*itList) ) == false )
 				{
 					return -1;
 				}
@@ -101,9 +118,9 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 				break;
 			}
 
-			if( (*itRoot)->m_cType == ASN_TYPE_OCTET_STR )
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
 			{
-				CAsnString * pclsValue = (CAsnString *)(*itRoot);
+				CAsnString * pclsValue = (CAsnString *)(*itList);
 				CAsnComplex clsData;
 
 				if( clsData.ParsePacket( pclsValue->m_strValue.c_str(), pclsValue->m_strValue.length() ) == -1 )
@@ -118,12 +135,13 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 			}
 			else
 			{
+				CLog::Print( LOG_ERROR, "%s msgSecurityParameters type(%d) is not octet string", __FUNCTION__, (*itList)->m_cType );
 				return -1;
 			}
 		}
 		else if( cType == 4 )
 		{
-			if( SetMsgData( (CAsnComplex *)(*itRoot) ) == false )
+			if( SetMsgData( (CAsnComplex *)(*itList) ) == false )
 			{
 				return -1;
 			}
