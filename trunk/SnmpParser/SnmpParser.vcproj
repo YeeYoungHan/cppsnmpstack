@@ -163,7 +163,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SnmpMessagePrivate.hpp"
+				RelativePath=".\SnmpMessageMake.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpMessageParse.hpp"
 				>
 			</File>
 		</Filter>

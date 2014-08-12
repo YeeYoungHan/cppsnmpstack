@@ -16,6 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
+/**
+ * @ingroup SnmpParser
+ * @brief msgGlobalData 정보를 저장한다.
+ * @param pclsComplex msgGlobalData 를 저장한 ASN 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpMessage::SetMsgGlobalData( CAsnComplex * pclsComplex )
 {
 	ASN_TYPE_LIST::iterator	itList;
@@ -82,6 +88,12 @@ bool CSnmpMessage::SetMsgGlobalData( CAsnComplex * pclsComplex )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief msgSecurityParameters 정보를 저장한다.
+ * @param pclsComplex msgSecurityParameters 를 저장한 ASN 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpMessage::SetMsgSecurityParameters( CAsnComplex * pclsComplex )
 {
 	ASN_TYPE_LIST::iterator	itList;
@@ -174,6 +186,12 @@ bool CSnmpMessage::SetMsgSecurityParameters( CAsnComplex * pclsComplex )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief msgData 정보를 저장한다.
+ * @param pclsComplex msgData 를 저장한 ASN 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpMessage::SetMsgData( CAsnComplex * pclsComplex )
 {
 	ASN_TYPE_LIST::iterator	itList;
@@ -221,6 +239,12 @@ bool CSnmpMessage::SetMsgData( CAsnComplex * pclsComplex )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief PDU 정보를 저장한다.
+ * @param pclsComplex PDU 를 저장한 ASN 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpMessage::SetCommand( CAsnComplex * pclsComplex )
 {
 	m_cCommand = pclsComplex->m_cType;
