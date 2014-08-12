@@ -40,6 +40,7 @@ public:
 
 	bool AddInt( uint32_t iValue );
 	bool AddString( const char * pszValue );
+	bool AddString( std::string & strValue );
 	bool AddOid( const char * pszValue );
 	bool AddNull( );
 	bool AddComplex( CAsnComplex * pclsValue );

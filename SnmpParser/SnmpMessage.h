@@ -22,6 +22,7 @@
 #include "SnmpPlatformDefine.h"
 #include "SnmpDefine.h"
 #include "AsnComplex.h"
+#include "AsnString.h"
 
 /**
  * @ingroup SnmpParser
@@ -83,6 +84,11 @@ private:
 	bool SetMsgSecurityParameters( CAsnComplex * pclsComplex );
 	bool SetMsgData( CAsnComplex * pclsComplex );
 	bool SetCommand( CAsnComplex * pclsComplex );
+
+	CAsnComplex * CreateMsgGlobalData( );
+	CAsnString * CreateMsgSecurityParameters( );
+	CAsnComplex * CreateMsgData( );
+	CAsnComplex * CreateCommand( );
 
 	int MakePacketV2( char * pszPacket, int iPacketSize );
 	int MakePacketV3( char * pszPacket, int iPacketSize );

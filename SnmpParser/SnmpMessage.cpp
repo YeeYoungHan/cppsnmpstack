@@ -18,10 +18,8 @@
 
 #include "SnmpMessage.h"
 #include "AsnInt.h"
-#include "AsnString.h"
 #include "AsnOid.h"
 #include "AsnNull.h"
-#include "AsnComplex.h"
 #include "Log.h"
 #include "MemoryDebug.h"
 
@@ -163,46 +161,12 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
  */
 int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
 {
-	CAsnComplex clsComplex;
-	CAsnComplex *pclsCommand = NULL, *pclsBodyFrame = NULL, *pclsBody = NULL;
-
-	if( clsComplex.AddInt( m_cVersion ) == false ) return -1;
-	if( clsComplex.AddString( m_strCommunity.c_str() ) == false ) return -1;
-
-	pclsCommand = new CAsnComplex();
-	if( pclsCommand == NULL ) return -1;
-
-	pclsCommand->m_cType = m_cCommand;
-	if( pclsCommand->AddInt( m_iRequestId ) == false ) goto FUNC_ERROR;
-	if( pclsCommand->AddInt( m_iErrorStatus ) == false ) goto FUNC_ERROR;
-	if( pclsCommand->AddInt( m_iErrorIndex ) == false ) goto FUNC_ERROR;
-
-	pclsBodyFrame = new CAsnComplex();
-	if( pclsBodyFrame == NULL ) goto FUNC_ERROR;
-
-	pclsBody = new CAsnComplex();
-	if( pclsBody == NULL ) goto FUNC_ERROR;
-
-	if( pclsBody->AddOid( m_strOid.c_str() ) == false ) goto FUNC_ERROR;
-
+	if( m_cVersion != SNMP_VERSION_3 )
 	{
-		CAsnType * pclsValue = m_pclsValue->Copy();
-		if( pclsValue == NULL ) goto FUNC_ERROR;
-		if( pclsBody->AddValue( pclsValue ) == false ) goto FUNC_ERROR;
+		return MakePacketV2( pszPacket, iPacketSize );
 	}
 
-	pclsBodyFrame->AddComplex( pclsBody );
-	pclsCommand->AddComplex( pclsBodyFrame );
-	clsComplex.AddComplex( pclsCommand );
-
-	return clsComplex.MakePacket( pszPacket, iPacketSize );
-
-FUNC_ERROR:
-	if( pclsCommand ) delete pclsCommand;
-	if( pclsBodyFrame ) delete pclsBodyFrame;
-	if( pclsBody ) delete pclsBody;
-
-	return -1;
+	return MakePacketV3( pszPacket, iPacketSize );
 }
 
 /**
