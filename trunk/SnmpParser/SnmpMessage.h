@@ -39,9 +39,14 @@ public:
 	void Clear();
 
 	bool MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
+	bool MakeGetRequest( uint32_t iMsgId, const char * pszUserName, uint32_t iRequestId, const char * pszOid );
 
 	uint8_t			m_cVersion;
+
+	// SNMPv2
 	std::string	m_strCommunity;
+
+	// data
 	uint8_t			m_cCommand;
 	uint32_t		m_iRequestId;
 	uint32_t		m_iErrorStatus;
@@ -49,9 +54,27 @@ public:
 	std::string	m_strOid;
 	CAsnType    * m_pclsValue;
 
+	// SNMPv3
+	uint32_t		m_iMsgId;
+	uint32_t		m_iMsgMaxSize;
+	uint8_t			m_cMsgFlags;
+	uint32_t		m_iMsgSecurityModel;
+
+	std::string	m_strMsgAuthEngineId;
+	uint32_t		m_iMsgAuthEngineBoots;
+	uint32_t		m_iMsgAuthEngineTime;
+	std::string	m_strMsgUserName;
+	std::string	m_strMsgAuthParams;
+	std::string	m_strMsgPrivParams;
+
+	std::string	m_strContextEngineId;
+	std::string	m_strContextName;
+
+	// 네트워크 전송 패킷
 	char				* m_pszPacket;
 	int					m_iPacketLen;
 
+	// 목적지 IP 주소 및 포트 번호
 	std::string	m_strDestIp;
 	int					m_iDestPort;
 };

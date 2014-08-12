@@ -24,7 +24,11 @@
 #include "AsnComplex.h"
 #include "MemoryDebug.h"
 
-CSnmpMessage::CSnmpMessage() : m_pclsValue(NULL), m_pszPacket(NULL), m_iPacketLen(0)
+CSnmpMessage::CSnmpMessage() : m_cVersion(SNMP_VERSION_2C), m_cCommand(SNMP_CMD_GET)
+	, m_iRequestId(0), m_iErrorStatus(0), m_iErrorIndex(0)
+	, m_iMsgId(0), m_iMsgMaxSize(0), m_cMsgFlags(0), m_iMsgSecurityModel(0)
+	, m_iMsgAuthEngineBoots(0), m_iMsgAuthEngineTime(0)
+	, m_pclsValue(NULL), m_pszPacket(NULL), m_iPacketLen(0)
 {
 }
 
@@ -195,6 +199,11 @@ FUNC_ERROR:
 	return -1;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷을 생성하여서 내부 변수에 저장한다.
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpMessage::MakePacket( )
 {
 	if( m_pszPacket == NULL )
@@ -223,6 +232,14 @@ void CSnmpMessage::Clear()
 	m_iErrorStatus = 0;
 	m_iErrorIndex = 0;
 
+	m_iMsgId = 0;
+	m_iMsgMaxSize = SNMP_MAX_PACKET_SIZE;
+	m_cMsgFlags = 0;
+	m_iMsgSecurityModel = SNMP_SECURITY_MODEL_USM;
+
+	m_iMsgAuthEngineBoots = 0;
+	m_iMsgAuthEngineTime = 0;
+
 	if( m_pclsValue )
 	{
 		delete m_pclsValue;
@@ -238,7 +255,7 @@ void CSnmpMessage::Clear()
 
 /**
  * @ingroup SnmpParser
- * @brief SNMP GET 요청 메시지를 생성한다.
+ * @brief SNMPv2 GET 요청 메시지를 생성한다.
  * @param pszCommunity	community 문자열
  * @param iRequestId		요청 아이디
  * @param pszOid				OID 문자열
@@ -252,6 +269,35 @@ bool CSnmpMessage::MakeGetRequest( const char * pszCommunity, uint32_t iRequestI
 
 	m_cVersion = SNMP_VERSION_2C;
 	m_strCommunity = pszCommunity;
+	m_cCommand = SNMP_CMD_GET;
+	m_iRequestId = iRequestId;
+	m_strOid = pszOid;
+	m_pclsValue = new CAsnNull();
+	if( m_pclsValue == NULL ) return false;
+
+	return true;
+}
+
+/**
+ * @ingroup SnmpParser
+ * @brief SNMPv3 GET 요청 메시지를 생성한다.
+ * @param iMsgId			메시지 아이디
+ * @param pszUserName	사용자 아이디
+ * @param iRequestId	요청 아이디
+ * @param pszOid			요청 아이디
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
+bool CSnmpMessage::MakeGetRequest( uint32_t iMsgId, const char * pszUserName, uint32_t iRequestId, const char * pszOid )
+{
+	if( pszUserName == NULL || pszOid == NULL ) return false;
+
+	Clear();
+
+	m_cVersion = SNMP_VERSION_3;
+	
+	m_iMsgId = iMsgId;
+	m_strMsgUserName = pszUserName;
+
 	m_cCommand = SNMP_CMD_GET;
 	m_iRequestId = iRequestId;
 	m_strOid = pszOid;
