@@ -22,6 +22,7 @@
 #include "AsnOid.h"
 #include "AsnNull.h"
 #include "AsnComplex.h"
+#include "Log.h"
 #include "MemoryDebug.h"
 
 #include "SnmpMessagePrivate.hpp"
@@ -92,72 +93,39 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 		{
 			if( m_cVersion != SNMP_VERSION_3 )
 			{
+				if( SetCommand( (CAsnComplex *)(*itRoot) ) == false )
+				{
+					return -1;
+				}
+
 				break;
 			}
-		}
-	}
 
-	if( cType == 3 )
-	{
-		m_cCommand = (*itRoot)->m_cType;
-		CAsnComplex * pclsCmd = (CAsnComplex *)(*itRoot);
-		ASN_TYPE_LIST::iterator	itCmd;
-		cType = 0;
-
-		for( itCmd = pclsCmd->m_clsList.begin(); itCmd != pclsCmd->m_clsList.end(); ++itCmd )
-		{
-			++cType;
-
-			if( cType == 1 )
+			if( (*itRoot)->m_cType == ASN_TYPE_OCTET_STR )
 			{
-				if( (*itCmd)->m_cType == ASN_TYPE_INT )
+				CAsnString * pclsValue = (CAsnString *)(*itRoot);
+				CAsnComplex clsData;
+
+				if( clsData.ParsePacket( pclsValue->m_strValue.c_str(), pclsValue->m_strValue.length() ) == -1 )
 				{
-					CAsnInt * pclsValue = (CAsnInt *)(*itCmd);
-					m_iRequestId = pclsValue->m_iValue;
+					return -1;
+				}
+
+				if( SetMsgSecurityParameters( &clsData ) == false )
+				{
+					return -1;
 				}
 			}
-			else if( cType == 2 )
+			else
 			{
-				if( (*itCmd)->m_cType == ASN_TYPE_INT )
-				{
-					CAsnInt * pclsValue = (CAsnInt *)(*itCmd);
-					m_iErrorStatus = pclsValue->m_iValue;
-				}
-			}
-			else if( cType == 3 )
-			{
-				if( (*itCmd)->m_cType == ASN_TYPE_INT )
-				{
-					CAsnInt * pclsValue = (CAsnInt *)(*itCmd);
-					m_iErrorIndex = pclsValue->m_iValue;
-				}
-			}
-			else if( cType == 4 )
-			{
-				break;
+				return -1;
 			}
 		}
-
-		if( cType == 4 )
+		else if( cType == 4 )
 		{
-			CAsnComplex * pclsBodyFrame = (CAsnComplex *)(*itCmd);
-			CAsnComplex * pclsBody = (CAsnComplex *)(*pclsBodyFrame->m_clsList.begin());
-			ASN_TYPE_LIST::iterator	itBody;
-			cType = 0;
-
-			for( itBody = pclsBody->m_clsList.begin(); itBody != pclsBody->m_clsList.end(); ++itBody )
+			if( SetMsgData( (CAsnComplex *)(*itRoot) ) == false )
 			{
-				++cType;
-
-				if( cType == 1 )
-				{
-					CAsnOid * pclsValue = (CAsnOid *)(*itBody);
-					m_strOid = pclsValue->m_strValue;
-				}
-				else if( cType == 2 )
-				{
-					m_pclsValue = (*itBody)->Copy();
-				}
+				return -1;
 			}
 		}
 	}
