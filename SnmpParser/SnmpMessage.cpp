@@ -25,7 +25,8 @@
 #include "Log.h"
 #include "MemoryDebug.h"
 
-#include "SnmpMessagePrivate.hpp"
+#include "SnmpMessageMake.hpp"
+#include "SnmpMessageParse.hpp"
 
 CSnmpMessage::CSnmpMessage() : m_cVersion(SNMP_VERSION_2C), m_cCommand(SNMP_CMD_GET)
 	, m_iRequestId(0), m_iErrorStatus(0), m_iErrorIndex(0)
@@ -118,6 +119,7 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 				break;
 			}
 
+			// msgSecurityParameters
 			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
 			{
 				CAsnString * pclsValue = (CAsnString *)(*itList);
@@ -141,6 +143,7 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 		}
 		else if( cType == 4 )
 		{
+			// msgData
 			if( SetMsgData( (CAsnComplex *)(*itList) ) == false )
 			{
 				return -1;

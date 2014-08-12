@@ -83,6 +83,9 @@ private:
 	bool SetMsgSecurityParameters( CAsnComplex * pclsComplex );
 	bool SetMsgData( CAsnComplex * pclsComplex );
 	bool SetCommand( CAsnComplex * pclsComplex );
+
+	int MakePacketV2( char * pszPacket, int iPacketSize );
+	int MakePacketV3( char * pszPacket, int iPacketSize );
 };
 
 #endif
