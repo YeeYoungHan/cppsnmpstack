@@ -80,6 +80,9 @@ public:
 
 private:
 	bool SetMsgGlobalData( CAsnComplex * pclsComplex );
+	bool SetMsgSecurityParameters( CAsnComplex * pclsComplex );
+	bool SetMsgData( CAsnComplex * pclsComplex );
+	bool SetCommand( CAsnComplex * pclsComplex );
 };
 
 #endif

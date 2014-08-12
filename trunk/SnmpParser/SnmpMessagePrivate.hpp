@@ -34,6 +34,7 @@ bool CSnmpMessage::SetMsgGlobalData( CAsnComplex * pclsComplex )
 			}
 			else
 			{
+				CLog::Print( LOG_ERROR, "%s msgId type(%d) is not int", __FUNCTION__, (*itList)->m_cType );
 				return false;
 			}
 		}
@@ -46,10 +47,236 @@ bool CSnmpMessage::SetMsgGlobalData( CAsnComplex * pclsComplex )
 			}
 			else
 			{
+				CLog::Print( LOG_ERROR, "%s msgMaxSize type(%d) is not int", __FUNCTION__, (*itList)->m_cType );
+				return false;
+			}
+		}
+		else if( cType == 3 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				m_cMsgFlags = pclsValue->m_strValue.at(0);
+			}
+			else
+			{
+				CLog::Print( LOG_ERROR, "%s msgFlags type(%d) is not octet string", __FUNCTION__, (*itList)->m_cType );
+				return false;
+			}
+		}
+		else if( cType == 4 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itList);
+				m_iMsgSecurityModel = pclsValue->m_iValue;
+			}
+			else
+			{
+				CLog::Print( LOG_ERROR, "%s msgSecurityModel type(%d) is not int", __FUNCTION__, (*itList)->m_cType );
 				return false;
 			}
 		}
 	}
 
-	return false;
+	return true;
+}
+
+bool CSnmpMessage::SetMsgSecurityParameters( CAsnComplex * pclsComplex )
+{
+	ASN_TYPE_LIST::iterator	itList;
+	uint8_t cType = 0;
+
+	for( itList = pclsComplex->m_clsList.begin(); itList != pclsComplex->m_clsList.end(); ++itList )
+	{
+		++cType;
+
+		if( cType == 1 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				m_strMsgAuthEngineId = pclsValue->m_strValue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if( cType == 2 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itList);
+				m_iMsgAuthEngineBoots = pclsValue->m_iValue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if( cType == 3 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itList);
+				m_iMsgAuthEngineTime = pclsValue->m_iValue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if( cType == 4 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				m_strMsgUserName = pclsValue->m_strValue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if( cType == 5 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				m_strMsgAuthParams = pclsValue->m_strValue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if( cType == 6 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				m_strMsgPrivParams = pclsValue->m_strValue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool CSnmpMessage::SetMsgData( CAsnComplex * pclsComplex )
+{
+	ASN_TYPE_LIST::iterator	itList;
+	uint8_t cType = 0;
+
+	for( itList = pclsComplex->m_clsList.begin(); itList != pclsComplex->m_clsList.end(); ++itList )
+	{
+		++cType;
+
+		if( cType == 1 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				m_strContextEngineId = pclsValue->m_strValue;
+			}
+			else
+			{
+				CLog::Print( LOG_ERROR, "%s contextEngineId type(%d) is not int", __FUNCTION__, (*itList)->m_cType );
+				return false;
+			}
+		}
+		else if( cType == 2 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				m_strContextName = pclsValue->m_strValue;
+			}
+			else
+			{
+				CLog::Print( LOG_ERROR, "%s contextName type(%d) is not int", __FUNCTION__, (*itList)->m_cType );
+				return false;
+			}
+		}
+		else if( cType == 3 )
+		{
+			if( SetCommand( (CAsnComplex *)(*itList) ) == false )
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool CSnmpMessage::SetCommand( CAsnComplex * pclsComplex )
+{
+	m_cCommand = pclsComplex->m_cType;
+	ASN_TYPE_LIST::iterator	itCmd;
+	uint8_t cType = 0;
+
+	for( itCmd = pclsComplex->m_clsList.begin(); itCmd != pclsComplex->m_clsList.end(); ++itCmd )
+	{
+		++cType;
+
+		if( cType == 1 )
+		{
+			if( (*itCmd)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itCmd);
+				m_iRequestId = pclsValue->m_iValue;
+			}
+		}
+		else if( cType == 2 )
+		{
+			if( (*itCmd)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itCmd);
+				m_iErrorStatus = pclsValue->m_iValue;
+			}
+		}
+		else if( cType == 3 )
+		{
+			if( (*itCmd)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itCmd);
+				m_iErrorIndex = pclsValue->m_iValue;
+			}
+		}
+		else if( cType == 4 )
+		{
+			break;
+		}
+	}
+
+	if( cType == 4 )
+	{
+		CAsnComplex * pclsBodyFrame = (CAsnComplex *)(*itCmd);
+		CAsnComplex * pclsBody = (CAsnComplex *)(*pclsBodyFrame->m_clsList.begin());
+		ASN_TYPE_LIST::iterator	itBody;
+		cType = 0;
+
+		for( itBody = pclsBody->m_clsList.begin(); itBody != pclsBody->m_clsList.end(); ++itBody )
+		{
+			++cType;
+
+			if( cType == 1 )
+			{
+				CAsnOid * pclsValue = (CAsnOid *)(*itBody);
+				m_strOid = pclsValue->m_strValue;
+			}
+			else if( cType == 2 )
+			{
+				m_pclsValue = (*itBody)->Copy();
+			}
+		}
+	}
+
+	return true;
 }
