@@ -77,6 +77,9 @@ public:
 	// 목적지 IP 주소 및 포트 번호
 	std::string	m_strDestIp;
 	int					m_iDestPort;
+
+private:
+	bool SetMsgGlobalData( CAsnComplex * pclsComplex );
 };
 
 #endif

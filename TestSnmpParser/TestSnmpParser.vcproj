@@ -177,7 +177,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\HexToPacket.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TestAuthenticationParameters.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TestParseSnmpv3Packet.cpp"
 				>
 			</File>
 			<File

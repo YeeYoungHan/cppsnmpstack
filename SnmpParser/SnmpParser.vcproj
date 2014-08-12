@@ -162,6 +162,10 @@
 				RelativePath=".\SnmpMessage.h"
 				>
 			</File>
+			<File
+				RelativePath=".\SnmpMessagePrivate.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="ASN"

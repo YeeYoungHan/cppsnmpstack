@@ -16,13 +16,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _TEST_SNMP_PARSER_H_
-#define _TEST_SNMP_PARSER_H_
+#include "SnmpPlatformDefine.h"
+#include "TestSnmpParser.h"
+#include <string.h>
+#include <stdio.h>
+#include "MemoryDebug.h"
 
-// HexToString.cpp
-int HexToString( const char * pszHex, char * pszPacket, int iPacketLen );
+int HexToString( const char * pszHex, char * pszPacket, int iPacketLen )
+{
+	int iHexLen = strlen( pszHex );
+	int iIndex = 0;
+	int iValue;
 
-// TestAuthenticationParameters.cpp
-bool TestAuthenticationParameters();
+	memset( pszPacket, 0, iPacketLen );
 
-#endif
+	for( int i = 0; i < iHexLen; i += 2 )
+	{
+		if( iIndex == iPacketLen ) return -1;
+
+		sscanf( pszHex + i, "%02x", &iValue );
+		pszPacket[iIndex++] = iValue;
+	}
+
+	return iIndex;
+}
+
