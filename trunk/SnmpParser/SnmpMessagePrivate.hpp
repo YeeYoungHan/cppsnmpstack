@@ -16,13 +16,40 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _TEST_SNMP_PARSER_H_
-#define _TEST_SNMP_PARSER_H_
+bool CSnmpMessage::SetMsgGlobalData( CAsnComplex * pclsComplex )
+{
+	ASN_TYPE_LIST::iterator	itList;
+	uint8_t cType = 0;
 
-// HexToString.cpp
-int HexToString( const char * pszHex, char * pszPacket, int iPacketLen );
+	for( itList = pclsComplex->m_clsList.begin(); itList != pclsComplex->m_clsList.end(); ++itList )
+	{
+		++cType;
 
-// TestAuthenticationParameters.cpp
-bool TestAuthenticationParameters();
+		if( cType == 1 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itList);
+				m_iMsgId = pclsValue->m_iValue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else if( cType == 2 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itList);
+				m_iMsgMaxSize = pclsValue->m_iValue;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
 
-#endif
+	return false;
+}

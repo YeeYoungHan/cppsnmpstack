@@ -24,6 +24,8 @@
 #include "AsnComplex.h"
 #include "MemoryDebug.h"
 
+#include "SnmpMessagePrivate.hpp"
+
 CSnmpMessage::CSnmpMessage() : m_cVersion(SNMP_VERSION_2C), m_cCommand(SNMP_CMD_GET)
 	, m_iRequestId(0), m_iErrorStatus(0), m_iErrorIndex(0)
 	, m_iMsgId(0), m_iMsgMaxSize(0), m_cMsgFlags(0), m_iMsgSecurityModel(0)
@@ -65,6 +67,10 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 				CAsnInt * pclsValue = (CAsnInt *)(*itRoot);
 				m_cVersion = pclsValue->m_iValue;
 			}
+			else
+			{
+				return -1;
+			}
 		}
 		else if( cType == 2 )
 		{
@@ -73,10 +79,21 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 				CAsnString * pclsValue = (CAsnString *)(*itRoot);
 				m_strCommunity = pclsValue->m_strValue;
 			}
+			else if( (*itRoot)->m_cType == ASN_TYPE_COMPLEX )
+			{
+				// msgGlobalData
+				if( SetMsgGlobalData( (CAsnComplex *)*itRoot ) == false )
+				{
+					return -1;
+				}
+			}
 		}
 		else if( cType == 3 )
 		{
-			break;
+			if( m_cVersion != SNMP_VERSION_3 )
+			{
+				break;
+			}
 		}
 	}
 

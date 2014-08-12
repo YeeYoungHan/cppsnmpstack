@@ -104,22 +104,13 @@ static bool TestHmac( )
 	const char * pszEngineId = "80001f88809b26630b890ed353";
 	int iHexLen = strlen(pszHexPacket);
 	unsigned char szPacket[1500], szEngineId[51];
-	int iValue, iIndex = 0, iEngineIdLen = 0;
+	int iIndex = 0, iEngineIdLen = 0;
 
-	memset( szPacket, 0, sizeof(szPacket) );
+	iIndex = HexToString( pszHexPacket, (char *)szPacket, sizeof(szPacket) );
+	if( iIndex == -1 ) return false;
 
-	for( int i = 0; i < iHexLen; i += 2 )
-	{
-		sscanf( pszHexPacket + i, "%02x", &iValue );
-		szPacket[iIndex++] = iValue;
-	}
-
-	iHexLen = strlen( pszEngineId );
-	for( int i = 0; i < iHexLen; i += 2 )
-	{
-		sscanf( pszEngineId + i, "%02x", &iValue );
-		szEngineId[iEngineIdLen++] = iValue;
-	}
+	iEngineIdLen = HexToString( pszEngineId, (char *)szEngineId, sizeof(szEngineId) );
+	if( iEngineIdLen == -1 ) return false;
 
 	unsigned char szKey[16], szAuthKey[16], szResult[512];
 	unsigned int iResultSize = sizeof(szResult);

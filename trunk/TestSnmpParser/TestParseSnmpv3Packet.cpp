@@ -16,13 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _TEST_SNMP_PARSER_H_
-#define _TEST_SNMP_PARSER_H_
+#include "SnmpPlatformDefine.h"
+#include "TestSnmpParser.h"
+#include "MemoryDebug.h"
 
-// HexToString.cpp
-int HexToString( const char * pszHex, char * pszPacket, int iPacketLen );
+bool TestParseSnmpv3Packet( )
+{
+	const char * pszPacket = "3066020103300f02020523020300ffe3040100020103041e301c040d80001f88809b26630b890ed353020109020203180400040004003030040d80001f88809b26630b890ed3530400a81d02022cf20201000201003011300f060a2b060106030f0101040041010a";
+	
 
-// TestAuthenticationParameters.cpp
-bool TestAuthenticationParameters();
-
-#endif
+	return true;
+}
