@@ -77,6 +77,7 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 		case SNMP_CMD_GET:
 		case SNMP_CMD_GET_NEXT:
 		case SNMP_CMD_RESPONSE:
+		case SNMP_CMD_REPORT:
 			pclsValue = new CAsnComplex();
 			break;
 		default:

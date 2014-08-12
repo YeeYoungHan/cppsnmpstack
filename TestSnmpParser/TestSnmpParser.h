@@ -25,4 +25,7 @@ int HexToString( const char * pszHex, char * pszPacket, int iPacketLen );
 // TestAuthenticationParameters.cpp
 bool TestAuthenticationParameters();
 
+// TestParseSnmpv3Packet.cpp
+bool TestParseSnmpv3Packet( );
+
 #endif

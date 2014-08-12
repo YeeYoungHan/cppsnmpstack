@@ -18,6 +18,7 @@
 
 #include "SnmpPlatformDefine.h"
 #include "TestSnmpParser.h"
+#include <stdio.h>
 #include "MemoryDebug.h"
 
 int main( int argc, char * argv[] )
@@ -26,7 +27,14 @@ int main( int argc, char * argv[] )
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
 #endif
 
-	TestAuthenticationParameters();
+	if( TestParseSnmpv3Packet() == false ) goto FUNC_ERROR;
+	if( TestAuthenticationParameters() == false ) goto FUNC_ERROR;
 
+	printf( "All Test is O.K!!!!\n" );
 	return 0;
+
+FUNC_ERROR:
+	printf( "Error\n" );
+
+	return -1;
 }

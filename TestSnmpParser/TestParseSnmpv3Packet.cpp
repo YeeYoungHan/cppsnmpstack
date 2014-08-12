@@ -18,12 +18,21 @@
 
 #include "SnmpPlatformDefine.h"
 #include "TestSnmpParser.h"
+#include "SnmpMessage.h"
 #include "MemoryDebug.h"
 
 bool TestParseSnmpv3Packet( )
 {
-	const char * pszPacket = "3066020103300f02020523020300ffe3040100020103041e301c040d80001f88809b26630b890ed353020109020203180400040004003030040d80001f88809b26630b890ed3530400a81d02022cf20201000201003011300f060a2b060106030f0101040041010a";
-	
+	const char * pszHexPacket = "3066020103300f02020523020300ffe3040100020103041e301c040d80001f88809b26630b890ed353020109020203180400040004003030040d80001f88809b26630b890ed3530400a81d02022cf20201000201003011300f060a2b060106030f0101040041010a";
+	char szPacket[1500];
+	int iPacketLen, n;
+	CSnmpMessage clsMessage;
+
+	iPacketLen = HexToString( pszHexPacket, (char *)szPacket, sizeof(szPacket) );
+	if( iPacketLen == -1 ) return false;
+
+	n = clsMessage.ParsePacket( szPacket, iPacketLen );
+	if( n == -1 ) return false;
 
 	return true;
 }
