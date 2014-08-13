@@ -44,8 +44,6 @@ public:
 
 	bool SendRequest( const char * pszIp, int iPort, CSnmpMessage * pclsRequest );
 
-	static bool SendRequest( const char * pszIp, int iPort, CSnmpMessage & clsRequest, CSnmpMessage & clsResponse, int iTimeout = 2 );
-
 	CSnmpStackSetup m_clsSetup;
 	Socket					m_hSocket;
 

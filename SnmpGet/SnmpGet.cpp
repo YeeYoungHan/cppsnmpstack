@@ -44,34 +44,6 @@ int main( int argc, char * argv[] )
 
 	InitNetwork();
 
-#ifdef USE_BLOCKING_METHOD
-	clsRequest.MakeGetRequest( "public", 32594, pszMib );
-
-	if( CSnmpStack::SendRequest( pszDestIp, 161, clsRequest, clsResponse ) == false )
-	{
-		printf( "CSnmpStack::SendRequest error\n" );
-		return 0;
-	}
-
-	if( clsResponse.m_pclsValue )
-	{
-		uint32_t iValue;
-		std::string strValue;
-
-		if( clsResponse.m_pclsValue->GetInt( iValue ) )
-		{
-			printf( "[%u] (type=int)\n", iValue );
-		}
-		else if( clsResponse.m_pclsValue->GetString( strValue ) )
-		{
-			printf( "[%s] (type=string)\n", strValue.c_str() );
-		}
-		else
-		{
-			printf( "(type=no_such_object)\n" );
-		}
-	}
-#else
 	CSnmpStack clsStack;
 	CSnmpStackSetup clsSetup;
 	CCallBack clsCallBack;
@@ -94,7 +66,6 @@ int main( int argc, char * argv[] )
 	}
 
 	clsStack.Stop();
-#endif
 
 	return 0;
 }
