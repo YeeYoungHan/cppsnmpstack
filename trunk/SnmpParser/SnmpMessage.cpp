@@ -271,6 +271,8 @@ bool CSnmpMessage::MakeGetRequest( const char * pszUserName, const char * pszAut
 	m_cCommand = SNMP_CMD_GET;
 	m_iRequestId = iRequestId;
 
+	m_cMsgFlags = SNMP_MSG_FLAG_REPORT;
+
 	// 두번째 SNMP 메시지 전송을 위해서 저장한다.
 	m_strReqOid = pszOid;
 

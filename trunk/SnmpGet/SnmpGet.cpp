@@ -28,9 +28,9 @@ CSnmpMutexSignal gclsMutex;
 
 int main( int argc, char * argv[] )
 {
-	if( argc != 3 )
+	if( argc != 3 && argc != 5 )
 	{
-		printf( "[Usage] %s {ip} {mib}\n", argv[0] );
+		printf( "[Usage] %s {ip} {mib} {user id} {auth password}\n", argv[0] );
 		return -1;
 	}
 
@@ -40,7 +40,15 @@ int main( int argc, char * argv[] )
 
 	const char * pszDestIp = argv[1];
 	const char * pszMib = argv[2];
+	const char * pszUserId = NULL;
+	const char * pszAuthPassWord = NULL;
 	CSnmpMessage clsRequest, clsResponse;
+
+	if( argc == 5 )
+	{
+		pszUserId = argv[3];
+		pszAuthPassWord = argv[4];
+	}
 
 	InitNetwork();
 
@@ -56,11 +64,24 @@ int main( int argc, char * argv[] )
 	CSnmpMessage * pclsRequest = new CSnmpMessage();
 	if( pclsRequest )
 	{
-		if( pclsRequest->MakeGetRequest( "public", 32594, pszMib ) )
+		if( pszUserId )
 		{
-			if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
+			if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, NULL, 32594, pszMib ) )
 			{
-				gclsMutex.wait();
+				if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
+				{
+					gclsMutex.wait();
+				}
+			}
+		}
+		else
+		{
+			if( pclsRequest->MakeGetRequest( "public", 32594, pszMib ) )
+			{
+				if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
+				{
+					gclsMutex.wait();
+				}
 			}
 		}
 	}

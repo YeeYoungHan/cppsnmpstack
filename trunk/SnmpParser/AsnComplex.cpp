@@ -212,6 +212,24 @@ bool CAsnComplex::AddString( std::string & strValue )
 
 /**
  * @ingroup SnmpParser
+ * @brief 1 문자로 구성된 CAsnString 변수를 리스트에 추가한다.
+ * @param cValue 1 문자
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
+bool CAsnComplex::AddString( uint8_t cValue )
+{
+	CAsnString * pclsValue = new CAsnString();
+	if( pclsValue == NULL ) return false;
+
+	pclsValue->m_strValue.append(" ");
+	pclsValue->m_strValue.at(0) = cValue;
+	m_clsList.push_back( pclsValue );
+
+	return true;
+}
+
+/**
+ * @ingroup SnmpParser
  * @brief CAsnOid 변수를 리스트에 추가한다.
  * @param pszValue OID 문자열
  * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
