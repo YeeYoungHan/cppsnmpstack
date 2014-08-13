@@ -23,7 +23,7 @@ CAsnComplex * CSnmpMessage::CreateMsgGlobalData( )
 
 	if( pclsComplex->AddInt( m_iMsgId ) == false ) goto FUNC_ERROR;
 	if( pclsComplex->AddInt( m_iMsgMaxSize ) == false ) goto FUNC_ERROR;
-	if( pclsComplex->AddInt( m_cMsgFlags ) == false ) goto FUNC_ERROR;
+	if( pclsComplex->AddString( m_cMsgFlags ) == false ) goto FUNC_ERROR;
 	if( pclsComplex->AddInt( m_iMsgSecurityModel ) == false ) goto FUNC_ERROR;
 
 	return pclsComplex;
