@@ -251,13 +251,14 @@ bool CSnmpMessage::MakeGetRequest( const char * pszCommunity, uint32_t iRequestI
 /**
  * @ingroup SnmpParser
  * @brief SNMPv3 GET 요청 메시지를 생성한다.
- * @param iMsgId			메시지 아이디
  * @param pszUserName	사용자 아이디
+ * @param pszAuthPassWord	msgAuthenticationParameters 생성을 위한 비밀번호
+ * @param pszPrivPassWord msgPrivacyParameters 생성을 위한 비밀번호
  * @param iRequestId	요청 아이디
- * @param pszOid			요청 아이디
+ * @param pszOid			OID 문자열
  * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
  */
-bool CSnmpMessage::MakeGetRequest( uint32_t iMsgId, const char * pszUserName, uint32_t iRequestId, const char * pszOid )
+bool CSnmpMessage::MakeGetRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid )
 {
 	if( pszUserName == NULL || pszOid == NULL ) return false;
 
@@ -265,14 +266,28 @@ bool CSnmpMessage::MakeGetRequest( uint32_t iMsgId, const char * pszUserName, ui
 
 	m_cVersion = SNMP_VERSION_3;
 	
-	m_iMsgId = iMsgId;
-	m_strMsgUserName = pszUserName;
+	m_iMsgId = iRequestId;
 
 	m_cCommand = SNMP_CMD_GET;
 	m_iRequestId = iRequestId;
 	m_strOid = pszOid;
 	m_pclsValue = new CAsnNull();
 	if( m_pclsValue == NULL ) return false;
+
+	if( pszUserName )
+	{
+		m_strUserId = pszUserName;
+	}
+
+	if( pszAuthPassWord )
+	{
+		m_strAuthPassWord = pszAuthPassWord;
+	}
+
+	if( pszPrivPassWord )
+	{
+		m_strPrivPassWord = pszPrivPassWord;
+	}
 
 	return true;
 }

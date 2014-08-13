@@ -40,14 +40,14 @@ public:
 	void Clear();
 
 	bool MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
-	bool MakeGetRequest( uint32_t iMsgId, const char * pszUserName, uint32_t iRequestId, const char * pszOid );
+	bool MakeGetRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid );
 
 	uint8_t			m_cVersion;
 
 	// SNMPv2
 	std::string	m_strCommunity;
 
-	// data
+	// SNMP data
 	uint8_t			m_cCommand;
 	uint32_t		m_iRequestId;
 	uint32_t		m_iErrorStatus;
@@ -70,6 +70,11 @@ public:
 
 	std::string	m_strContextEngineId;
 	std::string	m_strContextName;
+
+	// SNMPv3 id & password
+	std::string m_strUserId;
+	std::string m_strAuthPassWord;
+	std::string m_strPrivPassWord;
 
 	// 네트워크 전송 패킷
 	char				* m_pszPacket;
