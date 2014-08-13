@@ -75,6 +75,7 @@ public:
 	std::string m_strUserId;
 	std::string m_strAuthPassWord;
 	std::string m_strPrivPassWord;
+	std::string m_strReqOid;
 
 	// 네트워크 전송 패킷
 	char				* m_pszPacket;

@@ -105,18 +105,22 @@ CAsnComplex * CSnmpMessage::CreateCommand( )
 	pclsBodyFrame = new CAsnComplex();
 	if( pclsBodyFrame == NULL ) goto FUNC_ERROR;
 
-	pclsBody = new CAsnComplex();
-	if( pclsBody == NULL ) goto FUNC_ERROR;
-
-	if( pclsBody->AddOid( m_strOid.c_str() ) == false ) goto FUNC_ERROR;
-
+	if( m_strOid.empty() == false )
 	{
-		CAsnType * pclsValue = m_pclsValue->Copy();
-		if( pclsValue == NULL ) goto FUNC_ERROR;
-		if( pclsBody->AddValue( pclsValue ) == false ) goto FUNC_ERROR;
-	}
+		pclsBody = new CAsnComplex();
+		if( pclsBody == NULL ) goto FUNC_ERROR;
 
-	pclsBodyFrame->AddComplex( pclsBody );
+		if( pclsBody->AddOid( m_strOid.c_str() ) == false ) goto FUNC_ERROR;
+
+		{
+			CAsnType * pclsValue = m_pclsValue->Copy();
+			if( pclsValue == NULL ) goto FUNC_ERROR;
+			if( pclsBody->AddValue( pclsValue ) == false ) goto FUNC_ERROR;
+		}
+
+		pclsBodyFrame->AddComplex( pclsBody );
+	}
+	
 	pclsCommand->AddComplex( pclsBodyFrame );
 
 	return pclsCommand;
