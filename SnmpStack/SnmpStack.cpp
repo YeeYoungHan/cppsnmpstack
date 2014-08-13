@@ -90,9 +90,15 @@ bool CSnmpStack::Stop( )
 
 bool CSnmpStack::SendRequest( const char * pszIp, int iPort, CSnmpMessage * pclsRequest )
 {
-	if( pclsRequest->MakePacket() == false ) return false;
 	pclsRequest->m_strDestIp = pszIp;
 	pclsRequest->m_iDestPort = iPort;
+
+	return SendRequest( pclsRequest );
+}
+
+bool CSnmpStack::SendRequest( CSnmpMessage * pclsRequest )
+{
+	if( pclsRequest->MakePacket() == false ) return false;
 
 	if( m_clsTransactionList.Insert( pclsRequest ) == false ) return false;
 

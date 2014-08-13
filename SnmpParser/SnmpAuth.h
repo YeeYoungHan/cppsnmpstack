@@ -16,41 +16,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_STACK_H_
-#define _SNMP_STACK_H_
+#ifndef _SNMP_AUTH_H_
+#define _SNMP_AUTH_H_
 
-/**
- * @defgroup SnmpStack SnmpStack
- * SNMP 메시지 전송/수신 라이브러리
- */
+#include <string>
 
-#include "SnmpStackSetup.h"
-#include "SnmpTransactionList.h"
-#include "SnmpUdp.h"
-#include "SnmpStackCallBack.h"
-
-/**
- * @ingroup SnmpStack
- * @brief SNMP 메시지 전송/수신 클래스
- */
-class CSnmpStack
-{
-public:
-	CSnmpStack();
-	~CSnmpStack();
-
-	bool Start( CSnmpStackSetup & clsSetup, ISnmpStackCallBack * pclsCallBack );
-	bool Stop( );
-
-	bool SendRequest( const char * pszIp, int iPort, CSnmpMessage * pclsRequest );
-	bool SendRequest( CSnmpMessage * pclsRequest );
-
-	CSnmpStackSetup m_clsSetup;
-	Socket					m_hSocket;
-
-	ISnmpStackCallBack	* m_pclsCallBack;
-
-	CSnmpTransactionList	m_clsTransactionList;
-};
+bool SnmpMakeHmac( const char * pszPacket, int iPacketLen, const char * pszPassWord, const char * pszEngineId, int iEngineIdLen, std::string & strAuthParams );
 
 #endif
