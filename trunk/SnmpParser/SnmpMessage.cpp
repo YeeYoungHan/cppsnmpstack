@@ -17,6 +17,7 @@
  */
 
 #include "SnmpMessage.h"
+#include "SnmpAuth.h"
 #include "AsnInt.h"
 #include "AsnOid.h"
 #include "AsnNull.h"
@@ -292,4 +293,42 @@ bool CSnmpMessage::MakeGetRequest( const char * pszUserName, const char * pszAut
 	}
 
 	return true;
+}
+
+bool CSnmpMessage::SetAuthParams( )
+{
+	int		iPacketLen;
+	char	szPacket[SNMP_MAX_PACKET_SIZE];
+
+	m_strMsgAuthParams.clear();
+
+	for( int i = 0; i < 12; ++i )
+	{
+		m_strMsgAuthParams.append( "\0" );
+	}
+
+	iPacketLen = MakePacket( szPacket, sizeof(szPacket) );
+	if( iPacketLen == -1 ) return false;
+
+	if( SnmpMakeHmac( szPacket, iPacketLen, m_strAuthPassWord.c_str(), m_strMsgAuthEngineId.c_str(), m_strMsgAuthEngineId.length(), m_strMsgAuthParams ) == false )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+CSnmpMessage * CSnmpMessage::Create( CSnmpMessage * pclsMessage )
+{
+	CSnmpMessage * pclsCopy = new CSnmpMessage();
+	if( pclsCopy == NULL ) return NULL;
+
+	*pclsCopy = *pclsMessage;
+
+	pclsCopy->m_pclsValue = NULL;
+
+	pclsCopy->m_pszPacket = NULL;
+	pclsCopy->m_iPacketLen = 0;
+
+	return pclsCopy;
 }
