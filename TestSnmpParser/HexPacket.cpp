@@ -41,3 +41,19 @@ int HexToString( const char * pszHex, char * pszPacket, int iPacketLen )
 	return iIndex;
 }
 
+int StringToHex( const char * pszPacket, char * pszHex, int iHexLen )
+{
+	int iPacketLen = strlen( pszPacket );
+	int iLen = 0;
+
+	memset( pszHex, 0, iHexLen );
+
+	for( int i = 0; i < iPacketLen; ++i )
+	{
+		if( ( iLen + 2 ) >= iHexLen ) return -1;
+
+		iLen += snprintf( pszHex + iLen, iHexLen - iLen, "%02x", pszPacket[i] );
+	}
+
+	return iLen;
+}
