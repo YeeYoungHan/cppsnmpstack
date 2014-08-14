@@ -304,7 +304,8 @@ bool CSnmpMessage::SetAuthParams( )
 
 	for( int i = 0; i < 12; ++i )
 	{
-		m_strMsgAuthParams.append( "\0" );
+		m_strMsgAuthParams.append( " " );
+		m_strMsgAuthParams.at(i) = '\0';
 	}
 
 	iPacketLen = MakePacket( szPacket, sizeof(szPacket) );
