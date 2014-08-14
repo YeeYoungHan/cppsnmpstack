@@ -66,6 +66,35 @@ int CAsnType::ParseHeader( const char * pszPacket, int iPacketLen )
 	return iPos;
 }
 
+int CAsnType::SetHeaderLength( char * pszPacket, int iPacketSize, int iLength )
+{
+	if( iLength <= 127 )
+	{
+		pszPacket[1] = iLength;
+		return iLength + 2;
+	}
+
+	uint8_t szLen[5];
+	int iLenSize;
+
+	iLenSize = SetInt( szLen, sizeof(szLen), iLength );
+	if( iLenSize == -1 ) return -1;
+
+	if( iPacketSize < ( iLength + iLenSize + 1 ) ) return -1;
+
+	char * pszCopy = (char *)malloc( iPacketSize );
+	if( pszCopy == NULL ) return -1;
+
+	memcpy( pszCopy, pszPacket, iPacketSize );
+
+	memcpy( pszPacket + 1, szLen, iLenSize );
+	memcpy( pszPacket + 1 + iLenSize, pszPacket + 2, iLength );
+
+	free( pszCopy );
+
+	return 1 + iLenSize + iLength;
+}
+
 int CAsnType::ParseInt( const char * pszPacket, int iPacketLen, uint8_t cLength, uint32_t & iValue )
 {
 	if( iPacketLen < cLength ) return -1;
@@ -104,4 +133,39 @@ int CAsnType::ParseInt( const char * pszPacket, int iPacketLen, uint8_t cLength,
 	}
 
 	return -1;
+}
+
+int CAsnType::SetInt( uint8_t * pszPacket, int iPacketLen, uint32_t iValue )
+{
+	if( iValue <= 0xFF )
+	{
+		pszPacket[0] = 0x81;
+		pszPacket[1] = iValue;
+		return 2;
+	}
+
+	if( iValue <= 0xFFFF )
+	{
+		pszPacket[0] = 0x82;
+
+		int16_t sTemp = htons( iValue );
+		memcpy( pszPacket + 1, &sTemp, 2 );
+		return 3;
+	}
+
+	if( iValue <= 0xFFFFFF )
+	{
+		pszPacket[0] = 0x83;
+
+		uint32_t iTemp = htonl( iValue );
+		memcpy( pszPacket + 1, ((char *)&iTemp) + 1, 3 );
+		return 4;
+	}
+
+	pszPacket[0] = 0x84;
+
+	uint32_t iTemp = htons( iValue );
+	memcpy( pszPacket + 1, &iTemp, 4 );
+
+	return 5;
 }

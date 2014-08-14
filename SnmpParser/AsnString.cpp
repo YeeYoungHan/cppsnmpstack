@@ -38,15 +38,15 @@ CAsnString::~CAsnString()
 int CAsnString::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	int			iPos = 0;
-	uint8_t	cLength;
 
 	m_strValue.clear();
 
-	m_cType = pszPacket[iPos++];
-	cLength = pszPacket[iPos++];
-	m_strValue.append( pszPacket + iPos, cLength );
+	iPos = ParseHeader( pszPacket, iPacketLen );
+	if( iPos == -1 ) return -1;
 
-	iPos += cLength;
+	m_strValue.append( pszPacket + iPos, m_iLen );
+
+	iPos += m_iLen;
 
 	return iPos;
 }
@@ -60,13 +60,25 @@ int CAsnString::ParsePacket( const char * pszPacket, int iPacketLen )
  */
 int CAsnString::MakePacket( char * pszPacket, int iPacketSize )
 {
-	int			iPos = 0;
-	uint8_t	cLength = m_strValue.length();
+	int				iPos = 0;
+	uint32_t	iLength = m_strValue.length();
 
 	pszPacket[iPos++] = m_cType;
-	pszPacket[iPos++] = cLength;
-	memcpy( pszPacket + iPos, m_strValue.c_str(), cLength );
-	iPos += cLength;
+
+	if( iLength <= 127 )
+	{
+		pszPacket[iPos++] = iLength;
+	}
+	else
+	{
+		int n = SetInt( (uint8_t *)pszPacket + 1, iPacketSize - 1, iLength );
+		if( n == -1 ) return -1;
+
+		iPos += n;
+	}
+
+	memcpy( pszPacket + iPos, m_strValue.c_str(), iLength );
+	iPos += iLength;
 
 	return iPos;
 }

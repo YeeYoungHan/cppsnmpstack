@@ -95,7 +95,7 @@ int CAsnInt::MakePacket( char * pszPacket, int iPacketSize )
 		pszPacket[iPos++] = 4;
 
 		uint32_t iValue = htons( m_iValue );
-		memcpy( pszPacket + iPos, &iValue, 2 );
+		memcpy( pszPacket + iPos, &iValue, 4 );
 		iPos += 4;
 	}
 
