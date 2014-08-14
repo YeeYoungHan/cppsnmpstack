@@ -55,8 +55,10 @@ public:
 	virtual bool GetString( std::string & strValue );
 
 	int ParseHeader( const char * pszPacket, int iPacketLen );
+	int SetHeaderLength( char * pszPacket, int iPacketSize, int iLength );
 
 	static int ParseInt( const char * pszPacket, int iPacketLen, uint8_t cLength, uint32_t & iValue );
+	static int SetInt( uint8_t * pszPacket, int iPacketLen, uint32_t iValue );
 };
 
 #endif
