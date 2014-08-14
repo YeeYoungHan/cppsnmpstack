@@ -44,7 +44,8 @@ class CAsnType
 public:
 	virtual ~CAsnType(){ };
 
-	uint8_t	m_cType;
+	uint8_t		m_cType;
+	uint32_t	m_iLen;
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen ) = 0;
 	virtual int MakePacket( char * pszPacket, int iPacketSize ) = 0;
@@ -52,6 +53,10 @@ public:
 
 	virtual bool GetInt( uint32_t & iValue );
 	virtual bool GetString( std::string & strValue );
+
+	int ParseHeader( const char * pszPacket, int iPacketLen );
+
+	static int ParseInt( const char * pszPacket, int iPacketLen, uint8_t cLength, uint32_t & iValue );
 };
 
 #endif

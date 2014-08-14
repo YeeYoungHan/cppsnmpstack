@@ -29,4 +29,7 @@ bool TestAuthenticationParameters();
 // TestParseSnmpv3Packet.cpp
 bool TestParseSnmpv3Packet( );
 
+// TestAsnType.cpp
+bool TestAsnType( );
+
 #endif
