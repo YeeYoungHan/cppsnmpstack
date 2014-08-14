@@ -123,9 +123,7 @@ int CAsnComplex::MakePacket( char * pszPacket, int iPacketSize )
 		iPos += n;
 	}
 
-	SetHeaderLength( pszPacket, iPacketSize, iPos - 2 );
-
-	return iPos;
+	return SetHeaderLength( pszPacket, iPacketSize, iPos - 2 );
 }
 
 /**
