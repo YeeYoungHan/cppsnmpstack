@@ -20,6 +20,7 @@
 #include "SnmpUdp.h"
 #include "SnmpStack.h"
 #include "CallBack.h"
+#include "TimeUtility.h"
 #include "MemoryDebug.h"
 
 #ifndef USE_BLOCKING_METHOD
@@ -55,10 +56,18 @@ int main( int argc, char * argv[] )
 	CSnmpStack clsStack;
 	CSnmpStackSetup clsSetup;
 	CCallBack clsCallBack;
+	uint32_t iRequestId;
+	struct timeval sttTime;
+
+	gettimeofday( &sttTime, NULL );
+	srand( ( sttTime.tv_sec << 4 ) + sttTime.tv_usec );
+
+	iRequestId = rand();
 
 	if( clsStack.Start( clsSetup, &clsCallBack ) == false )
 	{
 		printf( "clsStack.Start() error\n" );
+		return 0;
 	}
 
 	CSnmpMessage * pclsRequest = new CSnmpMessage();
@@ -66,8 +75,7 @@ int main( int argc, char * argv[] )
 	{
 		if( pszUserId )
 		{
-			//if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, NULL, 32594, pszMib ) )
-			if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, NULL, 65507, pszMib ) )
+			if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, NULL, iRequestId, pszMib ) )
 			{
 				if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
 				{
@@ -77,7 +85,7 @@ int main( int argc, char * argv[] )
 		}
 		else
 		{
-			if( pclsRequest->MakeGetRequest( "public", 32594, pszMib ) )
+			if( pclsRequest->MakeGetRequest( "public", iRequestId, pszMib ) )
 			{
 				if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
 				{

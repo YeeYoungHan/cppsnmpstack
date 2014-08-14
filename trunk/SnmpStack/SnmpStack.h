@@ -45,12 +45,18 @@ public:
 	bool SendRequest( const char * pszIp, int iPort, CSnmpMessage * pclsRequest );
 	bool SendRequest( CSnmpMessage * pclsRequest );
 
+	uint32_t GetNextRequestId();
+
 	CSnmpStackSetup m_clsSetup;
 	Socket					m_hSocket;
 
 	ISnmpStackCallBack	* m_pclsCallBack;
 
 	CSnmpTransactionList	m_clsTransactionList;
+
+private:
+	uint32_t		m_iRequestId;
+	CSnmpMutex	m_clsMutex;
 };
 
 #endif
