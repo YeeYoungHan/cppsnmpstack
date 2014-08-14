@@ -66,7 +66,8 @@ int main( int argc, char * argv[] )
 	{
 		if( pszUserId )
 		{
-			if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, NULL, 32594, pszMib ) )
+			//if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, NULL, 32594, pszMib ) )
+			if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, NULL, 65507, pszMib ) )
 			{
 				if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
 				{

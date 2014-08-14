@@ -69,12 +69,12 @@ int CAsnInt::MakePacket( char * pszPacket, int iPacketSize )
 
 	pszPacket[iPos++] = m_cType;
 
-	if( m_iValue <= 0xFF )
+	if( m_iValue <= 0xFE )
 	{
 		pszPacket[iPos++] = 1;
 		pszPacket[iPos++] = m_iValue;
 	}
-	else if( m_iValue <= 0xFFFF )
+	else if( m_iValue <= 0xFEFF )
 	{
 		pszPacket[iPos++] = 2;
 
@@ -82,7 +82,7 @@ int CAsnInt::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, &sValue, 2 );
 		iPos += 2;
 	}
-	else if( m_iValue <= 0xFFFFFF )
+	else if( m_iValue <= 0xFEFFFF )
 	{
 		pszPacket[iPos++] = 3;
 

@@ -41,9 +41,8 @@ int HexToString( const char * pszHex, char * pszPacket, int iPacketLen )
 	return iIndex;
 }
 
-int StringToHex( const char * pszPacket, char * pszHex, int iHexLen )
+int StringToHex( const char * pszPacket, int iPacketLen, char * pszHex, int iHexLen )
 {
-	int iPacketLen = strlen( pszPacket );
 	int iLen = 0;
 
 	memset( pszHex, 0, iHexLen );

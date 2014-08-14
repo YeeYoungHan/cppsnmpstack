@@ -21,7 +21,7 @@
 
 // HexToString.cpp
 int HexToString( const char * pszHex, char * pszPacket, int iPacketLen );
-int StringToHex( const char * pszPacket, char * pszHex, int iHexLen );
+int StringToHex( const char * pszPacket, int iPacketLen, char * pszHex, int iHexLen );
 
 // TestAuthenticationParameters.cpp
 bool TestAuthenticationParameters();
