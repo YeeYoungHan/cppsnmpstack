@@ -51,7 +51,7 @@ int StringToHex( const char * pszPacket, int iPacketLen, char * pszHex, int iHex
 	{
 		if( ( iLen + 2 ) >= iHexLen ) return -1;
 
-		iLen += snprintf( pszHex + iLen, iHexLen - iLen, "%02x", pszPacket[i] );
+		iLen += snprintf( pszHex + iLen, iHexLen - iLen, "%02x", (uint8_t)pszPacket[i] );
 	}
 
 	return iLen;

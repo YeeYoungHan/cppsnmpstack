@@ -29,34 +29,47 @@ bool TestParseSnmpv3Packet( )
 	CSnmpMessage clsMessage;
 
 	iPacketLen = HexToString( pszHexPacket, (char *)szPacket, sizeof(szPacket) );
-	if( iPacketLen == -1 ) return false;
+	if( iPacketLen == -1 ) 
+	{
+		printf( "%s HexToString error\n", __FUNCTION__ );
+		return false;
+	}
 
 	n = clsMessage.ParsePacket( szPacket, iPacketLen );
-	if( n == -1 ) return false;
+	if( n == -1 ) 
+	{
+		printf( "%s clsMessage.ParsePacket error\n", __FUNCTION__ );
+		return false;
+	}
 
 	pszHexPacket = "3081c3020103300f02027f53020300ffe30401010201030430302e040d80001f88809b26630b890ed35302010902030211c604057573657231040c37095a108c412a8594fe20730400307b040d80001f88809b26630b890ed3530400a26802027f53020100020100305c305a06082b06010201010100044e4c696e75782063656e746f7336335f333220322e362e33322d3237392e656c362e6936383620233120534d5020467269204a756e2032322031303a35393a35352055544320323031322069363836";
 	iPacketLen = HexToString( pszHexPacket, (char *)szPacket, sizeof(szPacket) );
 	if( iPacketLen == -1 ) return false;
 
 	n = clsMessage.ParsePacket( szPacket, iPacketLen );
-	if( n == -1 ) return false;
+	if( n == -1 )
+	{
+		printf( "%s clsMessage.ParsePacket error\n", __FUNCTION__ );
+		return false;
+	}
 
-	// 00ffe3 때문에 길이가 1 차이가 발생한다.
 	n = clsMessage.MakePacket( szPacket, sizeof(szPacket) );
 	if( n != iPacketLen )
 	{
-		printf( "n(%d) != iPacketLen(%d)\n", n, iPacketLen );
+		printf( "%s n(%d) != iPacketLen(%d)\n", __FUNCTION__, n, iPacketLen );
 		return false;
 	}
 
 	n = StringToHex( szPacket, iPacketLen, szHex, sizeof(szHex) );
 	if( n == -1 )
 	{
+		printf( "%s StringToHex error\n", __FUNCTION__ );
 		return false;
 	}
 
 	if( strcmp( szHex, pszHexPacket ) )
 	{
+		printf( "%s origin[%s] != rebuild[%s]\n", __FUNCTION__, pszHexPacket, szHex );
 		return false;
 	}
 
