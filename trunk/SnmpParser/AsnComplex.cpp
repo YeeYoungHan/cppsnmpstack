@@ -45,15 +45,15 @@ CAsnComplex::~CAsnComplex()
 int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 {
 	int			iPos = 0, n;
-	uint8_t	cType, cLength;
+	uint8_t	cType;
 	CAsnType	* pclsValue = NULL;
 
 	Clear();
 
-	m_cType = pszPacket[iPos++];
-	cLength = pszPacket[iPos++];
+	iPos = ParseHeader( pszPacket, iPacketLen );
+	if( iPos == -1 ) return -1;
 
-	for( uint8_t i = 0; i < cLength; )
+	for( uint8_t i = 0; i < m_iLen; )
 	{
 		cType = pszPacket[iPos];
 

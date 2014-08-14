@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestAsnType.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TestAuthenticationParameters.cpp"
 				>
 			</File>

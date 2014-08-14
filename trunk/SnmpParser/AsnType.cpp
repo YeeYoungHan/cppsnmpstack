@@ -40,3 +40,68 @@ bool CAsnType::GetString( std::string & strValue )
 {
 	return false;
 }
+
+int CAsnType::ParseHeader( const char * pszPacket, int iPacketLen )
+{
+	int iPos = 0, iIndex = 0;
+
+	m_cType = pszPacket[iPos++];
+	m_iLen = 0;
+
+	if( pszPacket[iPos] & 0x80 )
+	{
+		uint8_t cLength = pszPacket[iPos] & 0x7F;
+		++iPos;
+
+		int n = ParseInt( pszPacket + iPos, iPacketLen - iPos, cLength, m_iLen );
+		if( n == -1 ) return -1;
+
+		iPos += n;
+	}
+	else
+	{
+		m_iLen = pszPacket[iPos++];
+	}
+
+	return iPos;
+}
+
+int CAsnType::ParseInt( const char * pszPacket, int iPacketLen, uint8_t cLength, uint32_t & iValue )
+{
+	if( iPacketLen < cLength ) return -1;
+
+	if( cLength == 1 )
+	{
+		iValue = (uint8_t)pszPacket[0];
+		return 1;
+	}
+	
+	if( cLength == 2 )
+	{
+		int16_t sTemp;
+
+		memcpy( &sTemp, pszPacket, cLength );
+		iValue = ntohs( sTemp );
+		return 2;
+	}
+
+	if( cLength == 3 )
+	{
+		int32_t iTemp = 0;
+
+		memcpy( ((char *)&iTemp) + 1, pszPacket, cLength );
+		iValue = ntohl( iTemp );
+		return 3;
+	}
+
+	if( cLength == 4 )
+	{
+		int32_t iTemp;
+
+		memcpy( &iTemp, pszPacket, cLength );
+		iValue = ntohl( iTemp );
+		return 4;
+	}
+
+	return -1;
+}

@@ -16,26 +16,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpPlatformDefine.h"
 #include "TestSnmpParser.h"
-#include <stdio.h>
-#include "MemoryDebug.h"
+#include "AsnInt.h"
 
-int main( int argc, char * argv[] )
+bool TestAsnTypeHeader( )
 {
-#ifdef WIN32
-	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
-#endif
+	CAsnInt clsInt;
+	char szPacket[255];
+	int iPacketLen, n;
 
-	if( TestAsnType() == false ) goto FUNC_ERROR;
-	if( TestParseSnmpv3Packet() == false ) goto FUNC_ERROR;
-	if( TestAuthenticationParameters() == false ) goto FUNC_ERROR;
+	iPacketLen = HexToString( "3081c3", szPacket, sizeof(szPacket) );
 
-	printf( "All Test is O.K!!!!\n" );
-	return 0;
+	n = clsInt.ParseHeader( szPacket, iPacketLen );
+	if( n != 3 )
+	{
+		printf( "%s clsInt.ParseHeader return(%d) != 196\n", __FUNCTION__, n );
+		return false;
+	}
 
-FUNC_ERROR:
-	printf( "Error\n" );
+	if( clsInt.m_iLen != 195 )
+	{
+		printf( "%s clsInt.m_iLen(%d) != 196\n", __FUNCTION__, clsInt.m_iLen );
+		return false;
+	}
 
-	return -1;
+	return true;
+}
+
+bool TestAsnType( )
+{
+	if( TestAsnTypeHeader() == false ) return false;
+
+	return true;
 }
