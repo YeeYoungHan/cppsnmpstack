@@ -88,7 +88,7 @@ int CAsnType::SetHeaderLength( char * pszPacket, int iPacketSize, int iLength )
 	memcpy( pszCopy, pszPacket, iPacketSize );
 
 	memcpy( pszPacket + 1, szLen, iLenSize );
-	memcpy( pszPacket + 1 + iLenSize, pszPacket + 2, iLength );
+	memcpy( pszPacket + 1 + iLenSize, pszCopy + 2, iLength );
 
 	free( pszCopy );
 
