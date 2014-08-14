@@ -25,7 +25,7 @@
 #include "Log.h"
 #include "MemoryDebug.h"
 
-CSnmpStack::CSnmpStack()
+CSnmpStack::CSnmpStack() : m_iRequestId(0)
 {
 	m_clsTransactionList.SetSnmpStack( this );
 }
@@ -105,4 +105,17 @@ bool CSnmpStack::SendRequest( CSnmpMessage * pclsRequest )
 	UdpSend( m_hSocket, pclsRequest->m_pszPacket, pclsRequest->m_iPacketLen, pclsRequest->m_strDestIp.c_str(), pclsRequest->m_iDestPort );
 
 	return true;
+}
+
+uint32_t CSnmpStack::GetNextRequestId()
+{
+	uint32_t iRequestId;
+
+	m_clsMutex.acquire();
+	++m_iRequestId;
+	if( m_iRequestId > 2000000000 ) m_iRequestId = 1;
+	iRequestId = m_iRequestId;
+	m_clsMutex.release();
+
+	return iRequestId;
 }
