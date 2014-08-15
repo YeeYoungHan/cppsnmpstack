@@ -159,6 +159,14 @@ bool CAsnOid::GetString( std::string & strValue )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷에 OID 의 하나의 값을 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketSize 패킷 길이
+ * @param iValue			OID 의 하나의 값
+ * @param iPos				패킷 저장 위치
+ */
 void CAsnOid::SetOidEntry( char * pszPacket, int iPacketSize, int iValue, int & iPos )
 {
 	if( iValue < 0x80 )

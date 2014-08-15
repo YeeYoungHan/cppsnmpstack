@@ -28,6 +28,10 @@ class CSnmpStack;
 // key = m_iRequestId
 typedef std::map< uint32_t, CSnmpTransaction * > SNMP_TRANSACTION_MAP;
 
+/**
+ * @ingroup SnmpStack
+ * @brief 
+ */
 class CSnmpTransactionList
 {
 public:

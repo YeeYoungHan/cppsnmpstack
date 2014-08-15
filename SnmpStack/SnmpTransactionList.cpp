@@ -30,11 +30,22 @@ CSnmpTransactionList::~CSnmpTransactionList()
 {
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief CSnmpStack 객체를 저장한다. 재전송 등의 기능을 위해서 CSnmpStack 객체가 필요하다.
+ * @param pclsStack CSnmpStack 객체
+ */
 void CSnmpTransactionList::SetSnmpStack( CSnmpStack * pclsStack )
 {
 	m_pclsStack = pclsStack;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief transaction list 에 SNMP 메시지를 저장한다.
+ * @param pclsRequest SNMP 요청 메시지
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpTransactionList::Insert( CSnmpMessage * pclsRequest )
 {
 	bool bRes = false;
@@ -60,11 +71,24 @@ bool CSnmpTransactionList::Insert( CSnmpMessage * pclsRequest )
 	return bRes;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 메시지에 대한 transaction 을 삭제한다.
+ * @param pclsRequest SNMP 메시지
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpTransactionList::Delete( CSnmpMessage * pclsRequest )
 {
 	return Delete( pclsRequest->m_iRequestId );
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP request ID 로 transaction 을 검색한다.
+ * @param iRequestId				SNMP request ID
+ * @param ppclsTransaction	SNMP transaction 객체 저장 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpTransactionList::Select( uint32_t iRequestId, CSnmpTransaction ** ppclsTransaction )
 {
 	bool bRes = false;
@@ -83,6 +107,12 @@ bool CSnmpTransactionList::Select( uint32_t iRequestId, CSnmpTransaction ** ppcl
 	return bRes;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP request ID 인 transaction 을 삭제한다.
+ * @param iRequestId SNMP request ID
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpTransactionList::Delete( uint32_t iRequestId )
 {
 	bool bRes = false;
@@ -105,6 +135,11 @@ bool CSnmpTransactionList::Delete( uint32_t iRequestId )
 	return bRes;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief transaction 사용 개수를 1 감소 시킨다. transaction 사용 개수가 0 이면 transaction 을 자료구조에서 삭제한다.
+ * @param pclsTransaction transaction 객체
+ */
 void CSnmpTransactionList::Release( CSnmpTransaction * pclsTransaction )
 {
 	m_clsMutex.acquire();
@@ -125,6 +160,11 @@ void CSnmpTransactionList::Release( CSnmpTransaction * pclsTransaction )
 
 typedef std::list< int > REQUEST_ID_LIST;
 
+/**
+ * @ingroup SnmpStack
+ * @brief timeout 된 transaction 에 대한 재전송 기능을 수행한다.
+ * @param psttTime 현재 시간
+ */
 void CSnmpTransactionList::Execute( struct timeval * psttTime )
 {
 	SNMP_TRANSACTION_MAP::iterator	itMap;
@@ -171,6 +211,10 @@ void CSnmpTransactionList::Execute( struct timeval * psttTime )
 	}
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief 모든 transaction 을 삭제한다.
+ */
 void CSnmpTransactionList::DeleteAll( )
 {
 	SNMP_TRANSACTION_MAP::iterator	itMap, itNext;

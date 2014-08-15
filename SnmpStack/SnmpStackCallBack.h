@@ -21,11 +21,21 @@
 
 #include "SnmpMessage.h"
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP stack callback 인터페이스
+ */
 class ISnmpStackCallBack
 {
 public:
 	virtual ~ISnmpStackCallBack(){};
 
+	/**
+	 * @ingroup SnmpStack
+	 * @brief SNMP 응답 메시지 수신 이벤트 callback
+	 * @param pclsRequest		SNMP 요청 메시지
+	 * @param pclsResponse	SNMP 응답 메시지. SNMP 응답 메시지가 NULL 이면 timeout 된 것이다.
+	 */
 	virtual void RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse ) = 0;
 };
 

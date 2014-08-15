@@ -21,6 +21,10 @@
 
 #include "SnmpMessage.h"
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP transaction 저장 클래스
+ */
 class CSnmpTransaction
 {
 public:
@@ -29,10 +33,16 @@ public:
 
 	bool IsTimeout( struct timeval * psttTime, int iTimeout );
 
+	/** SNMP 요청 메시지 */
 	CSnmpMessage * m_pclsRequest;
 
+	/** SNMP 요청 메시지 전송 시간 */
 	struct timeval m_sttSendTime;
+
+	/** 재전송 개수 */
 	int m_iReSendCount;
+
+	/** 사용 개수 */
 	int m_iUseCount;
 };
 
