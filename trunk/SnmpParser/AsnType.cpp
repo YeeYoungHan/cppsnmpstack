@@ -41,6 +41,13 @@ bool CAsnType::GetString( std::string & strValue )
 	return false;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷을 파싱하여서 ASN.1 타입 및 body 길이를 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketLen	패킷 길이
+ * @returns 성공하면 파싱한 패킷 길이를 리턴하고 그렇지 않으면 -1 을 리턴한다.
+ */
 int CAsnType::ParseHeader( const char * pszPacket, int iPacketLen )
 {
 	int iPos = 0, iIndex = 0;
@@ -66,6 +73,14 @@ int CAsnType::ParseHeader( const char * pszPacket, int iPacketLen )
 	return iPos;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷에 body 길이를 저장한다. body 길이가 127 보다 크다면 패킷을 body 길이를 저장할 만큼 뒤로 복사한다.
+ * @param pszPacket		패킷의 body 길이 저장 위치
+ * @param iPacketSize	패킷 크기
+ * @param iLength			body 길이
+ * @returns 성공하면 저장된 패킷 길이를 리턴하고 그렇지 않으면 -1 을 리턴한다.
+ */
 int CAsnType::SetHeaderLength( char * pszPacket, int iPacketSize, int iLength )
 {
 	if( iLength <= 127 )
@@ -95,6 +110,15 @@ int CAsnType::SetHeaderLength( char * pszPacket, int iPacketSize, int iLength )
 	return 1 + iLenSize + iLength;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷에서 정수를 파싱한다.
+ * @param pszPacket		패킷
+ * @param iPacketLen	패킷 길이
+ * @param cLength			패킷에 저장된 정수의 길이
+ * @param iValue			정수값 저장 변수
+ * @returns 성공하면 파싱한 패킷 길이를 리턴하고 그렇지 않으면 -1 을 리턴한다.
+ */
 int CAsnType::ParseInt( const char * pszPacket, int iPacketLen, uint8_t cLength, uint32_t & iValue )
 {
 	if( iPacketLen < cLength ) return -1;
@@ -135,6 +159,14 @@ int CAsnType::ParseInt( const char * pszPacket, int iPacketLen, uint8_t cLength,
 	return -1;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief ASN.1 header 의 body 길이를 저장한다.
+ * @param pszPacket		패킷의 body 길이 위치
+ * @param iPacketLen	패킷의 길이
+ * @param iValue			body 길이
+ * @returns 성공하면 저장된 패킷 길이를 리턴한다.
+ */
 int CAsnType::SetInt( uint8_t * pszPacket, int iPacketLen, uint32_t iValue )
 {
 	if( iValue <= 0xFF )

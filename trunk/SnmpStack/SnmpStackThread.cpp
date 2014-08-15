@@ -25,6 +25,12 @@
 static bool gbStop = false;
 static bool gbRun = false;
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP stack 쓰레드
+ * @param lpParameter CSnmpStack 객체
+ * @returns 0 을 리턴한다.
+ */
 THREAD_API SnmpStackThread( LPVOID lpParameter )
 {
 	CSnmpStack * pclsSnmpStack = (CSnmpStack *)lpParameter;
@@ -45,16 +51,31 @@ THREAD_API SnmpStackThread( LPVOID lpParameter )
 	return 0;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP stack 쓰레드를 시작한다.
+ * @param pclsSnmpStack CSnmpStack 객체
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool StartSnmpStackThread( CSnmpStack * pclsSnmpStack )
 {
 	return StartThread( "SnmpStackThread", SnmpStackThread, pclsSnmpStack );
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP stack 쓰레드를 종료한다.
+ */
 void StopSnmpStackThread( )
 {
 	gbStop = true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP stack 쓰레드가 실행 중인지 검사한다.
+ * @returns SNMP stack 쓰레드가 실행 중이면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool IsSnmpStackThreadRun( )
 {
 	return gbRun;

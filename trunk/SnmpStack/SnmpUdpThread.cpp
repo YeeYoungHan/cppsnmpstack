@@ -27,6 +27,15 @@
 static bool gbStop = false;
 static bool gbRun = false;
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 응답 메시지 수신에 대한 callback 처리를 한다.
+ * @param pclsSnmpStack SNMP stack 객체
+ * @param pszPacket			패킷
+ * @param iPacketSize		패킷 길이
+ * @param pszIp					발신자 IP 주소
+ * @param sPort					발신자 포트 번호
+ */
 static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int iPacketSize, char * pszIp, uint16_t sPort )
 {
 	CSnmpMessage clsMessage;
@@ -87,6 +96,12 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 	}
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 메시지 수신 쓰레드
+ * @param lpParameter SNMP stack 객체
+ * @returns 0 을 리턴한다.
+ */
 THREAD_API SnmpUdpThread( LPVOID lpParameter )
 {
 	CSnmpStack * pclsSnmpStack = (CSnmpStack *)lpParameter;
@@ -117,6 +132,12 @@ THREAD_API SnmpUdpThread( LPVOID lpParameter )
 	return 0;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 메시지 수신 쓰레드를 시작한다.
+ * @param pclsSnmpStack SNMP stack 객체
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool StartSnmpUdpThread( CSnmpStack * pclsSnmpStack )
 {
 	gbStop = false;
@@ -124,11 +145,20 @@ bool StartSnmpUdpThread( CSnmpStack * pclsSnmpStack )
 	return StartThread( "SnmpUdpThread", SnmpUdpThread, pclsSnmpStack );
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 메시지 수신 쓰레드를 중지한다.
+ */
 void StopSnmpUdpThread( )
 {
 	gbStop = true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 메시지 수신 쓰레드가 실행 중인지 검사한다.
+ * @returns SNMP 메시지 수신 쓰레드가 실행 중이면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool IsSnmpUdpThreadRun( )
 {
 	return gbRun;

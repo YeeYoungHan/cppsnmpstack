@@ -22,6 +22,13 @@
 #include <string.h>
 #include "MemoryDebug.h"
 
+/**
+ * @ingroup SnmpParser
+ * @brief 비밀번호로 key 를 생성한다.
+ * @param pszPassWord 비밀번호
+ * @param pszKey			생성된 key 저장 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool SnmpMakeKey( const char * pszPassWord, uint8_t * pszKey )
 {
 	int iPassWordLen = strlen(pszPassWord);
@@ -54,6 +61,15 @@ bool SnmpMakeKey( const char * pszPassWord, uint8_t * pszKey )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief authentication key 를 생성한다.
+ * @param pszKey				key
+ * @param pszEngineId		SNMPv3 engine ID
+ * @param iEngineIdLen	SNMPv3 engine ID 길이
+ * @param pszAuthKey		authentication key 저장 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool SnmpMakeAuthKey( const uint8_t * pszKey, const uint8_t * pszEngineId, int iEngineIdLen, uint8_t * pszAuthKey )
 {
 	char szBuf[255];
@@ -76,6 +92,17 @@ bool SnmpMakeAuthKey( const uint8_t * pszKey, const uint8_t * pszEngineId, int i
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMPv3 msgAuthenticationParameters 를 계산한다.
+ * @param pszPacket			패킷
+ * @param iPacketLen		패킷 길이
+ * @param pszPassWord		비밀번호
+ * @param pszEngineId		SNMPv3 engine ID
+ * @param iEngineIdLen	SNMPv3 engine ID 길이
+ * @param strAuthParams SNMPv3 msgAuthenticationParameters 저장 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool SnmpMakeHmac( const char * pszPacket, int iPacketLen, const char * pszPassWord, const char * pszEngineId, int iEngineIdLen, std::string & strAuthParams )
 {
 	uint8_t szKey[16], szAuthKey[16], szResult[16];

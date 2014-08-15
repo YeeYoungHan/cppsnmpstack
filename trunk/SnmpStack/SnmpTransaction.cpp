@@ -35,6 +35,13 @@ CSnmpTransaction::~CSnmpTransaction()
 	}
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief timeout 되었는지 검사한다.
+ * @param psttTime 현재 시간
+ * @param iTimeout timeout milisecond
+ * @returns timeout 되었으면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpTransaction::IsTimeout( struct timeval * psttTime, int iTimeout )
 {
 	int iMiliSecond = DiffTimeval( &m_sttSendTime, psttTime );

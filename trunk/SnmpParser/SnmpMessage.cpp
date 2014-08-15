@@ -295,6 +295,11 @@ bool CSnmpMessage::MakeGetRequest( const char * pszUserName, const char * pszAut
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief msgAuthenticationParameters 값을 계산한다.
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpMessage::SetAuthParams( )
 {
 	int		iPacketLen;
@@ -319,6 +324,12 @@ bool CSnmpMessage::SetAuthParams( )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMP 메시지를 생성한 후, 입력된 SNMP 메시지를 복사한다.
+ * @param pclsMessage SNMP 메시지
+ * @returns 성공하면 복사된 SNMP 메시지를 리턴하고 그렇지 않으면 NULL 을 리턴한다.
+ */
 CSnmpMessage * CSnmpMessage::Create( CSnmpMessage * pclsMessage )
 {
 	CSnmpMessage * pclsCopy = new CSnmpMessage();

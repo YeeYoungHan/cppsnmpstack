@@ -34,6 +34,13 @@ CSnmpStack::~CSnmpStack()
 {
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP stack 을 시작한다.
+ * @param clsSetup			설정 객체
+ * @param pclsCallBack	callback 객체
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpStack::Start( CSnmpStackSetup & clsSetup, ISnmpStackCallBack * pclsCallBack )
 {
 	InitNetwork();
@@ -71,6 +78,11 @@ FUNC_ERROR:
 	return false;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP stack 을 종료한다.
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpStack::Stop( )
 {
 	StopSnmpStackThread();
@@ -88,6 +100,14 @@ bool CSnmpStack::Stop( )
 	return true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 요청 메시지를 전송한다.
+ * @param pszIp				목적지 IP 주소
+ * @param iPort				목적지 포트 번호
+ * @param pclsRequest	SNMP 요청 메시지
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpStack::SendRequest( const char * pszIp, int iPort, CSnmpMessage * pclsRequest )
 {
 	pclsRequest->m_strDestIp = pszIp;
@@ -96,6 +116,12 @@ bool CSnmpStack::SendRequest( const char * pszIp, int iPort, CSnmpMessage * pcls
 	return SendRequest( pclsRequest );
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 요청 메시지를 전송한다.
+ * @param pclsRequest SNMP 요청 메시지
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpStack::SendRequest( CSnmpMessage * pclsRequest )
 {
 	if( pclsRequest->MakePacket() == false ) return false;
@@ -107,6 +133,11 @@ bool CSnmpStack::SendRequest( CSnmpMessage * pclsRequest )
 	return true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP request ID 를 리턴한다.
+ * @returns SNMP request ID 를 리턴한다.
+ */
 uint32_t CSnmpStack::GetNextRequestId()
 {
 	uint32_t iRequestId;

@@ -16,6 +16,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMPv3 msgGlobalData 영역으로 CAsnComplex 로 생성한다.
+ * @returns 성공하면 생성된 CAsnComplex 객체의 포인터를 리턴하고 그렇지 않으면 NULL 을 리턴한다.
+ */
 CAsnComplex * CSnmpMessage::CreateMsgGlobalData( )
 {
 	CAsnComplex * pclsComplex = new CAsnComplex();
@@ -34,6 +39,11 @@ FUNC_ERROR:
 	return NULL;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMPv3 msgSecurityParameters 영역을 CAsnString 로 생성한다.
+ * @returns 성공하면 생성된 CAsnString 객체의 포인터를 리턴하고 그렇지 않으면 NULL 을 리턴한다.
+ */
 CAsnString * CSnmpMessage::CreateMsgSecurityParameters( )
 {
 	CAsnComplex clsComplex;
@@ -63,6 +73,11 @@ CAsnString * CSnmpMessage::CreateMsgSecurityParameters( )
 	return pclsValue;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMPv3 msgData 영역으로 CAsnComplex 로 생성한다.
+ * @returns 성공하면 생성된 CAsnComplex 객체의 포인터를 리턴하고 그렇지 않으면 NULL 을 리턴한다.
+ */
 CAsnComplex * CSnmpMessage::CreateMsgData( )
 {
 	CAsnComplex * pclsCommand = CreateCommand( );
@@ -90,6 +105,11 @@ FUNC_ERROR:
 	return NULL;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMP command 영역으로 CAsnComplex 로 생성한다.
+ * @returns 성공하면 생성된 CAsnComplex 객체의 포인터를 리턴하고 그렇지 않으면 NULL 을 리턴한다.
+ */
 CAsnComplex * CSnmpMessage::CreateCommand( )
 {
 	CAsnComplex * pclsCommand = NULL, *pclsBodyFrame = NULL, *pclsBody = NULL;
@@ -133,6 +153,13 @@ FUNC_ERROR:
 	return NULL;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMPv2 패킷을 생성한다.
+ * @param pszPacket		패킷 저장 변수
+ * @param iPacketSize 패킷 저장 변수의 크기
+ * @returns 성공하면 패킷의 길이를 리턴하고 그렇지 않으면 -1 을 리턴한다.
+ */
 int CSnmpMessage::MakePacketV2( char * pszPacket, int iPacketSize )
 {
 	CAsnComplex clsComplex;
@@ -149,6 +176,13 @@ int CSnmpMessage::MakePacketV2( char * pszPacket, int iPacketSize )
 	return clsComplex.MakePacket( pszPacket, iPacketSize );
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMPv3 패킷을 생성한다.
+ * @param pszPacket		패킷 저장 변수
+ * @param iPacketSize 패킷 저장 변수의 크기
+ * @returns 성공하면 패킷의 길이를 리턴하고 그렇지 않으면 -1 을 리턴한다.
+ */
 int CSnmpMessage::MakePacketV3( char * pszPacket, int iPacketSize )
 {
 	CAsnComplex clsComplex;

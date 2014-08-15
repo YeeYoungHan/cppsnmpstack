@@ -19,6 +19,10 @@
 #ifndef _SNMP_STACK_SETUP_H_
 #define _SNMP_STACK_SETUP_H_
 
+/**
+ * @ingroup SnmpStack
+ * @brief 
+ */
 class CSnmpStackSetup
 {
 public:
