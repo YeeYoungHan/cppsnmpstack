@@ -18,7 +18,8 @@ LIB_OBJ=Directory.o Log.o \
 	SnmpMutex.o \
 	SnmpTcp.o SnmpUdp.o \
 	TimeUtility.o \
-	FileUtility.o
+	FileUtility.o \
+	ServerUtility.o
 
 libsnmpplatform.a: $(LIB_OBJ)
 	ar crv $@ $(LIB_OBJ)

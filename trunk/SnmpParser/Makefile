@@ -16,7 +16,8 @@ all: libsnmpparser.a
 
 LIB_OBJ=AsnComplex.o \
 	AsnInt.o AsnNull.o AsnOid.o AsnString.o AsnType.o \
-	SnmpMessage.o
+	SnmpMessage.o \
+	SnmpAuth.o
 
 libsnmpparser.a: $(LIB_OBJ)
 	ar crv $@ $(LIB_OBJ)
