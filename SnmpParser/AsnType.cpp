@@ -17,6 +17,8 @@
  */
 
 #include "AsnType.h"
+#include "SnmpUdp.h"
+#include <stdlib.h>
 #include "MemoryDebug.h"
 
 /**
@@ -50,7 +52,7 @@ bool CAsnType::GetString( std::string & strValue )
  */
 int CAsnType::ParseHeader( const char * pszPacket, int iPacketLen )
 {
-	int iPos = 0, iIndex = 0;
+	int iPos = 0;
 
 	m_cType = pszPacket[iPos++];
 	m_iLen = 0;

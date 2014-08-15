@@ -22,16 +22,17 @@
 #include "AsnOid.h"
 #include "AsnNull.h"
 #include "Log.h"
+#include <stdlib.h>
 #include "MemoryDebug.h"
 
 #include "SnmpMessageMake.hpp"
 #include "SnmpMessageParse.hpp"
 
 CSnmpMessage::CSnmpMessage() : m_cVersion(SNMP_VERSION_2C), m_cCommand(SNMP_CMD_GET)
-	, m_iRequestId(0), m_iErrorStatus(0), m_iErrorIndex(0)
+	, m_iRequestId(0), m_iErrorStatus(0), m_iErrorIndex(0), m_pclsValue(NULL)
 	, m_iMsgId(0), m_iMsgMaxSize(0), m_cMsgFlags(0), m_iMsgSecurityModel(0)
 	, m_iMsgAuthEngineBoots(0), m_iMsgAuthEngineTime(0)
-	, m_pclsValue(NULL), m_pszPacket(NULL), m_iPacketLen(0)
+	, m_pszPacket(NULL), m_iPacketLen(0)
 {
 }
 

@@ -14,7 +14,9 @@ INC=-I../SnmpParser -I../SnmpPlatform
 
 all: libsnmpstack.a
 
-LIB_OBJ=SnmpStack.o
+LIB_OBJ=SnmpStack.o SnmpStackSetup.o \
+	SnmpTransaction.o SnmpTransactionList.o \
+	SnmpStackThread.o SnmpUdpThread.o
 
 libsnmpstack.a: $(LIB_OBJ)
 	ar crv $@ $(LIB_OBJ)
