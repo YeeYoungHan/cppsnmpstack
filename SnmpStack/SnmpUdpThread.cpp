@@ -87,7 +87,7 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 				}
 				else
 				{
-					pclsSnmpStack->m_pclsCallBack->RecvResponse( NULL, &clsMessage );
+					pclsSnmpStack->m_pclsCallBack->RecvResponse( clsData.m_pclsData->m_pclsRequest, &clsMessage );
 				}
 			}
 		}
