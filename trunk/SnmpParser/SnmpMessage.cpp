@@ -252,6 +252,31 @@ bool CSnmpMessage::MakeGetRequest( const char * pszCommunity, uint32_t iRequestI
 
 /**
  * @ingroup SnmpParser
+ * @brief SNMPv2 GET NEXT 요청 메시지를 생성한다.
+ * @param pszCommunity	community 문자열
+ * @param iRequestId		요청 아이디
+ * @param pszOid				OID 문자열
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
+bool CSnmpMessage::MakeGetNextRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid )
+{
+	if( pszCommunity == NULL || pszOid == NULL ) return false;
+
+	Clear();
+
+	m_cVersion = SNMP_VERSION_2C;
+	m_strCommunity = pszCommunity;
+	m_cCommand = SNMP_CMD_GET_NEXT;
+	m_iRequestId = iRequestId;
+	m_strOid = pszOid;
+	m_pclsValue = new CAsnNull();
+	if( m_pclsValue == NULL ) return false;
+
+	return true;
+}
+
+/**
+ * @ingroup SnmpParser
  * @brief SNMPv3 GET 요청 메시지를 생성한다.
  * @param pszUserName	사용자 아이디
  * @param pszAuthPassWord	msgAuthenticationParameters 생성을 위한 비밀번호
