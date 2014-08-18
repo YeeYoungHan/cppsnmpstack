@@ -46,54 +46,44 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 		return;
 	}
 
-	if( clsMessage.m_cVersion != SNMP_VERSION_3 )
 	{
-		if( pclsSnmpStack->m_clsTransactionList.Delete( &clsMessage ) )
-		{
-			pclsSnmpStack->m_pclsCallBack->RecvResponse( NULL, &clsMessage );
-		}
-	}
-	else
-	{
-		{
-			CAutoRelease< CSnmpTransactionList, CSnmpTransaction > clsData( pclsSnmpStack->m_clsTransactionList );
+		CAutoRelease< CSnmpTransactionList, CSnmpTransaction > clsData( pclsSnmpStack->m_clsTransactionList );
 
-			if( pclsSnmpStack->m_clsTransactionList.Select( clsMessage.m_iRequestId, &clsData.m_pclsData ) )
+		if( pclsSnmpStack->m_clsTransactionList.Select( clsMessage.m_iRequestId, &clsData.m_pclsData ) )
+		{
+			if( clsData.m_pclsData->m_pclsRequest->m_cMsgFlags == SNMP_MSG_FLAG_REPORT )
 			{
-				if( clsData.m_pclsData->m_pclsRequest->m_cMsgFlags == SNMP_MSG_FLAG_REPORT )
+				CSnmpMessage * pclsRequest = CSnmpMessage::Create( clsData.m_pclsData->m_pclsRequest );
+				if( pclsRequest )
 				{
-					CSnmpMessage * pclsRequest = CSnmpMessage::Create( clsData.m_pclsData->m_pclsRequest );
-					if( pclsRequest )
-					{
-						// QQQ: 시스템에서 request id 값을 가져와야 한다.
-						pclsRequest->m_cMsgFlags |= SNMP_MSG_FLAG_AUTH;
+					// QQQ: 시스템에서 request id 값을 가져와야 한다.
+					pclsRequest->m_cMsgFlags |= SNMP_MSG_FLAG_AUTH;
 
-						++pclsRequest->m_iMsgId;
-						++pclsRequest->m_iRequestId;
-						pclsRequest->m_strOid = pclsRequest->m_strReqOid;
+					++pclsRequest->m_iMsgId;
+					++pclsRequest->m_iRequestId;
+					pclsRequest->m_strOid = pclsRequest->m_strReqOid;
 
-						pclsRequest->m_strMsgAuthEngineId = clsMessage.m_strMsgAuthEngineId;
-						pclsRequest->m_iMsgAuthEngineBoots = clsMessage.m_iMsgAuthEngineBoots;
-						pclsRequest->m_iMsgAuthEngineTime = clsMessage.m_iMsgAuthEngineTime;
-						pclsRequest->m_strMsgUserName = pclsRequest->m_strUserId;
+					pclsRequest->m_strMsgAuthEngineId = clsMessage.m_strMsgAuthEngineId;
+					pclsRequest->m_iMsgAuthEngineBoots = clsMessage.m_iMsgAuthEngineBoots;
+					pclsRequest->m_iMsgAuthEngineTime = clsMessage.m_iMsgAuthEngineTime;
+					pclsRequest->m_strMsgUserName = pclsRequest->m_strUserId;
 
-						pclsRequest->m_strContextEngineId = clsMessage.m_strContextEngineId;
-						pclsRequest->m_pclsValue = new CAsnNull();
+					pclsRequest->m_strContextEngineId = clsMessage.m_strContextEngineId;
+					pclsRequest->m_pclsValue = new CAsnNull();
 
-						pclsRequest->SetAuthParams( );
+					pclsRequest->SetAuthParams( );
 
-						pclsSnmpStack->SendRequest( pclsRequest );
-					}
-				}
-				else
-				{
-					pclsSnmpStack->m_pclsCallBack->RecvResponse( clsData.m_pclsData->m_pclsRequest, &clsMessage );
+					pclsSnmpStack->SendRequest( pclsRequest );
 				}
 			}
+			else
+			{
+				pclsSnmpStack->m_pclsCallBack->RecvResponse( clsData.m_pclsData->m_pclsRequest, &clsMessage );
+			}
 		}
-
-		pclsSnmpStack->m_clsTransactionList.Delete( &clsMessage );
 	}
+
+	pclsSnmpStack->m_clsTransactionList.Delete( &clsMessage );
 }
 
 /**
