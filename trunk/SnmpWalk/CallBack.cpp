@@ -25,6 +25,8 @@ extern CSnmpMutexSignal gclsMutex;
 extern CSnmpStack gclsStack;
 extern std::string gstrDestIp;
 extern std::string gstrOid;
+extern std::string gstrUserId;
+extern std::string gstrAuthPassWord;
 extern uint32_t giRequestId;
 
 CCallBack::CCallBack()
@@ -77,14 +79,36 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 
 	giRequestId += 2;
 
+	bool bRes = false;
+
 	CSnmpMessage * pclsMessage = new CSnmpMessage();
 	if( pclsRequest )
 	{
-		if( pclsMessage->MakeGetNextRequest( "public", giRequestId, pclsResponse->m_strOid.c_str() ) )
+		if( gstrUserId.empty() == false )
 		{
-			if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsMessage ) )
+			if( pclsMessage->MakeGetNextRequest( gstrUserId.c_str(), gstrAuthPassWord.c_str(), NULL, giRequestId, pclsResponse->m_strOid.c_str() ) )
 			{
+				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsMessage ) )
+				{
+					bRes = true;
+				}
 			}
 		}
+		else
+		{
+			if( pclsMessage->MakeGetNextRequest( "public", giRequestId, pclsResponse->m_strOid.c_str() ) )
+			{
+				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsMessage ) )
+				{
+					bRes = true;
+				}
+			}
+		}
+	}
+
+	if( bRes == false )
+	{
+		printf( "make request error\n" );
+		gclsMutex.signal();
 	}
 }

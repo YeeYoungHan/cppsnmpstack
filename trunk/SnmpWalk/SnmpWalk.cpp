@@ -27,13 +27,15 @@ CSnmpMutexSignal gclsMutex;
 CSnmpStack gclsStack;
 std::string gstrDestIp;
 std::string gstrOid;
+std::string gstrUserId;
+std::string gstrAuthPassWord;
 uint32_t giRequestId;
 
 int main( int argc, char * argv[] )
 {
-	if( argc != 3 )
+	if( argc != 3 && argc != 5 )
 	{
-		printf( "[Usage] %s {ip} {mib}\n", argv[0] );
+		printf( "[Usage] %s {ip} {mib} {user id} {auth password}\n", argv[0] );
 		return -1;
 	}
 
@@ -43,6 +45,12 @@ int main( int argc, char * argv[] )
 
 	gstrDestIp = argv[1];
 	gstrOid = argv[2];
+
+	if( argc == 5 )
+	{
+		gstrUserId = argv[3];
+		gstrAuthPassWord = argv[4];
+	}
 
 	InitNetwork();
 
@@ -64,11 +72,24 @@ int main( int argc, char * argv[] )
 	CSnmpMessage * pclsRequest = new CSnmpMessage();
 	if( pclsRequest )
 	{
-		if( pclsRequest->MakeGetNextRequest( "public", giRequestId, gstrOid.c_str() ) )
+		if( gstrUserId.empty() == false )
 		{
-			if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsRequest ) )
+			if( pclsRequest->MakeGetNextRequest( gstrUserId.c_str(), gstrAuthPassWord.c_str(), NULL, giRequestId, gstrOid.c_str() ) )
 			{
-				gclsMutex.wait();
+				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsRequest ) )
+				{
+					gclsMutex.wait();
+				}
+			}
+		}
+		else
+		{
+			if( pclsRequest->MakeGetNextRequest( "public", giRequestId, gstrOid.c_str() ) )
+			{
+				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsRequest ) )
+				{
+					gclsMutex.wait();
+				}
 			}
 		}
 	}

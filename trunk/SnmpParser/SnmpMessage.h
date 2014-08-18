@@ -43,6 +43,7 @@ public:
 	bool MakeGetNextRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
 
 	bool MakeGetRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid );
+	bool MakeGetNextRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid );
 
 	bool SetAuthParams( );
 

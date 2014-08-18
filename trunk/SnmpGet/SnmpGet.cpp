@@ -43,7 +43,6 @@ int main( int argc, char * argv[] )
 	const char * pszMib = argv[2];
 	const char * pszUserId = NULL;
 	const char * pszAuthPassWord = NULL;
-	CSnmpMessage clsRequest, clsResponse;
 
 	if( argc == 5 )
 	{
