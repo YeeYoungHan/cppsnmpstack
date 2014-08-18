@@ -20,9 +20,14 @@
 #include "SnmpUdp.h"
 #include "SnmpStack.h"
 #include "CallBack.h"
+#include "TimeUtility.h"
 #include "MemoryDebug.h"
 
 CSnmpMutexSignal gclsMutex;
+CSnmpStack gclsStack;
+std::string gstrDestIp;
+std::string gstrOid;
+uint32_t giRequestId;
 
 int main( int argc, char * argv[] )
 {
@@ -36,33 +41,39 @@ int main( int argc, char * argv[] )
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
 #endif
 
-	const char * pszDestIp = argv[1];
-	const char * pszMib = argv[2];
+	gstrDestIp = argv[1];
+	gstrOid = argv[2];
 
 	InitNetwork();
 
-	CSnmpStack clsStack;
 	CSnmpStackSetup clsSetup;
 	CCallBack clsCallBack;
 
-	if( clsStack.Start( clsSetup, &clsCallBack ) == false )
+	if( gclsStack.Start( clsSetup, &clsCallBack ) == false )
 	{
 		printf( "clsStack.Start() error\n" );
 	}
 
+	struct timeval sttTime;
+
+	gettimeofday( &sttTime, NULL );
+	srand( ( sttTime.tv_sec << 4 ) + sttTime.tv_usec );
+
+	giRequestId = rand();
+
 	CSnmpMessage * pclsRequest = new CSnmpMessage();
 	if( pclsRequest )
 	{
-		if( pclsRequest->MakeGetRequest( "public", 32594, pszMib ) )
+		if( pclsRequest->MakeGetNextRequest( "public", giRequestId, gstrOid.c_str() ) )
 		{
-			if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
+			if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsRequest ) )
 			{
 				gclsMutex.wait();
 			}
 		}
 	}
 
-	clsStack.Stop();
+	gclsStack.Stop();
 
 	return 0;
 }

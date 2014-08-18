@@ -18,12 +18,14 @@
 
 #include "SnmpPlatformDefine.h"
 #include "CallBack.h"
-#include "SnmpMutex.h"
+#include "SnmpStack.h"
 #include "MemoryDebug.h"
 
-#ifndef USE_BLOCKING_METHOD
 extern CSnmpMutexSignal gclsMutex;
-#endif
+extern CSnmpStack gclsStack;
+extern std::string gstrDestIp;
+extern std::string gstrOid;
+extern uint32_t giRequestId;
 
 CCallBack::CCallBack()
 {
@@ -38,25 +40,51 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 	if( pclsResponse == NULL )
 	{
 		printf( "timeout\n" );
+		gclsMutex.signal();
+		return;
 	}
-	else if( pclsResponse->m_pclsValue )
+	
+	if( pclsResponse->m_pclsValue == NULL )
 	{
-		uint32_t iValue;
-		std::string strValue;
-
-		if( pclsResponse->m_pclsValue->GetInt( iValue ) )
-		{
-			printf( "[%u] (type=int)\n", iValue );
-		}
-		else if( pclsResponse->m_pclsValue->GetString( strValue ) )
-		{
-			printf( "[%s] (type=string)\n", strValue.c_str() );
-		}
-		else
-		{
-			printf( "(type=no_such_object)\n" );
-		}
+		printf( "respose error\n" );
+		gclsMutex.signal();
+		return;
 	}
 
-	gclsMutex.signal();
+	uint32_t iValue;
+	std::string strValue;
+
+	printf( "[%s] ", pclsRequest->m_strOid.c_str() );
+
+	if( pclsResponse->m_pclsValue->GetInt( iValue ) )
+	{
+		printf( "[%u] (type=int)\n", iValue );
+	}
+	else if( pclsResponse->m_pclsValue->GetString( strValue ) )
+	{
+		printf( "[%s] (type=string)\n", strValue.c_str() );
+	}
+	else
+	{
+		printf( "(type=no_such_object)\n" );
+	}
+
+	if( strncmp( gstrOid.c_str(), pclsResponse->m_strOid.c_str(), gstrOid.length() ) )
+	{
+		gclsMutex.signal();
+		return;
+	}
+
+	giRequestId += 2;
+
+	CSnmpMessage * pclsMessage = new CSnmpMessage();
+	if( pclsRequest )
+	{
+		if( pclsMessage->MakeGetNextRequest( "public", giRequestId, pclsResponse->m_strOid.c_str() ) )
+		{
+			if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsMessage ) )
+			{
+			}
+		}
+	}
 }
