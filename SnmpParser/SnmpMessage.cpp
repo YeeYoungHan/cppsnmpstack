@@ -368,16 +368,6 @@ bool CSnmpMessage::SetPrivParams( )
 
 	m_strMsgPrivParams.append( szPacket, 8 );
 
-	// QQQ: test
-	m_strMsgPrivParams.at(0) = (uint8_t)0x00;
-	m_strMsgPrivParams.at(1) = (uint8_t)0x00;
-	m_strMsgPrivParams.at(2) = (uint8_t)0x00;
-	m_strMsgPrivParams.at(3) = (uint8_t)0x01;
-	m_strMsgPrivParams.at(4) = (uint8_t)0x16;
-	m_strMsgPrivParams.at(5) = (uint8_t)0x6d;
-	m_strMsgPrivParams.at(6) = (uint8_t)0x41;
-	m_strMsgPrivParams.at(7) = (uint8_t)0x12;
-
 	CAsnComplex * pclsData = CreateMsgData();
 	if( pclsData == NULL ) return false;
 
@@ -386,21 +376,8 @@ bool CSnmpMessage::SetPrivParams( )
 
 	if( iPacketLen == -1 ) return false;
 
-	// QQQ: test
-	if( iPacketLen % 8 > 0 )
-	{
-		int iPadLen = 8 - iPacketLen % 8;
-
-		for( int i = 0; i < iPadLen; ++i )
-		{
-			szPacket[iPacketLen+i] = 1;
-		}
-
-		iPacketLen += iPadLen;
-	}
-
 	if( SnmpEncrypt( szPacket, iPacketLen, m_strPrivPassWord.c_str(), m_strMsgAuthEngineId.c_str(), m_strMsgAuthEngineId.length()
-		, m_strMsgPrivParams.c_str(), m_strMsgPrivParams.length(), m_strEncryptedPdu ) == false )
+				, m_strMsgPrivParams.c_str(), m_strMsgPrivParams.length(), m_strEncryptedPdu ) == false )
 	{
 		return false;
 	}
@@ -421,8 +398,9 @@ bool CSnmpMessage::SetAuthParams( )
 	char	szPacket[SNMP_MAX_PACKET_SIZE];
 
 	m_strMsgAuthParams.clear();
-
 	if( m_strAuthPassWord.empty() ) return true;
+
+	m_cMsgFlags |= SNMP_MSG_FLAG_AUTH;
 
 	for( int i = 0; i < 12; ++i )
 	{
@@ -437,8 +415,6 @@ bool CSnmpMessage::SetAuthParams( )
 	{
 		return false;
 	}
-
-	m_cMsgFlags |= SNMP_MSG_FLAG_AUTH;
 
 	return true;
 }
