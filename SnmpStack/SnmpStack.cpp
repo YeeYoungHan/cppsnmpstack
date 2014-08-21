@@ -150,3 +150,15 @@ uint32_t CSnmpStack::GetNextRequestId()
 
 	return iRequestId;
 }
+
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP request ID 를 설정한다.
+ * @param iRequestId SNMP request ID
+ */
+void CSnmpStack::SetRequestId( uint32_t iRequestId )
+{
+	m_clsMutex.acquire();
+	m_iRequestId = iRequestId;
+	m_clsMutex.release();
+}

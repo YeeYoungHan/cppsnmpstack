@@ -120,6 +120,19 @@ bool SnmpMakeHmac( const char * pszPacket, int iPacketLen, const char * pszPassW
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMPv3 PDU 를 암호화한다.
+ * @param pszPacket			평문 PDU 패킷
+ * @param iPacketLen		평문 PDU 패킷 길이
+ * @param pszPassWord		private 비밀번호
+ * @param pszEngineId		SNMPv3 engine ID
+ * @param iEngineIdLen	SNMPv3 engine ID 길이
+ * @param pszPrivParam	msgPrivacyParameter
+ * @param iPrivParamLen msgPrivacyParameter 길이
+ * @param strEncrypt		암화화된 PDU 저장 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool SnmpEncrypt( const char * pszPacket, int iPacketLen, const char * pszPassWord, const char * pszEngineId, int iEngineIdLen
 	, const char * pszPrivParam, int iPrivParamLen, std::string & strEncrypt )
 {
@@ -158,6 +171,19 @@ bool SnmpEncrypt( const char * pszPacket, int iPacketLen, const char * pszPassWo
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief SNMPv3 암호화된 PDU 를 복호화한다.
+ * @param pszPacket			암호화된 PDU
+ * @param iPacketLen		암호화된 PDU 길이
+ * @param pszPassWord		private 비밀번호
+ * @param pszEngineId		SNMPv3 engine ID
+ * @param iEngineIdLen	SNMPv3 engine ID 길이
+ * @param pszPrivParam	msgPrivacyParameter
+ * @param iPrivParamLen msgPrivacyParameter 길이
+ * @param strPlain			평문 PDU 저장 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool SnmpDecrypt( const char * pszPacket, int iPacketLen, const char * pszPassWord, const char * pszEngineId, int iEngineIdLen
 	, const char * pszPrivParam, int iPrivParamLen, std::string & strPlain )
 {

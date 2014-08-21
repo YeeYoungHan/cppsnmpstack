@@ -49,6 +49,7 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 
 	if( clsMessage.m_cVersion == SNMP_VERSION_3 )
 	{
+		// SNMPv3 에서 PDU 가 암호화되면 m_iRequestId 가 아직 저장되어 있지 않으므로 m_iMsgId 를 사용한다.
 		iRequestId = clsMessage.m_iMsgId;
 	}
 	else
@@ -66,9 +67,8 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 				CSnmpMessage * pclsRequest = CSnmpMessage::Create( clsData.m_pclsData->m_pclsRequest );
 				if( pclsRequest )
 				{
-					// QQQ: 시스템에서 request id 값을 가져와야 한다.
-					++pclsRequest->m_iMsgId;
-					++pclsRequest->m_iRequestId;
+					pclsRequest->m_iMsgId = pclsSnmpStack->GetNextRequestId();
+					pclsRequest->m_iRequestId = pclsRequest->m_iMsgId;
 					pclsRequest->m_strOid = pclsRequest->m_strReqOid;
 
 					pclsRequest->m_strMsgAuthEngineId = clsMessage.m_strMsgAuthEngineId;
