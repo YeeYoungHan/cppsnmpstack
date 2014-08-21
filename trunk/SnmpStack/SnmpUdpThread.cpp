@@ -57,8 +57,6 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 				if( pclsRequest )
 				{
 					// QQQ: 시스템에서 request id 값을 가져와야 한다.
-					pclsRequest->m_cMsgFlags |= SNMP_MSG_FLAG_AUTH;
-
 					++pclsRequest->m_iMsgId;
 					++pclsRequest->m_iRequestId;
 					pclsRequest->m_strOid = pclsRequest->m_strReqOid;

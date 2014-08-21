@@ -20,6 +20,7 @@
 #include "TestSnmpParser.h"
 #include <openssl/des.h>
 #include <string.h>
+#include "SnmpAuth.h"
 #include "MemoryDebug.h"
 
 static bool TestDecrypt( )
@@ -114,6 +115,18 @@ static bool TestEncrypt( )
 
 	DES_cbc_encrypt( szPdu, szEncrypt, iPduLen, &sttKeySchedule, (DES_cblock *)szIv, DES_ENCRYPT );
 	StringToHex( (char *)szEncrypt, iPduLen, (char *)szHex, sizeof(szHex) );
+
+	if( strcmp( (char *)szHex, pszResult ) )
+	{
+		printf( "%s error\n", __FUNCTION__ );
+		return false;
+	}
+
+	std::string strEncrypt;
+
+	SnmpEncrypt( (char *)szPdu, iPduLen, "xpassword", (char *)szEngineId, iEngineIdLen, (char *)szPrivParam, 8, strEncrypt );
+
+	StringToHex( (char *)strEncrypt.c_str(), strEncrypt.length(), (char *)szHex, sizeof(szHex) );
 
 	if( strcmp( (char *)szHex, pszResult ) )
 	{
