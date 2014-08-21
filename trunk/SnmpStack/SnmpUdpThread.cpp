@@ -39,6 +39,7 @@ static bool gbRun = false;
 static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int iPacketSize, char * pszIp, uint16_t sPort )
 {
 	CSnmpMessage clsMessage;
+	uint32_t iRequestId;
 
 	if( clsMessage.ParsePacket( pszPacket, iPacketSize ) == -1 )
 	{
@@ -46,10 +47,19 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 		return;
 	}
 
+	if( clsMessage.m_cVersion == SNMP_VERSION_3 )
+	{
+		iRequestId = clsMessage.m_iMsgId;
+	}
+	else
+	{
+		iRequestId = clsMessage.m_iRequestId;
+	}
+
 	{
 		CAutoRelease< CSnmpTransactionList, CSnmpTransaction > clsData( pclsSnmpStack->m_clsTransactionList );
 
-		if( pclsSnmpStack->m_clsTransactionList.Select( clsMessage.m_iRequestId, &clsData.m_pclsData ) )
+		if( pclsSnmpStack->m_clsTransactionList.Select( iRequestId, &clsData.m_pclsData ) )
 		{
 			if( clsData.m_pclsData->m_pclsRequest->m_cMsgFlags == SNMP_MSG_FLAG_REPORT )
 			{
