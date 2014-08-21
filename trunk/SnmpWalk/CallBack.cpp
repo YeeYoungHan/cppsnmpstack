@@ -27,7 +27,6 @@ extern std::string gstrDestIp;
 extern std::string gstrOid;
 extern std::string gstrUserId;
 extern std::string gstrAuthPassWord;
-extern uint32_t giRequestId;
 
 CCallBack::CCallBack()
 {
@@ -77,8 +76,6 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 		return;
 	}
 
-	giRequestId += 2;
-
 	bool bRes = false;
 
 	CSnmpMessage * pclsMessage = new CSnmpMessage();
@@ -86,7 +83,7 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 	{
 		if( gstrUserId.empty() == false )
 		{
-			if( pclsMessage->MakeGetNextRequest( gstrUserId.c_str(), gstrAuthPassWord.c_str(), NULL, giRequestId, pclsResponse->m_strOid.c_str() ) )
+			if( pclsMessage->MakeGetNextRequest( gstrUserId.c_str(), gstrAuthPassWord.c_str(), NULL, gclsStack.GetNextRequestId(), pclsResponse->m_strOid.c_str() ) )
 			{
 				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsMessage ) )
 				{
@@ -96,7 +93,7 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 		}
 		else
 		{
-			if( pclsMessage->MakeGetNextRequest( "public", giRequestId, pclsResponse->m_strOid.c_str() ) )
+			if( pclsMessage->MakeGetNextRequest( "public", gclsStack.GetNextRequestId(), pclsResponse->m_strOid.c_str() ) )
 			{
 				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsMessage ) )
 				{
