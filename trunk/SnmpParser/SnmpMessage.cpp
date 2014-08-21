@@ -347,6 +347,11 @@ bool CSnmpMessage::MakeGetNextRequest( const char * pszUserName, const char * ps
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief msgPrivacyParameters 값을 설정하고 PDU 를 암호화한다.
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
 bool CSnmpMessage::SetPrivParams( )
 {
 	int		iPacketLen;
@@ -419,6 +424,11 @@ bool CSnmpMessage::SetAuthParams( )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 암호화된 PDU 를 복호화하여서 내부 변수에 저장한다.
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpMessage::ParseEncryptedPdu( )
 {
 	std::string strPlain;

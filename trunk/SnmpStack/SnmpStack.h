@@ -46,6 +46,7 @@ public:
 	bool SendRequest( CSnmpMessage * pclsRequest );
 
 	uint32_t GetNextRequestId();
+	void SetRequestId( uint32_t iRequestId );
 
 	CSnmpStackSetup m_clsSetup;
 	Socket					m_hSocket;

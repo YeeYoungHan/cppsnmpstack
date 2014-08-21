@@ -63,13 +63,12 @@ int main( int argc, char * argv[] )
 	CSnmpStack clsStack;
 	CSnmpStackSetup clsSetup;
 	CCallBack clsCallBack;
-	uint32_t iRequestId;
 	struct timeval sttTime;
 
 	gettimeofday( &sttTime, NULL );
 	srand( ( sttTime.tv_sec << 4 ) + sttTime.tv_usec );
 
-	iRequestId = rand();
+	clsStack.SetRequestId( rand() );
 
 	if( clsStack.Start( clsSetup, &clsCallBack ) == false )
 	{
@@ -82,7 +81,7 @@ int main( int argc, char * argv[] )
 	{
 		if( pszUserId )
 		{
-			if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, pszPrivPassWord, iRequestId, pszMib ) )
+			if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, pszPrivPassWord, clsStack.GetNextRequestId(), pszMib ) )
 			{
 				if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
 				{
@@ -92,7 +91,7 @@ int main( int argc, char * argv[] )
 		}
 		else
 		{
-			if( pclsRequest->MakeGetRequest( "public", iRequestId, pszMib ) )
+			if( pclsRequest->MakeGetRequest( "public", clsStack.GetNextRequestId(), pszMib ) )
 			{
 				if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
 				{
