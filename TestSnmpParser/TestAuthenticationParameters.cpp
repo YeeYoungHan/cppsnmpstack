@@ -19,6 +19,7 @@
 #include "SnmpPlatformDefine.h"
 #include "TestSnmpParser.h"
 #include <openssl/hmac.h>
+#include <openssl/des.h>
 #include <string.h>
 #include "MemoryDebug.h"
 
@@ -84,12 +85,19 @@ static bool TestKey( )
 
 	GetKey( "apassword", szResult );
 
-	for( int i = 0; i < 16; ++i )
-	{
-		iKeyLen += snprintf( szKey + iKeyLen, sizeof(szKey) - iKeyLen, "%02x", szResult[i] );
-	}
+	StringToHex( (char *)szResult, sizeof(szResult), szKey, sizeof(szKey) );
 
 	if( strcmp( szKey, "9bcf0656023951f83ff7c8585a1f0684" ) )
+	{
+		printf( "auth key create error\n" );
+		return false;
+	}
+
+	GetKey( "xpassword", szResult );
+
+	StringToHex( (char *)szResult, sizeof(szResult), szKey, sizeof(szKey) );
+
+	if( strcmp( szKey, "6c4c29e2765e6d3070983b951b298948" ) )
 	{
 		printf( "auth key create error\n" );
 		return false;
@@ -137,10 +145,53 @@ static bool TestHmac( )
 	return true;
 }
 
+static bool TestPriv( )
+{
+	const char * pszHexPacket = "308180020103300f02022905020300ffe304010702010304383036040d80001f88809b26630b890ed353020109020302d7dc04057573657231040c3559f2da879ea3b86b2b9679040800000001166d411204305a06d0740666bc6dac3e93518b6afd5487784cf5c58b2d338ef8b05a368838d107d9409ba135bb1be39b9c0c78e48cc9";
+	const char * pszEngineId = "80001f88809b26630b890ed353";
+	const char * pszPrivParam = "00000001166d4112";
+	int iHexLen = strlen(pszHexPacket);
+	unsigned char szPacket[1500], szEngineId[51], szPrivParam[51], szPdu[1500], szIv[8];
+	int iIndex = 0, iEngineIdLen = 0, iPrivParamLen = 0, iPduPos = 83;
+
+	unsigned char szKey[16], szAuthKey[16], szResult[512];
+	unsigned int iResultSize = sizeof(szResult);
+
+	iIndex = HexToString( pszHexPacket, (char *)szPacket, sizeof(szPacket) );
+	if( iIndex == -1 ) return false;
+
+	iEngineIdLen = HexToString( pszEngineId, (char *)szEngineId, sizeof(szEngineId) );
+	if( iEngineIdLen == -1 ) return false;
+
+	iPrivParamLen = HexToString( pszPrivParam, (char *)szPrivParam, sizeof(szPrivParam) );
+	if( iPrivParamLen == -1 ) return false;
+
+	GetKey( "xpassword", szKey );
+	GetAuthKey( szKey, szEngineId, iEngineIdLen, szAuthKey );
+
+	for( int i = 0; i < 8; ++i )
+	{
+		szIv[i] = szPrivParam[i] ^ szAuthKey[8+i];
+	}
+
+	memset( szPdu, 0, sizeof(szPdu) );
+
+  DES_key_schedule	sttKeySchedule;
+  DES_cblock				sttBlock;
+
+	memcpy( sttBlock, szAuthKey, sizeof(sttBlock) );
+	DES_key_sched( &sttBlock, &sttKeySchedule );
+
+	DES_cbc_encrypt( szPacket + iPduPos, szPdu, iIndex - iPduPos, &sttKeySchedule, (DES_cblock *)szIv, DES_DECRYPT );
+
+	return true;
+}
+
 bool TestAuthenticationParameters()
 {
 	if( TestKey() == false ) return false;
 	if( TestHmac() == false ) return false;
+	if( TestPriv() == false ) return false;
 
 	return true;
 }
