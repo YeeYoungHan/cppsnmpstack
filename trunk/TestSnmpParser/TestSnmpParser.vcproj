@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestEncryptedPdu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TestParseSnmpv3Packet.cpp"
 				>
 			</File>

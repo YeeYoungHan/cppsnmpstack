@@ -24,7 +24,12 @@ int HexToString( const char * pszHex, char * pszPacket, int iPacketLen );
 int StringToHex( const char * pszPacket, int iPacketLen, char * pszHex, int iHexLen );
 
 // TestAuthenticationParameters.cpp
+bool GetKey( const char * pszPassWord, unsigned char * pszKey );
+bool GetAuthKey( unsigned char * pszKey, unsigned char * pszEngineId, int iEngineIdLen, unsigned char * pszAuthKey );
 bool TestAuthenticationParameters();
+
+// TestEncryptedPdu.cpp
+bool TestEncryptedPdu();
 
 // TestParseSnmpv3Packet.cpp
 bool TestParseSnmpv3Packet( );
