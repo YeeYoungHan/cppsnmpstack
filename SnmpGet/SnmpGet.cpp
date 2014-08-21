@@ -29,9 +29,11 @@ CSnmpMutexSignal gclsMutex;
 
 int main( int argc, char * argv[] )
 {
-	if( argc != 3 && argc != 5 )
+	if( argc != 3 && argc != 5 && argc != 6 )
 	{
+		printf( "[Usage] %s {ip} {mib}\n", argv[0] );
 		printf( "[Usage] %s {ip} {mib} {user id} {auth password}\n", argv[0] );
+		printf( "[Usage] %s {ip} {mib} {user id} {auth password} {priv password}\n", argv[0] );
 		return -1;
 	}
 
@@ -43,11 +45,17 @@ int main( int argc, char * argv[] )
 	const char * pszMib = argv[2];
 	const char * pszUserId = NULL;
 	const char * pszAuthPassWord = NULL;
+	const char * pszPrivPassWord = NULL;
 
-	if( argc == 5 )
+	if( argc >= 5 )
 	{
 		pszUserId = argv[3];
 		pszAuthPassWord = argv[4];
+	}
+
+	if( argc == 6 )
+	{
+		pszPrivPassWord = argv[5];
 	}
 
 	InitNetwork();
@@ -74,7 +82,7 @@ int main( int argc, char * argv[] )
 	{
 		if( pszUserId )
 		{
-			if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, NULL, iRequestId, pszMib ) )
+			if( pclsRequest->MakeGetRequest( pszUserId, pszAuthPassWord, pszPrivPassWord, iRequestId, pszMib ) )
 			{
 				if( clsStack.SendRequest( pszDestIp, 161, pclsRequest ) )
 				{

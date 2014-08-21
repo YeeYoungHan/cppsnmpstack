@@ -71,6 +71,7 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 					pclsRequest->m_strContextEngineId = clsMessage.m_strContextEngineId;
 					pclsRequest->m_pclsValue = new CAsnNull();
 
+					pclsRequest->SetPrivParams( );
 					pclsRequest->SetAuthParams( );
 
 					pclsSnmpStack->SendRequest( pclsRequest );
@@ -78,6 +79,12 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 			}
 			else
 			{
+				if( clsMessage.m_strEncryptedPdu.empty() == false )
+				{
+					clsMessage.m_strPrivPassWord = clsData.m_pclsData->m_pclsRequest->m_strPrivPassWord;
+					clsMessage.ParseEncryptedPdu( );
+				}
+
 				pclsSnmpStack->m_pclsCallBack->RecvResponse( clsData.m_pclsData->m_pclsRequest, &clsMessage );
 			}
 		}

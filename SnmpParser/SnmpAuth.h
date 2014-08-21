@@ -22,5 +22,9 @@
 #include <string>
 
 bool SnmpMakeHmac( const char * pszPacket, int iPacketLen, const char * pszPassWord, const char * pszEngineId, int iEngineIdLen, std::string & strAuthParams );
+bool SnmpEncrypt( const char * pszPacket, int iPacketLen, const char * pszPassWord, const char * pszEngineId, int iEngineIdLen
+	, const char * pszPrivParam, int iPrivParamLen, std::string & strEncrypt );
+bool SnmpDecrypt( const char * pszPacket, int iPacketLen, const char * pszPassWord, const char * pszEngineId, int iEngineIdLen
+	, const char * pszPrivParam, int iPrivParamLen, std::string & strPlain );
 
 #endif

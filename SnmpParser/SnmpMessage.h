@@ -45,7 +45,10 @@ public:
 	bool MakeGetRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid );
 	bool MakeGetNextRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid );
 
+	bool SetPrivParams( );
 	bool SetAuthParams( );
+
+	bool ParseEncryptedPdu( );
 
 	static CSnmpMessage * Create( CSnmpMessage * pclsMessage );
 
@@ -83,6 +86,8 @@ public:
 	std::string m_strAuthPassWord;
 	std::string m_strPrivPassWord;
 	std::string m_strReqOid;
+
+	std::string m_strEncryptedPdu;
 
 	// 네트워크 전송 패킷
 	char				* m_pszPacket;
