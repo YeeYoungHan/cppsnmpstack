@@ -145,10 +145,50 @@ static bool TestHmac( )
 	return true;
 }
 
+static bool TestHmac2( )
+{
+	const char * pszHexPacket = "308180020103300f02022905020300ffe304010702010304383036040d80001f88809b26630b890ed353020109020302d7dc04057573657231040c000000000000000000000000040800000001166d411204305a06d0740666bc6dac3e93518b6afd5487784cf5c58b2d338ef8b05a368838d107d9409ba135bb1be39b9c0c78e48cc9";
+	const char * pszEngineId = "80001f88809b26630b890ed353";
+	int iHexLen = strlen(pszHexPacket);
+	unsigned char szPacket[1500], szEngineId[51];
+	int iIndex = 0, iEngineIdLen = 0;
+
+	iIndex = HexToString( pszHexPacket, (char *)szPacket, sizeof(szPacket) );
+	if( iIndex == -1 ) return false;
+
+	iEngineIdLen = HexToString( pszEngineId, (char *)szEngineId, sizeof(szEngineId) );
+	if( iEngineIdLen == -1 ) return false;
+
+	unsigned char szKey[16], szAuthKey[16], szResult[512];
+	unsigned int iResultSize = sizeof(szResult);
+
+	GetKey( "apassword", szKey );
+	GetAuthKey( szKey, szEngineId, iEngineIdLen, szAuthKey );
+
+	HMAC( EVP_md5(), szAuthKey, 16, szPacket, iIndex, szResult, &iResultSize );
+
+	char szHmac[33];
+	int iHmacLen = 0;
+
+	for( int i = 0; i < 12; ++i )
+	{
+		iHmacLen += snprintf( szHmac + iHmacLen, sizeof(szHmac) - iHmacLen, "%02x", szResult[i] );
+	}
+
+	if( strcmp( szHmac, "3559f2da879ea3b86b2b9679" ) )
+	{
+		printf( "hmac create error\n" );
+		return false;
+	}
+
+	return true;
+}
+
 bool TestAuthenticationParameters()
 {
 	if( TestKey() == false ) return false;
 	if( TestHmac() == false ) return false;
+	if( TestHmac2() == false ) return false;
 
 	return true;
 }
