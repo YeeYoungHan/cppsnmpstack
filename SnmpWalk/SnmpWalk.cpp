@@ -29,7 +29,6 @@ std::string gstrDestIp;
 std::string gstrOid;
 std::string gstrUserId;
 std::string gstrAuthPassWord;
-uint32_t giRequestId;
 
 int main( int argc, char * argv[] )
 {
@@ -67,14 +66,14 @@ int main( int argc, char * argv[] )
 	gettimeofday( &sttTime, NULL );
 	srand( ( sttTime.tv_sec << 4 ) + sttTime.tv_usec );
 
-	giRequestId = rand();
+	gclsStack.SetRequestId( rand() );
 
 	CSnmpMessage * pclsRequest = new CSnmpMessage();
 	if( pclsRequest )
 	{
 		if( gstrUserId.empty() == false )
 		{
-			if( pclsRequest->MakeGetNextRequest( gstrUserId.c_str(), gstrAuthPassWord.c_str(), NULL, giRequestId, gstrOid.c_str() ) )
+			if( pclsRequest->MakeGetNextRequest( gstrUserId.c_str(), gstrAuthPassWord.c_str(), NULL, gclsStack.GetNextRequestId(), gstrOid.c_str() ) )
 			{
 				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsRequest ) )
 				{
@@ -84,7 +83,7 @@ int main( int argc, char * argv[] )
 		}
 		else
 		{
-			if( pclsRequest->MakeGetNextRequest( "public", giRequestId, gstrOid.c_str() ) )
+			if( pclsRequest->MakeGetNextRequest( "public", gclsStack.GetNextRequestId(), gstrOid.c_str() ) )
 			{
 				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsRequest ) )
 				{
