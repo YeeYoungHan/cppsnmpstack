@@ -196,13 +196,21 @@ int CSnmpMessage::MakePacketV3( char * pszPacket, int iPacketSize )
 	pclsSecurityParams = CreateMsgSecurityParameters();
 	if( pclsSecurityParams == NULL ) goto FUNC_ERROR;
 
-	pclsData = CreateMsgData();
-	if( pclsData == NULL ) goto FUNC_ERROR;
-
 	if( clsComplex.AddInt( m_cVersion ) == false ) goto FUNC_ERROR;
 	if( clsComplex.AddComplex( pclsGlobalData ) == false ) goto FUNC_ERROR;
 	if( clsComplex.AddValue( pclsSecurityParams ) == false ) goto FUNC_ERROR;
-	if( clsComplex.AddComplex( pclsData ) == false ) goto FUNC_ERROR;
+
+	if( m_strEncryptedPdu.empty() )
+	{
+		pclsData = CreateMsgData();
+		if( pclsData == NULL ) goto FUNC_ERROR;
+
+		if( clsComplex.AddComplex( pclsData ) == false ) goto FUNC_ERROR;
+	}
+	else
+	{
+		if( clsComplex.AddString( m_strEncryptedPdu ) == false ) goto FUNC_ERROR;
+	}
 
 	n = clsComplex.MakePacket( pszPacket, iPacketSize );
 	if( n == -1 ) goto FUNC_ERROR;

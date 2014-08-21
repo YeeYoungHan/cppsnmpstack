@@ -19,6 +19,7 @@
 #include "SnmpPlatformDefine.h"
 #include "SnmpAuth.h"
 #include <openssl/hmac.h>
+#include <openssl/des.h>
 #include <string.h>
 #include "MemoryDebug.h"
 
@@ -118,3 +119,74 @@ bool SnmpMakeHmac( const char * pszPacket, int iPacketLen, const char * pszPassW
 
 	return true;
 }
+
+bool SnmpEncrypt( const char * pszPacket, int iPacketLen, const char * pszPassWord, const char * pszEngineId, int iEngineIdLen
+	, const char * pszPrivParam, int iPrivParamLen, std::string & strEncrypt )
+{
+	uint8_t szKey[16], szAuthKey[16], szIv[8];
+
+	strEncrypt.clear();
+
+	if( SnmpMakeKey( pszPassWord, szKey ) == false ) return false;
+	if( SnmpMakeAuthKey( szKey, (const uint8_t *)pszEngineId, iEngineIdLen, szAuthKey ) == false ) return false;
+
+	if( iPacketLen % 8 > 0 )
+	{
+		int iPadLen = 8 - iPacketLen % 8;
+		iPacketLen += iPadLen;
+	}
+
+	char * pszEncrypt = (char *)malloc( iPacketLen );
+	if( pszEncrypt == NULL ) return false;
+
+	for( int i = 0; i < 8; ++i )
+	{
+		szIv[i] = pszPrivParam[i] ^ szAuthKey[8+i];
+	}
+
+  DES_key_schedule	sttKeySchedule;
+  DES_cblock				sttBlock;
+
+	memcpy( sttBlock, szAuthKey, sizeof(sttBlock) );
+	DES_key_sched( &sttBlock, &sttKeySchedule );
+
+	DES_cbc_encrypt( (uint8_t *)pszPacket, (uint8_t *)pszEncrypt, iPacketLen, &sttKeySchedule, (DES_cblock *)szIv, DES_ENCRYPT );	
+	strEncrypt.append( pszEncrypt, iPacketLen );
+
+	free( pszEncrypt );
+
+	return true;
+}
+
+bool SnmpDecrypt( const char * pszPacket, int iPacketLen, const char * pszPassWord, const char * pszEngineId, int iEngineIdLen
+	, const char * pszPrivParam, int iPrivParamLen, std::string & strPlain )
+{
+	uint8_t szKey[16], szAuthKey[16], szIv[8];
+
+	strPlain.clear();
+
+	if( SnmpMakeKey( pszPassWord, szKey ) == false ) return false;
+	if( SnmpMakeAuthKey( szKey, (const uint8_t *)pszEngineId, iEngineIdLen, szAuthKey ) == false ) return false;
+
+	char * pszPlain = (char *)malloc( iPacketLen );
+	if( pszPlain == NULL ) return false;
+
+	for( int i = 0; i < 8; ++i )
+	{
+		szIv[i] = pszPrivParam[i] ^ szAuthKey[8+i];
+	}
+
+  DES_key_schedule	sttKeySchedule;
+  DES_cblock				sttBlock;
+
+	memcpy( sttBlock, szAuthKey, sizeof(sttBlock) );
+	DES_key_sched( &sttBlock, &sttKeySchedule );
+
+	DES_cbc_encrypt( (uint8_t *)pszPacket, (uint8_t *)pszPlain, iPacketLen, &sttKeySchedule, (DES_cblock *)szIv, DES_DECRYPT );	
+	strPlain.append( pszPlain, iPacketLen );
+
+	free( pszPlain );
+
+	return true;
+}
+

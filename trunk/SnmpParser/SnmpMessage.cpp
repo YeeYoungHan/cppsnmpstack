@@ -22,6 +22,7 @@
 #include "AsnOid.h"
 #include "AsnNull.h"
 #include "Log.h"
+#include "TimeUtility.h"
 #include <stdlib.h>
 #include "MemoryDebug.h"
 
@@ -144,8 +145,22 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 		else if( cType == 4 )
 		{
 			// msgData
-			if( SetMsgData( (CAsnComplex *)(*itList) ) == false )
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
 			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				m_strEncryptedPdu = pclsValue->m_strValue;
+			}
+			else if( (*itList)->m_cType == ASN_TYPE_COMPLEX )
+			{
+				if( SetMsgData( (CAsnComplex *)(*itList) ) == false )
+				{
+					CLog::Print( LOG_ERROR, "%s SetMsgData error", __FUNCTION__ );
+					return -1;
+				}
+			}
+			else
+			{
+				CLog::Print( LOG_ERROR, "%s msgData type(%d) is not complex or string", __FUNCTION__, (*itList)->m_cType );
 				return -1;
 			}
 		}
@@ -332,6 +347,39 @@ bool CSnmpMessage::MakeGetNextRequest( const char * pszUserName, const char * ps
 	return true;
 }
 
+bool CSnmpMessage::SetPrivParams( )
+{
+	int		iPacketLen;
+	char	szPacket[SNMP_MAX_PACKET_SIZE];
+	struct timeval sttTime;
+	uint32_t	iSec, iNanoSec;
+
+	m_strMsgPrivParams.clear();
+	m_strEncryptedPdu.clear();
+
+	if( m_strPrivPassWord.empty() ) return true;
+
+	gettimeofday( &sttTime, NULL );
+	iSec = sttTime.tv_sec;
+	iNanoSec = sttTime.tv_usec;
+
+	memcpy( szPacket, &iSec, 4 );
+	memcpy( szPacket + 4, &iNanoSec, 4 );
+
+	m_strMsgPrivParams.append( szPacket, 8 );
+
+	CAsnComplex * pclsData = CreateMsgData();
+	if( pclsData == NULL ) return false;
+
+	iPacketLen = pclsData->MakePacket( szPacket, sizeof(szPacket) );
+	delete pclsData;
+
+	if( iPacketLen == -1 ) return false;
+
+	return SnmpEncrypt( szPacket, iPacketLen, m_strPrivPassWord.c_str(), m_strMsgAuthEngineId.c_str(), m_strMsgAuthEngineId.length()
+		, m_strMsgPrivParams.c_str(), m_strMsgPrivParams.length(), m_strEncryptedPdu );
+}
+
 /**
  * @ingroup SnmpParser
  * @brief msgAuthenticationParameters 값을 계산한다.
@@ -344,6 +392,8 @@ bool CSnmpMessage::SetAuthParams( )
 
 	m_strMsgAuthParams.clear();
 
+	if( m_strAuthPassWord.empty() ) return true;
+
 	for( int i = 0; i < 12; ++i )
 	{
 		m_strMsgAuthParams.append( " " );
@@ -355,6 +405,34 @@ bool CSnmpMessage::SetAuthParams( )
 
 	if( SnmpMakeHmac( szPacket, iPacketLen, m_strAuthPassWord.c_str(), m_strMsgAuthEngineId.c_str(), m_strMsgAuthEngineId.length(), m_strMsgAuthParams ) == false )
 	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CSnmpMessage::ParseEncryptedPdu( )
+{
+	std::string strPlain;
+
+	if( SnmpDecrypt( m_strEncryptedPdu.c_str(), m_strEncryptedPdu.length(), m_strPrivPassWord.c_str()
+			, m_strMsgAuthEngineId.c_str(), m_strMsgAuthEngineId.length(), m_strMsgPrivParams.c_str(), m_strMsgPrivParams.length(), strPlain ) == false )
+	{
+		CLog::Print( LOG_ERROR, "%s msgData decrypt error", __FUNCTION__ );
+		return false;
+	}
+
+	CAsnComplex clsData;
+
+	if( clsData.ParsePacket( strPlain.c_str(), strPlain.length() ) == -1 )
+	{
+		CLog::Print( LOG_ERROR, "%s msgData parse error", __FUNCTION__ );
+		return false;
+	}
+
+	if( SetMsgData( &clsData ) == false )
+	{
+		CLog::Print( LOG_ERROR, "%s SetMsgData error", __FUNCTION__ );
 		return false;
 	}
 
