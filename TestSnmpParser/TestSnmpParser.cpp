@@ -30,6 +30,7 @@ int main( int argc, char * argv[] )
 	if( TestAsnType() == false ) goto FUNC_ERROR;
 	if( TestParseSnmpv3Packet() == false ) goto FUNC_ERROR;
 	if( TestAuthenticationParameters() == false ) goto FUNC_ERROR;
+	if( TestEncryptedPdu() == false ) goto FUNC_ERROR;
 
 	printf( "All Test is O.K!!!!\n" );
 	return 0;
