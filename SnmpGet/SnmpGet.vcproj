@@ -188,6 +188,10 @@
 				RelativePath=".\SnmpGet.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\SnmpGet.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
