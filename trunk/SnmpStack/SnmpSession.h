@@ -38,6 +38,7 @@ public:
 	bool Close();
 
 	bool SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse );
+	bool SendGetRequest( const char * pszOid, CAsnType ** ppclsAsnType );
 
 private:
 	std::string	m_strIp;
@@ -55,6 +56,7 @@ private:
 	int					m_iReSendCount;
 
 	uint32_t		m_iRequestId;
+	CSnmpMessage	m_clsResponse;
 
 	Socket			m_hSocket;
 

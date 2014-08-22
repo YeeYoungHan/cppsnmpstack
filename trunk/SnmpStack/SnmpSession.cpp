@@ -136,7 +136,10 @@ bool CSnmpSession::SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsR
 			pclsSecondRequest->SetPrivParams( );
 			pclsSecondRequest->SetAuthParams( );
 
-			if( SendRecv( pclsRequest, pclsResponse ) == false ) return false;
+			bool bRes = SendRecv( pclsSecondRequest, pclsResponse );
+			delete pclsSecondRequest;
+
+			if( bRes == false ) return false;
 
 			if( pclsResponse->m_strEncryptedPdu.empty() == false )
 			{
@@ -145,6 +148,37 @@ bool CSnmpSession::SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsR
 			}
 		}
 	}
+
+	return true;
+}
+
+bool CSnmpSession::SendGetRequest( const char * pszOid, CAsnType ** ppclsAsnType )
+{
+	CSnmpMessage clsRequest;
+	uint32_t iRequestId = ++m_iRequestId;
+
+	if( m_strUserName.empty() )
+	{
+		// SNMPv2
+		if( clsRequest.MakeGetRequest( m_strCommunity.c_str(), iRequestId, pszOid ) == false )
+		{
+			CLog::Print( LOG_ERROR, "%s MakeGetRequest SNMPv2 error", __FUNCTION__ );
+			return false;
+		}
+	}
+	else
+	{
+		// SNMPv3
+		if( clsRequest.MakeGetRequest( m_strUserName.c_str(), m_strAuthPassWord.c_str(), m_strPrivPassWord.c_str(), iRequestId, pszOid ) == false )
+		{
+			CLog::Print( LOG_ERROR, "%s MakeGetRequest SNMPv2 error", __FUNCTION__ );
+			return false;
+		}
+	}
+
+	if( SendRequest( &clsRequest, &m_clsResponse ) == false ) return false;
+
+	*ppclsAsnType = m_clsResponse.m_pclsValue;
 
 	return true;
 }
