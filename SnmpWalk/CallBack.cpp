@@ -18,15 +18,8 @@
 
 #include "SnmpPlatformDefine.h"
 #include "CallBack.h"
-#include "SnmpStack.h"
+#include "SnmpWalk.h"
 #include "MemoryDebug.h"
-
-extern CSnmpMutexSignal gclsMutex;
-extern CSnmpStack gclsStack;
-extern std::string gstrDestIp;
-extern std::string gstrOid;
-extern std::string gstrUserId;
-extern std::string gstrAuthPassWord;
 
 CCallBack::CCallBack()
 {
@@ -41,14 +34,18 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 	if( pclsResponse == NULL )
 	{
 		printf( "timeout\n" );
+#ifndef USE_SNMP_SESSION
 		gclsMutex.signal();
+#endif
 		return;
 	}
 	
 	if( pclsResponse->m_pclsValue == NULL )
 	{
 		printf( "respose error\n" );
+#ifndef USE_SNMP_SESSION
 		gclsMutex.signal();
+#endif
 		return;
 	}
 
@@ -72,7 +69,9 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 
 	if( strncmp( gstrOid.c_str(), pclsResponse->m_strOid.c_str(), gstrOid.length() ) )
 	{
+#ifndef USE_SNMP_SESSION
 		gclsMutex.signal();
+#endif
 		return;
 	}
 
@@ -106,6 +105,8 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 	if( bRes == false )
 	{
 		printf( "make request error\n" );
+#ifndef USE_SNMP_SESSION
 		gclsMutex.signal();
+#endif
 	}
 }

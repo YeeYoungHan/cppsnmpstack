@@ -189,3 +189,35 @@ bool CSnmpSession::SendGetRequest( const char * pszOid, CAsnType ** ppclsAsnType
 
 	return true;
 }
+
+bool CSnmpSession::SendGetNextRequest( const char * pszOid, std::string ** ppstrResponseOid, CAsnType ** ppclsAsnType )
+{
+	CSnmpMessage clsRequest;
+	uint32_t iRequestId = ++m_iRequestId;
+
+	if( m_strUserName.empty() )
+	{
+		// SNMPv2
+		if( clsRequest.MakeGetNextRequest( m_strCommunity.c_str(), iRequestId, pszOid ) == false )
+		{
+			CLog::Print( LOG_ERROR, "%s MakeGetRequest SNMPv2 error", __FUNCTION__ );
+			return false;
+		}
+	}
+	else
+	{
+		// SNMPv3
+		if( clsRequest.MakeGetNextRequest( m_strUserName.c_str(), m_strAuthPassWord.c_str(), m_strPrivPassWord.c_str(), iRequestId, pszOid ) == false )
+		{
+			CLog::Print( LOG_ERROR, "%s MakeGetRequest SNMPv2 error", __FUNCTION__ );
+			return false;
+		}
+	}
+
+	if( SendRequest( &clsRequest, &m_clsResponse ) == false ) return false;
+
+	*ppstrResponseOid = &m_clsResponse.m_strOid;
+	*ppclsAsnType = m_clsResponse.m_pclsValue;
+
+	return true;
+}

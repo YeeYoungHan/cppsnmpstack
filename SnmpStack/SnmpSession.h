@@ -43,6 +43,7 @@ public:
 
 	bool SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse );
 	bool SendGetRequest( const char * pszOid, CAsnType ** ppclsAsnType );
+	bool SendGetNextRequest( const char * pszOid, std::string ** ppstrResponseOid, CAsnType ** ppclsAsnType );
 
 private:
 	std::string	m_strIp;
