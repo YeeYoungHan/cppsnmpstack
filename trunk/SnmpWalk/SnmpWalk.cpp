@@ -18,9 +18,10 @@
 
 #include "SnmpPlatformDefine.h"
 #include "SnmpUdp.h"
-#include "SnmpStack.h"
 #include "CallBack.h"
 #include "TimeUtility.h"
+#include "SnmpWalk.h"
+#include "SnmpSession.h"
 #include "MemoryDebug.h"
 
 CSnmpMutexSignal gclsMutex;
@@ -53,6 +54,63 @@ int main( int argc, char * argv[] )
 
 	InitNetwork();
 
+#ifdef USE_SNMP_SESSION
+	CSnmpSession clsSession;
+	CAsnType * pclsValue;
+	std::string * pstrOid;
+	const char * pszMib = gstrOid.c_str();
+
+	if( clsSession.Open() == false )
+	{
+		printf( "SnmpSession open error\n" );
+		return 0;
+	}
+
+	clsSession.SetDestination( gstrDestIp.c_str(), 161 );
+
+	if( gstrUserId.empty() == false )
+	{
+		clsSession.SetSnmpv3( gstrUserId.c_str(), gstrAuthPassWord.c_str(), NULL );
+	}
+	else
+	{
+		clsSession.SetSnmpv2( "public" );
+	}
+
+	while( 1 )
+	{
+		if( clsSession.SendGetNextRequest( pszMib, &pstrOid, &pclsValue ) )
+		{
+			uint32_t iValue;
+			std::string strValue;
+
+			if( pclsValue->GetInt( iValue ) )
+			{
+				printf( "[%u] (type=int)\n", iValue );
+			}
+			else if( pclsValue->GetString( strValue ) )
+			{
+				printf( "[%s] (type=string)\n", strValue.c_str() );
+			}
+			else
+			{
+				printf( "(type=no_such_object)\n" );
+			}
+		}
+		else
+		{
+			printf( "timeout\n" );
+		}
+
+		if( strncmp( gstrOid.c_str(), pstrOid->c_str(), gstrOid.length() ) )
+		{
+			break;
+		}
+
+		pszMib = pstrOid->c_str();
+	}
+
+#else
 	CSnmpStackSetup clsSetup;
 	CCallBack clsCallBack;
 
@@ -94,6 +152,7 @@ int main( int argc, char * argv[] )
 	}
 
 	gclsStack.Stop();
+#endif
 
 	return 0;
 }
