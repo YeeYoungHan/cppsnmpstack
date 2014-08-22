@@ -16,45 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpPlatformDefine.h"
-#include "CallBack.h"
-#include "SnmpGet.h"
-#include "MemoryDebug.h"
+#ifndef _SNMP_GET_H_
+#define _SNMP_GET_H_
 
-CCallBack::CCallBack()
-{
-}
+#include "SnmpMutex.h"
 
-CCallBack::~CCallBack()
-{
-}
-
-void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse )
-{
-	if( pclsResponse == NULL )
-	{
-		printf( "timeout\n" );
-	}
-	else if( pclsResponse->m_pclsValue )
-	{
-		uint32_t iValue;
-		std::string strValue;
-
-		if( pclsResponse->m_pclsValue->GetInt( iValue ) )
-		{
-			printf( "[%u] (type=int)\n", iValue );
-		}
-		else if( pclsResponse->m_pclsValue->GetString( strValue ) )
-		{
-			printf( "[%s] (type=string)\n", strValue.c_str() );
-		}
-		else
-		{
-			printf( "(type=no_such_object)\n" );
-		}
-	}
+#define USE_SNMP_SESSION
 
 #ifndef USE_SNMP_SESSION
-	gclsMutex.signal();
+extern CSnmpMutexSignal gclsMutex;
 #endif
-}
+
+#endif
