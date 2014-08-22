@@ -21,7 +21,7 @@
 #include "Log.h"
 #include "MemoryDebug.h"
 
-#include "SnmpSessionPrivate.hpp"
+#include "SnmpSessionComm.hpp"
 
 CSnmpSession::CSnmpSession() : m_iPort(161), m_iIp(0), m_sPort(0)
 	, m_iMiliTimeout(1000), m_iReSendCount(5), m_iRequestId(0)
@@ -34,6 +34,13 @@ CSnmpSession::~CSnmpSession()
 	Close();
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 요청 메시지를 전송할 SNMP Agent 주소를 설정한다.
+ * @param pszIp	IP 주소
+ * @param iPort 포트 번호
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpSession::SetDestination( const char * pszIp, int iPort )
 {
 	if( pszIp == NULL || strlen(pszIp) == 0 ) return false;
@@ -48,6 +55,12 @@ bool CSnmpSession::SetDestination( const char * pszIp, int iPort )
 	return true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMPv2 를 위한 SNMP community 문자열을 설정한다.
+ * @param pszCommunity SNMP community 문자열
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpSession::SetSnmpv2( const char * pszCommunity )
 {
 	if( pszCommunity == NULL ) return false;
@@ -57,6 +70,14 @@ bool CSnmpSession::SetSnmpv2( const char * pszCommunity )
 	return true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMPv3 를 위한 사용자 아이디 및 비밀번호를 설정한다.
+ * @param pszUserName			사용자 아이디
+ * @param pszAuthPassWord 인증 비밀번호
+ * @param pszPrivPassWord 암호화 비밀번호
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpSession::SetSnmpv3( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord )
 {
 	if( pszUserName == NULL ) return false;
@@ -73,6 +94,12 @@ bool CSnmpSession::SetSnmpv3( const char * pszUserName, const char * pszAuthPass
 	return true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief 재전송을 위한 수신 대기 timeout 시간을 설정한다.
+ * @param iMiliSecond milisecond timeout 시간
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpSession::SetTimeout( int iMiliSecond )
 {
 	if( iMiliSecond <= 0 ) return false;
@@ -82,6 +109,12 @@ bool CSnmpSession::SetTimeout( int iMiliSecond )
 	return true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief timeout 되었을 때에 재전송하는 개수를 설정한다.
+ * @param iReSendCount timeout 되었을 때에 재전송하는 개수
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpSession::SetReSendCount( int iReSendCount )
 {
 	if( iReSendCount < 0 ) return false;
@@ -91,6 +124,11 @@ bool CSnmpSession::SetReSendCount( int iReSendCount )
 	return true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 통신을 위한 UDP 소켓을 생성한다.
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpSession::Open()
 {
 	if( m_hSocket != INVALID_SOCKET ) return false;
@@ -101,57 +139,26 @@ bool CSnmpSession::Open()
 	return true;
 }
 
-bool CSnmpSession::Close()
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 통신을 위한 UDP 소켓을 종료한다.
+ */
+void CSnmpSession::Close()
 {
 	if( m_hSocket != INVALID_SOCKET )
 	{
 		closesocket( m_hSocket );
 		m_hSocket = INVALID_SOCKET;
 	}
-
-	return true;
 }
 
-bool CSnmpSession::SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse )
-{
-	if( SendRecv( pclsRequest, pclsResponse ) == false ) return false;
-
-	if( pclsRequest->m_cMsgFlags == SNMP_MSG_FLAG_REPORT )
-	{
-		CSnmpMessage * pclsSecondRequest = CSnmpMessage::Create( pclsRequest );
-		if( pclsSecondRequest )
-		{
-			pclsSecondRequest->m_iMsgId = ++m_iRequestId;
-			pclsSecondRequest->m_iRequestId = pclsSecondRequest->m_iMsgId;
-			pclsSecondRequest->m_strOid = pclsSecondRequest->m_strReqOid;
-
-			pclsSecondRequest->m_strMsgAuthEngineId = pclsResponse->m_strMsgAuthEngineId;
-			pclsSecondRequest->m_iMsgAuthEngineBoots = pclsResponse->m_iMsgAuthEngineBoots;
-			pclsSecondRequest->m_iMsgAuthEngineTime = pclsResponse->m_iMsgAuthEngineTime;
-			pclsSecondRequest->m_strMsgUserName = pclsSecondRequest->m_strUserId;
-
-			pclsSecondRequest->m_strContextEngineId = pclsResponse->m_strContextEngineId;
-			pclsSecondRequest->m_pclsValue = new CAsnNull();
-
-			pclsSecondRequest->SetPrivParams( );
-			pclsSecondRequest->SetAuthParams( );
-
-			bool bRes = SendRecv( pclsSecondRequest, pclsResponse );
-			delete pclsSecondRequest;
-
-			if( bRes == false ) return false;
-
-			if( pclsResponse->m_strEncryptedPdu.empty() == false )
-			{
-				pclsResponse->m_strPrivPassWord = pclsRequest->m_strPrivPassWord;
-				pclsResponse->ParseEncryptedPdu( );
-			}
-		}
-	}
-
-	return true;
-}
-
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP GET 메시지를 전송하여서 이에 대한 응답을 수신한다.
+ * @param pszOid				MIB
+ * @param ppclsAsnType	응답 메시지의 ASN 타입 저장 변수
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpSession::SendGetRequest( const char * pszOid, CAsnType ** ppclsAsnType )
 {
 	CSnmpMessage clsRequest;

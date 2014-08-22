@@ -22,6 +22,10 @@
 #include "SnmpUdp.h"
 #include "SnmpMessage.h"
 
+/**
+ * @ingroup SnmpStack
+ * @brief 동기 방식으로 SNMP 통신하는 클래스
+ */
 class CSnmpSession
 {
 public:
@@ -35,7 +39,7 @@ public:
 	bool SetReSendCount( int iReSendCount );
 
 	bool Open();
-	bool Close();
+	void Close();
 
 	bool SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse );
 	bool SendGetRequest( const char * pszOid, CAsnType ** ppclsAsnType );
