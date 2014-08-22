@@ -56,6 +56,8 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 	uint8_t cType = 0;
 	int n;
 
+	Clear();
+
 	n = clsComplex.ParsePacket( pszPacket, iPacketLen );
 	if( n == -1 ) return -1;
 
