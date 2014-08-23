@@ -53,6 +53,16 @@ bool CSnmpSession::SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsR
 
 			if( bRes == false ) return false;
 
+			if( pclsResponse->m_cMsgFlags & SNMP_MSG_FLAG_AUTH )
+			{
+				pclsResponse->m_strAuthPassWord = pclsRequest->m_strAuthPassWord;
+
+				if( pclsResponse->CheckAuth() == false )
+				{
+					return false;
+				}
+			}
+
 			if( pclsResponse->m_strEncryptedPdu.empty() == false )
 			{
 				pclsResponse->m_strPrivPassWord = pclsRequest->m_strPrivPassWord;

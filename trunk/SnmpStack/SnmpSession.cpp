@@ -190,6 +190,14 @@ bool CSnmpSession::SendGetRequest( const char * pszOid, CAsnType ** ppclsAsnType
 	return true;
 }
 
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP GET NEXT 메시지를 전송하여서 이에 대한 응답을 수신한다.
+ * @param pszOid						MIB
+ * @param ppstrResponseOid	응답 메시지의 OID 저장 변수
+ * @param ppclsAsnType			응답 메시지의 ASN 타입 저장 변수
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpSession::SendGetNextRequest( const char * pszOid, std::string ** ppstrResponseOid, CAsnType ** ppclsAsnType )
 {
 	CSnmpMessage clsRequest;

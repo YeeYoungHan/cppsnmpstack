@@ -18,6 +18,47 @@
 
 /**
  * @ingroup SnmpParser
+ * @brief 내부 변수를 패킷에 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketSize 패킷 크기
+ * @returns 성공하면 저장된 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
+int CSnmpMessage::MakePacket( char * pszPacket, int iPacketSize )
+{
+	if( m_cVersion != SNMP_VERSION_3 )
+	{
+		return MakePacketV2( pszPacket, iPacketSize );
+	}
+
+	return MakePacketV3( pszPacket, iPacketSize );
+}
+
+/**
+ * @ingroup SnmpParser
+ * @brief 패킷을 생성하여서 내부 변수에 저장한다.
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
+bool CSnmpMessage::MakePacket( )
+{
+	if( m_pszPacket == NULL )
+	{
+		m_pszPacket = (char *)malloc( SNMP_MAX_PACKET_SIZE );
+		if( m_pszPacket == NULL ) return false;
+	}
+
+	m_iPacketLen = MakePacket( m_pszPacket, SNMP_MAX_PACKET_SIZE );
+	if( m_iPacketLen == -1 ) 
+	{
+		free( m_pszPacket );
+		m_pszPacket = NULL;
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * @ingroup SnmpParser
  * @brief SNMPv3 msgGlobalData 영역으로 CAsnComplex 로 생성한다.
  * @returns 성공하면 생성된 CAsnComplex 객체의 포인터를 리턴하고 그렇지 않으면 NULL 을 리턴한다.
  */

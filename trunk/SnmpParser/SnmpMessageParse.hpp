@@ -18,6 +18,135 @@
 
 /**
  * @ingroup SnmpParser
+ * @brief 패킷을 파싱하여서 내부 변수에 패킷 데이터를 저장한다.
+ * @param pszPacket		패킷
+ * @param iPacketLen	패킷 길이
+ * @returns 성공하면 파싱한 패킷 길이를 리턴하고 실패하면 -1 을 리턴한다.
+ */
+int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
+{
+	CAsnComplex clsComplex;
+	ASN_TYPE_LIST::iterator	itList;
+	uint8_t cType = 0;
+	int n;
+
+	Clear();
+
+	n = clsComplex.ParsePacket( pszPacket, iPacketLen );
+	if( n == -1 ) return -1;
+
+	for( itList = clsComplex.m_clsList.begin(); itList != clsComplex.m_clsList.end(); ++itList )
+	{
+		++cType;
+
+		if( cType == 1 )
+		{
+			if( (*itList)->m_cType == ASN_TYPE_INT )
+			{
+				CAsnInt * pclsValue = (CAsnInt *)(*itList);
+				m_cVersion = pclsValue->m_iValue;
+			}
+			else
+			{
+				CLog::Print( LOG_ERROR, "%s version type(%d) is not int", __FUNCTION__, (*itList)->m_cType );
+				return -1;
+			}
+		}
+		else if( cType == 2 )
+		{
+			if( m_cVersion != SNMP_VERSION_3 )
+			{
+				if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+				{
+					CAsnString * pclsValue = (CAsnString *)(*itList);
+					m_strCommunity = pclsValue->m_strValue;
+				}
+				else
+				{
+					CLog::Print( LOG_ERROR, "%s community type(%d) is not octet string", __FUNCTION__, (*itList)->m_cType );
+					return -1;
+				}
+			}
+			else
+			{
+				if( (*itList)->m_cType == ASN_TYPE_COMPLEX )
+				{
+					// msgGlobalData
+					if( SetMsgGlobalData( (CAsnComplex *)*itList ) == false )
+					{
+						return -1;
+					}
+				}
+				else
+				{
+					CLog::Print( LOG_ERROR, "%s msgGlobalData type(%d) is not complex", __FUNCTION__, (*itList)->m_cType );
+					return -1;
+				}
+			}
+		}
+		else if( cType == 3 )
+		{
+			if( m_cVersion != SNMP_VERSION_3 )
+			{
+				if( SetCommand( (CAsnComplex *)(*itList) ) == false )
+				{
+					return -1;
+				}
+
+				break;
+			}
+
+			// msgSecurityParameters
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				CAsnComplex clsData;
+
+				if( clsData.ParsePacket( pclsValue->m_strValue.c_str(), pclsValue->m_strValue.length() ) == -1 )
+				{
+					return -1;
+				}
+
+				if( SetMsgSecurityParameters( &clsData ) == false )
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				CLog::Print( LOG_ERROR, "%s msgSecurityParameters type(%d) is not octet string", __FUNCTION__, (*itList)->m_cType );
+				return -1;
+			}
+		}
+		else if( cType == 4 )
+		{
+			// msgData
+			if( (*itList)->m_cType == ASN_TYPE_OCTET_STR )
+			{
+				CAsnString * pclsValue = (CAsnString *)(*itList);
+				m_strEncryptedPdu = pclsValue->m_strValue;
+			}
+			else if( (*itList)->m_cType == ASN_TYPE_COMPLEX )
+			{
+				if( SetMsgData( (CAsnComplex *)(*itList) ) == false )
+				{
+					CLog::Print( LOG_ERROR, "%s SetMsgData error", __FUNCTION__ );
+					return -1;
+				}
+			}
+			else
+			{
+				CLog::Print( LOG_ERROR, "%s msgData type(%d) is not complex or string", __FUNCTION__, (*itList)->m_cType );
+				return -1;
+			}
+		}
+	}
+
+	return n;
+}
+
+/**
+ * @ingroup SnmpParser
  * @brief msgGlobalData 정보를 저장한다.
  * @param pclsComplex msgGlobalData 를 저장한 ASN 변수
  * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.

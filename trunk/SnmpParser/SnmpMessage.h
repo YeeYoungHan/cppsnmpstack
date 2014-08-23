@@ -34,9 +34,6 @@ public:
 	CSnmpMessage();
 	~CSnmpMessage();
 
-	int ParsePacket( const char * pszPacket, int iPacketLen );
-	int MakePacket( char * pszPacket, int iPacketSize );
-	bool MakePacket( );
 	void Clear();
 
 	bool MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
@@ -45,13 +42,22 @@ public:
 	bool MakeGetRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid );
 	bool MakeGetNextRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid );
 
-	bool SetPrivParams( );
-	bool SetAuthParams( );
-
-	bool ParseEncryptedPdu( );
-
 	static CSnmpMessage * Create( CSnmpMessage * pclsMessage );
 
+	// SnmpMessageParse.hpp
+	int ParsePacket( const char * pszPacket, int iPacketLen );
+
+	// SnmpMessageMake.hpp
+	int MakePacket( char * pszPacket, int iPacketSize );
+	bool MakePacket( );
+
+	// SnmpMessagev3.hpp
+	bool SetPrivParams( );
+	bool SetAuthParams( );
+	bool ParseEncryptedPdu( );
+	bool CheckAuth( );
+
+	// 
 	uint8_t			m_cVersion;
 
 	// SNMPv2
@@ -98,11 +104,13 @@ public:
 	int					m_iDestPort;
 
 private:
+	// SnmpMessageParse.hpp
 	bool SetMsgGlobalData( CAsnComplex * pclsComplex );
 	bool SetMsgSecurityParameters( CAsnComplex * pclsComplex );
 	bool SetMsgData( CAsnComplex * pclsComplex );
 	bool SetCommand( CAsnComplex * pclsComplex );
 
+	// SnmpMessageMake.hpp
 	CAsnComplex * CreateMsgGlobalData( );
 	CAsnString * CreateMsgSecurityParameters( );
 	CAsnComplex * CreateMsgData( );
