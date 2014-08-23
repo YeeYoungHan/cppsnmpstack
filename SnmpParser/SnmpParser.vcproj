@@ -170,6 +170,10 @@
 				RelativePath=".\SnmpMessageParse.hpp"
 				>
 			</File>
+			<File
+				RelativePath=".\SnmpMessagev3.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="ASN"

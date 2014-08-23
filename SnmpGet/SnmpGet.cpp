@@ -103,7 +103,7 @@ int main( int argc, char * argv[] )
 	}
 	else
 	{
-		printf( "timeout\n" );
+		printf( "timeout or error\n" );
 	}
 
 #else

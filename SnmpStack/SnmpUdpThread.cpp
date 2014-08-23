@@ -87,13 +87,22 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 			}
 			else
 			{
-				if( clsMessage.m_strEncryptedPdu.empty() == false )
-				{
-					clsMessage.m_strPrivPassWord = clsData.m_pclsData->m_pclsRequest->m_strPrivPassWord;
-					clsMessage.ParseEncryptedPdu( );
-				}
+				clsMessage.m_strAuthPassWord = clsData.m_pclsData->m_pclsRequest->m_strAuthPassWord;
 
-				pclsSnmpStack->m_pclsCallBack->RecvResponse( clsData.m_pclsData->m_pclsRequest, &clsMessage );
+				if( clsMessage.CheckAuth() == false )
+				{
+					pclsSnmpStack->m_pclsCallBack->RecvResponse( clsData.m_pclsData->m_pclsRequest, NULL );
+				}
+				else
+				{
+					if( clsMessage.m_strEncryptedPdu.empty() == false )
+					{
+						clsMessage.m_strPrivPassWord = clsData.m_pclsData->m_pclsRequest->m_strPrivPassWord;
+						clsMessage.ParseEncryptedPdu( );
+					}
+
+					pclsSnmpStack->m_pclsCallBack->RecvResponse( clsData.m_pclsData->m_pclsRequest, &clsMessage );
+				}
 			}
 		}
 	}
