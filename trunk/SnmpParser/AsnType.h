@@ -33,6 +33,7 @@
 
 #define ASN_TYPE_COMPLEX				0x30
 #define ASN_TYPE_COUNTER_32			0x41
+#define ASN_TYPE_GAUGE_32				0x42
 #define ASN_TYPE_NO_SUCH_OBJECT	0x80
 
 /**
