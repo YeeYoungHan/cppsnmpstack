@@ -27,6 +27,7 @@ int main( int argc, char * argv[] )
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
 #endif
 
+	if( TestAsnOid() == false ) goto FUNC_ERROR;
 	if( TestAsnType() == false ) goto FUNC_ERROR;
 	if( TestParseSnmpv3Packet() == false ) goto FUNC_ERROR;
 	if( TestAuthenticationParameters() == false ) goto FUNC_ERROR;
