@@ -16,28 +16,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _TEST_SNMP_PARSER_H_
-#define _TEST_SNMP_PARSER_H_
+#include "TestSnmpParser.h"
+#include "AsnOid.h"
 
-// HexToString.cpp
-int HexToString( const char * pszHex, char * pszPacket, int iPacketLen );
-int StringToHex( const char * pszPacket, int iPacketLen, char * pszHex, int iHexLen );
+bool TestAsnOid()
+{
+	const char * pszHexPacket = "060c2b0601020102020101848003";
+	char szPacket[1500];
+	int iPacketLen;
+	CAsnOid clsOid;
+	std::string	strValue;
 
-// TestAuthenticationParameters.cpp
-bool GetKey( const char * pszPassWord, unsigned char * pszKey );
-bool GetAuthKey( unsigned char * pszKey, unsigned char * pszEngineId, int iEngineIdLen, unsigned char * pszAuthKey );
-bool TestAuthenticationParameters();
+	iPacketLen = HexToString( pszHexPacket, szPacket, sizeof(szPacket) );
 
-// TestEncryptedPdu.cpp
-bool TestEncryptedPdu();
+	if( clsOid.ParsePacket( szPacket, iPacketLen ) == -1 ) return false;
 
-// TestParseSnmpv3Packet.cpp
-bool TestParseSnmpv3Packet( );
+	clsOid.GetString( strValue );
 
-// TestAsnType.cpp
-bool TestAsnType( );
+	if( strcmp( strValue.c_str(), "1.3.6.1.2.1.2.2.1.1.65539" ) )
+	{
+		return false;
+	}
 
-// TestAsnOid.cpp
-bool TestAsnOid();
-
-#endif
+	return true;
+}

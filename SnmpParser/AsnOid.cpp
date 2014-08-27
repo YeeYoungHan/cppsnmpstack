@@ -58,7 +58,7 @@ int CAsnOid::ParsePacket( const char * pszPacket, int iPacketLen )
 		iNum = 0;
 		for( int j = 0; j < 4; ++j, ++i )
 		{
-			iNum = ( iNum << ( j * 7 ) ) | ( pszPacket[i+2] & 0x7F );
+			iNum = ( iNum << 7 ) | ( pszPacket[i+2] & 0x7F );
 			if( ( pszPacket[i+2] & 0x80 ) == 0 ) break;
 		}
 
