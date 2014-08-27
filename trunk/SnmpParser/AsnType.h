@@ -34,6 +34,7 @@
 #define ASN_TYPE_COMPLEX				0x30
 #define ASN_TYPE_COUNTER_32			0x41
 #define ASN_TYPE_GAUGE_32				0x42
+#define ASN_TYPE_COUNTER_64			0x46
 #define ASN_TYPE_NO_SUCH_OBJECT	0x80
 
 /**
@@ -53,6 +54,7 @@ public:
 	virtual CAsnType * Copy( ) = 0;
 
 	virtual bool GetInt( uint32_t & iValue );
+	virtual bool GetLong( uint64_t & iValue );
 	virtual bool GetString( std::string & strValue );
 
 	int ParseHeader( const char * pszPacket, int iPacketLen );

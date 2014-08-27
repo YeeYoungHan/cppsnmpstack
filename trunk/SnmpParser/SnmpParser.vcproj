@@ -195,6 +195,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\AsnLong.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AsnLong.h"
+				>
+			</File>
+			<File
 				RelativePath=".\AsnNull.cpp"
 				>
 			</File>

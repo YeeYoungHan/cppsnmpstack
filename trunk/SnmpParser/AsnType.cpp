@@ -34,6 +34,17 @@ bool CAsnType::GetInt( uint32_t & iValue )
 
 /**
  * @ingroup SnmpParser
+ * @brief ASN 변수에 정수가 저장되어 있으면 정수값을 가져온다.
+ * @param iValue 정수를 저장할 변수
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
+bool CAsnType::GetLong( uint64_t & iValue )
+{
+	return false;
+}
+
+/**
+ * @ingroup SnmpParser
  * @brief ASN 변수에 문자열이 저장되어 있으면 문자열을 가져온다.
  * @param strValue 문자열을 저장할 변수
  * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
