@@ -18,6 +18,7 @@
 
 #include "AsnComplex.h"
 #include "AsnInt.h"
+#include "AsnLong.h"
 #include "AsnString.h"
 #include "AsnOid.h"
 #include "AsnNull.h"
@@ -63,6 +64,9 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 		case ASN_TYPE_COUNTER_32:
 		case ASN_TYPE_GAUGE_32:
 			pclsValue = new CAsnInt( cType );
+			break;
+		case ASN_TYPE_COUNTER_64:
+			pclsValue = new CAsnLong( cType );
 			break;
 		case ASN_TYPE_OCTET_STR:
 			pclsValue = new CAsnString();

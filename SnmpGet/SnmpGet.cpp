@@ -86,11 +86,16 @@ int main( int argc, char * argv[] )
 	if( clsSession.SendGetRequest( pszMib, &pclsValue ) )
 	{
 		uint32_t iValue;
+		uint64_t iValue64;
 		std::string strValue;
 
 		if( pclsValue->GetInt( iValue ) )
 		{
 			printf( "[%u] (type=int)\n", iValue );
+		}
+		else if( pclsValue->GetLong( iValue64 ) )
+		{
+			printf( "[%llu] (type=long)\n", iValue64 );
 		}
 		else if( pclsValue->GetString( strValue ) )
 		{

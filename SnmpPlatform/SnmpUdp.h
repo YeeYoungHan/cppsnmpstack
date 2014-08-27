@@ -70,4 +70,8 @@ void InitNetwork();
 
 bool GetLocalIp( std::string & strIp );
 
+// bigendian system 인 경우, 아래의 소스 코드를 수정해야 한다.
+#define htonll(x)   ((((uint64_t)htonl((uint32_t)x)) << 32) + htonl(x >> 32))
+#define ntohll(x)   ((((uint64_t)ntohl((uint32_t)x)) << 32) + ntohl(x >> 32))
+
 #endif
