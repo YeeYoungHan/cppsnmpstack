@@ -69,12 +69,12 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 
 	pszPacket[iPos++] = m_cType;
 
-	if( m_iValue <= 0xFE )
+	if( m_iValue <= 0x7F )
 	{
 		pszPacket[iPos++] = 1;
 		pszPacket[iPos++] = (uint8_t)m_iValue;
 	}
-	else if( m_iValue <= 0xFEFF )
+	else if( m_iValue <= 0x7FFF )
 	{
 		pszPacket[iPos++] = 2;
 
@@ -82,7 +82,7 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, &sValue, 2 );
 		iPos += 2;
 	}
-	else if( m_iValue <= 0xFEFFFF )
+	else if( m_iValue <= 0x7FFFFF )
 	{
 		pszPacket[iPos++] = 3;
 
@@ -90,7 +90,7 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, ((char *)&iValue) + 1, 3 );
 		iPos += 3;
 	}
-	else if( m_iValue <= 0xFEFFFFFF )
+	else if( m_iValue <= 0x7FFFFFFF )
 	{
 		pszPacket[iPos++] = 4;
 
@@ -98,7 +98,7 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, &iValue, 4 );
 		iPos += 4;
 	}
-	else if( m_iValue <= 0xFEFFFFFFFF )
+	else if( m_iValue <= 0x7FFFFFFFFF )
 	{
 		pszPacket[iPos++] = 5;
 
@@ -106,7 +106,7 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, ((char *)&iValue) + 3, 5 );
 		iPos += 5;
 	}
-	else if( m_iValue <= 0xFEFFFFFFFFFF )
+	else if( m_iValue <= 0x7FFFFFFFFFFF )
 	{
 		pszPacket[iPos++] = 6;
 
@@ -114,7 +114,7 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, ((char *)&iValue) + 2, 6 );
 		iPos += 6;
 	}
-	else if( m_iValue <= 0xFEFFFFFFFFFFFF )
+	else if( m_iValue <= 0x7FFFFFFFFFFFFF )
 	{
 		pszPacket[iPos++] = 7;
 
@@ -122,9 +122,10 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, ((char *)&iValue) + 1, 7 );
 		iPos += 7;
 	}
-	else
+	else if( m_iValue <= 0x7FFFFFFFFFFFFFFF )
 	{
-		pszPacket[iPos++] = 8;
+		pszPacket[iPos++] = 9;
+		pszPacket[iPos++] = 0;
 
 		uint64_t iValue = htonll( m_iValue );
 		memcpy( pszPacket + iPos, ((char *)&iValue), 8 );
@@ -239,6 +240,15 @@ int CAsnLong::ParseLong( const char * pszPacket, int iPacketLen, uint8_t cLength
 		int64_t iTemp;
 
 		memcpy( &iTemp, pszPacket, cLength );
+		iValue = ntohll( iTemp );
+		return 8;
+	}
+
+	if( cLength == 9 )
+	{
+		int64_t iTemp;
+
+		memcpy( &iTemp, pszPacket + 1, 8 );
 		iValue = ntohll( iTemp );
 		return 8;
 	}
