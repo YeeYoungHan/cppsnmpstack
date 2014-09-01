@@ -40,4 +40,7 @@ bool TestAsnType( );
 // TestAsnOid.cpp
 bool TestAsnOid();
 
+// TestAsnInt.cpp
+bool TestAsnInt();
+
 #endif
