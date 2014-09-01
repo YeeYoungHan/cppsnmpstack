@@ -16,30 +16,38 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpPlatformDefine.h"
 #include "TestSnmpParser.h"
-#include <stdio.h>
-#include "MemoryDebug.h"
+#include "AsnLong.h"
 
-int main( int argc, char * argv[] )
+bool TestAsnLong( const char * pszHex, uint64_t iValue )
 {
-#ifdef WIN32
-	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
-#endif
+	CAsnLong clsLong;
+	char szPacket[255];
+	int iPacketLen, n;
 
-	if( TestAsnLong() == false ) goto FUNC_ERROR;
-	if( TestAsnInt() == false ) goto FUNC_ERROR;
-	if( TestAsnOid() == false ) goto FUNC_ERROR;
-	if( TestAsnType() == false ) goto FUNC_ERROR;
-	if( TestParseSnmpv3Packet() == false ) goto FUNC_ERROR;
-	if( TestAuthenticationParameters() == false ) goto FUNC_ERROR;
-	if( TestEncryptedPdu() == false ) goto FUNC_ERROR;
+	iPacketLen = HexToString( pszHex, szPacket, sizeof(szPacket) );
 
-	printf( "All Test is O.K!!!!\n" );
-	return 0;
+	n = clsLong.ParsePacket( szPacket, iPacketLen );
+	if( n == -1 )
+	{
+		printf( "%s clsInt.ParseHeader return(%d)\n", __FUNCTION__, n );
+		return false;
+	}
 
-FUNC_ERROR:
-	printf( "Error\n" );
+	if( clsLong.m_iValue != iValue )
+	{
+		printf( "%s clsInt.m_iValue(%llu) != %llu\n", __FUNCTION__, clsLong.m_iValue, iValue );
+		return false;
+	}
 
-	return -1;
+	return true;
 }
+
+bool TestAsnLong( )
+{
+	if( TestAsnLong( "46060096ecf70c31", 648220707889 ) == false ) return false;
+
+	return true;
+}
+
+
