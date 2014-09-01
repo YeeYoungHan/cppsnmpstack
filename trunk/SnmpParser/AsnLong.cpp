@@ -210,7 +210,7 @@ int CAsnLong::ParseLong( const char * pszPacket, int iPacketLen, uint8_t cLength
 
 	if( cLength == 5 )
 	{
-		int64_t iTemp;
+		int64_t iTemp = 0;
 
 		memcpy( ((char *)&iTemp) + 3, pszPacket, cLength );
 		iValue = ntohll( iTemp );
@@ -219,7 +219,7 @@ int CAsnLong::ParseLong( const char * pszPacket, int iPacketLen, uint8_t cLength
 
 	if( cLength == 6 )
 	{
-		int64_t iTemp;
+		int64_t iTemp = 0;
 
 		memcpy( ((char *)&iTemp) + 2, pszPacket, cLength );
 		iValue = ntohll( iTemp );
@@ -228,7 +228,7 @@ int CAsnLong::ParseLong( const char * pszPacket, int iPacketLen, uint8_t cLength
 
 	if( cLength == 7 )
 	{
-		int64_t iTemp;
+		int64_t iTemp = 0;
 
 		memcpy( ((char *)&iTemp) + 1, pszPacket, cLength );
 		iValue = ntohll( iTemp );
@@ -237,7 +237,7 @@ int CAsnLong::ParseLong( const char * pszPacket, int iPacketLen, uint8_t cLength
 
 	if( cLength == 8 )
 	{
-		int64_t iTemp;
+		int64_t iTemp = 0;
 
 		memcpy( &iTemp, pszPacket, cLength );
 		iValue = ntohll( iTemp );
@@ -246,7 +246,7 @@ int CAsnLong::ParseLong( const char * pszPacket, int iPacketLen, uint8_t cLength
 
 	if( cLength == 9 )
 	{
-		int64_t iTemp;
+		int64_t iTemp = 0;
 
 		memcpy( &iTemp, pszPacket + 1, 8 );
 		iValue = ntohll( iTemp );

@@ -43,4 +43,7 @@ bool TestAsnOid();
 // TestAsnInt.cpp
 bool TestAsnInt();
 
+// TestAsnLong.cpp
+bool TestAsnLong( );
+
 #endif
