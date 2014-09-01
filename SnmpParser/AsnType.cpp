@@ -169,6 +169,15 @@ int CAsnType::ParseInt( const char * pszPacket, int iPacketLen, uint8_t cLength,
 		return 4;
 	}
 
+	if( cLength == 5 )
+	{
+		int32_t iTemp;
+
+		memcpy( &iTemp, pszPacket + 1, cLength - 1 );
+		iValue = ntohl( iTemp );
+		return 5;
+	}
+
 	return -1;
 }
 
