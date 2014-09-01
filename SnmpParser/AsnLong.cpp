@@ -124,6 +124,14 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 	}
 	else if( m_iValue <= 0x7FFFFFFFFFFFFFFF )
 	{
+		pszPacket[iPos++] = 8;
+
+		uint64_t iValue = htonll( m_iValue );
+		memcpy( pszPacket + iPos, ((char *)&iValue), 8 );
+		iPos += 8;
+	}
+	else
+	{
 		pszPacket[iPos++] = 9;
 		pszPacket[iPos++] = 0;
 
