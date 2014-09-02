@@ -46,4 +46,7 @@ bool TestAsnInt();
 // TestAsnLong.cpp
 bool TestAsnLong( );
 
+// SendAsnInt.cpp
+bool SendAsnInt( );
+
 #endif
