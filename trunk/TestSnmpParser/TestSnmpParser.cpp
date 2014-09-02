@@ -27,6 +27,12 @@ int main( int argc, char * argv[] )
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
 #endif
 
+	if( argc == 2 )
+	{
+		SendAsnInt();
+		return 0;
+	}
+
 	if( TestAsnLong() == false ) goto FUNC_ERROR;
 	if( TestAsnInt() == false ) goto FUNC_ERROR;
 	if( TestAsnOid() == false ) goto FUNC_ERROR;

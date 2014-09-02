@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SendAsnInt.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TestAsnInt.cpp"
 				>
 			</File>

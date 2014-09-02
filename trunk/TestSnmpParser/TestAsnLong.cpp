@@ -46,6 +46,7 @@ bool TestAsnLong( const char * pszHex, uint64_t iValue )
 bool TestAsnLong( )
 {
 	if( TestAsnLong( "46060096ecf70c31", 648220707889 ) == false ) return false;
+	if( TestAsnLong( "4606008401A23296", 566963090070 ) == false ) return false;
 
 	return true;
 }
