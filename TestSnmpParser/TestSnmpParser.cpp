@@ -17,6 +17,7 @@
  */
 
 #include "SnmpPlatformDefine.h"
+#include "SnmpUdp.h"
 #include "TestSnmpParser.h"
 #include <stdio.h>
 #include "MemoryDebug.h"
