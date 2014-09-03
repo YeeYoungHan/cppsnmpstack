@@ -15,7 +15,7 @@ INC=-I../SnmpPlatform
 all: libsnmpparser.a
 
 LIB_OBJ=AsnComplex.o \
-	AsnInt.o AsnNull.o AsnOid.o AsnString.o AsnType.o \
+	AsnInt.o AsnLong.o AsnNull.o AsnOid.o AsnString.o AsnType.o \
 	SnmpMessage.o \
 	SnmpAuth.o
 

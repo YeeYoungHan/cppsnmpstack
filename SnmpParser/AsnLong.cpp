@@ -98,7 +98,7 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, &iValue, 4 );
 		iPos += 4;
 	}
-	else if( m_iValue <= 0x7FFFFFFFFF )
+	else if( m_iValue <= 0x7FFFFFFFFFULL )
 	{
 		pszPacket[iPos++] = 5;
 
@@ -106,7 +106,7 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, ((char *)&iValue) + 3, 5 );
 		iPos += 5;
 	}
-	else if( m_iValue <= 0x7FFFFFFFFFFF )
+	else if( m_iValue <= 0x7FFFFFFFFFFFULL )
 	{
 		pszPacket[iPos++] = 6;
 
@@ -114,7 +114,7 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, ((char *)&iValue) + 2, 6 );
 		iPos += 6;
 	}
-	else if( m_iValue <= 0x7FFFFFFFFFFFFF )
+	else if( m_iValue <= 0x7FFFFFFFFFFFFFULL )
 	{
 		pszPacket[iPos++] = 7;
 
@@ -122,7 +122,7 @@ int CAsnLong::MakePacket( char * pszPacket, int iPacketSize )
 		memcpy( pszPacket + iPos, ((char *)&iValue) + 1, 7 );
 		iPos += 7;
 	}
-	else if( m_iValue <= 0x7FFFFFFFFFFFFFFF )
+	else if( m_iValue <= 0x7FFFFFFFFFFFFFFFULL )
 	{
 		pszPacket[iPos++] = 8;
 
