@@ -20,6 +20,12 @@
 #include "Log.h"
 #include "MemoryDebug.h"
 
+/**
+ * @ingroup SnmpStack
+ * @brief 패킷을 HEX 문자열로 로그 출력한다.
+ * @param pszPacket		패킷
+ * @param iPacketLen	패킷 길이
+ */
 void LogPacket( const char * pszPacket, int iPacketLen )
 {
 	char	szHex[3000];
@@ -31,4 +37,6 @@ void LogPacket( const char * pszPacket, int iPacketLen )
 
 		iLen += snprintf( szHex + iLen, sizeof(szHex) - iLen, "%02x", (uint8_t)pszPacket[i] );
 	}
+
+	CLog::Print( LOG_DEBUG, "packet[%s]", szHex );
 }
