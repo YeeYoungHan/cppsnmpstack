@@ -19,6 +19,7 @@
 #include "SnmpSession.h"
 #include "AsnNull.h"
 #include "Log.h"
+#include "SnmpDebug.h"
 #include "MemoryDebug.h"
 
 #include "SnmpSessionComm.hpp"
@@ -26,6 +27,7 @@
 CSnmpSession::CSnmpSession() : m_iPort(161), m_iIp(0), m_sPort(0)
 	, m_iMiliTimeout(1000), m_iReSendCount(5), m_iRequestId(0)
 	, m_hSocket(INVALID_SOCKET)
+	, m_bDebug(false)
 {
 }
 
@@ -122,6 +124,11 @@ bool CSnmpSession::SetReSendCount( int iReSendCount )
 	m_iReSendCount = iReSendCount;
 
 	return true;
+}
+
+void CSnmpSession::SetDebug( bool bDebug )
+{
+	m_bDebug = bDebug;
 }
 
 /**

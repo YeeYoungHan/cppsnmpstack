@@ -115,6 +115,11 @@ bool CSnmpSession::SendRecv( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResp
 			{
 				if( pclsResponse->ParsePacket( szRecv, iRecvLen ) > 0 )
 				{
+					if( m_bDebug )
+					{
+						LogPacket( szRecv, iRecvLen );
+					}
+
 					if( pclsRequest->m_iRequestId == pclsResponse->m_iRequestId ||
 							( pclsRequest->m_iMsgId > 0 && pclsRequest->m_iMsgId == pclsResponse->m_iMsgId ) )
 					{
