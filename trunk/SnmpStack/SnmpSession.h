@@ -37,6 +37,7 @@ public:
 	bool SetSnmpv3( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord );
 	bool SetTimeout( int iMiliSecond );
 	bool SetReSendCount( int iReSendCount );
+	void SetDebug( bool bDebug );
 
 	bool Open();
 	void Close();
@@ -64,6 +65,8 @@ private:
 	CSnmpMessage	m_clsResponse;
 
 	Socket			m_hSocket;
+
+	bool				m_bDebug;
 
 	bool SendRecv( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse );
 };
