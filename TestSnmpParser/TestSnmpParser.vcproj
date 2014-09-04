@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TestSnmpMessage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TestSnmpParser.cpp"
 				>
 			</File>
