@@ -48,6 +48,18 @@ bool TestAsnLong( )
 	if( TestAsnLong( "46060096ecf70c31", 648220707889 ) == false ) return false;
 	if( TestAsnLong( "4606008401A23296", 566963090070 ) == false ) return false;
 
+	CAsnLong clsLong;
+	char szPacket[1500], szHex[1500];
+	int iPacketLen;
+
+	clsLong.m_iValue = 111681615645ULL;
+
+	iPacketLen = clsLong.MakePacket( szPacket, sizeof(szPacket) );
+	if( iPacketLen == -1 ) return false;
+
+	StringToHex( szPacket, iPacketLen, szHex, sizeof(szHex) );
+	if( strcmp( szHex, "46051a00be371d" ) ) return false;
+
 	return true;
 }
 

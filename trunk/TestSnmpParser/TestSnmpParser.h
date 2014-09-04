@@ -34,6 +34,9 @@ bool TestEncryptedPdu();
 // TestParseSnmpv3Packet.cpp
 bool TestParseSnmpv3Packet( );
 
+// TestSnmpMessage.cpp
+bool TestSnmpMessage();
+
 // TestAsnType.cpp
 bool TestAsnType( );
 
@@ -48,5 +51,6 @@ bool TestAsnLong( );
 
 // SendAsnInt.cpp
 bool SendAsnInt( );
+
 
 #endif

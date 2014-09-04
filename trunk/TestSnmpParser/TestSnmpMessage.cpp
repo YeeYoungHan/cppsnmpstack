@@ -17,37 +17,30 @@
  */
 
 #include "SnmpPlatformDefine.h"
-#include "SnmpUdp.h"
 #include "TestSnmpParser.h"
-#include <stdio.h>
+#include "SnmpMessage.h"
 #include "MemoryDebug.h"
 
-int main( int argc, char * argv[] )
+bool TestSnmpMessage()
 {
-#ifdef WIN32
-	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
-#endif
+	const char * pszHex = "303002010104067075626c6963a2230202021f02010002010030173015060c2b060102011f0101010aa70f46051a00be371d";
+	char szPacket[1500];
+	int iPacketLen, n;
+	CSnmpMessage clsMessage;
 
-	if( argc == 2 )
+	iPacketLen = HexToString( pszHex, (char *)szPacket, sizeof(szPacket) );
+	if( iPacketLen == -1 ) 
 	{
-		SendAsnInt();
-		return 0;
+		printf( "%s HexToString error\n", __FUNCTION__ );
+		return false;
 	}
 
-	if( TestSnmpMessage() == false ) goto FUNC_ERROR;
-	if( TestAsnLong() == false ) goto FUNC_ERROR;
-	if( TestAsnInt() == false ) goto FUNC_ERROR;
-	if( TestAsnOid() == false ) goto FUNC_ERROR;
-	if( TestAsnType() == false ) goto FUNC_ERROR;
-	if( TestParseSnmpv3Packet() == false ) goto FUNC_ERROR;
-	if( TestAuthenticationParameters() == false ) goto FUNC_ERROR;
-	if( TestEncryptedPdu() == false ) goto FUNC_ERROR;
+	n = clsMessage.ParsePacket( szPacket, iPacketLen );
+	if( n == -1 ) 
+	{
+		printf( "%s clsMessage.ParsePacket error\n", __FUNCTION__ );
+		return false;
+	}
 
-	printf( "All Test is O.K!!!!\n" );
-	return 0;
-
-FUNC_ERROR:
-	printf( "Error\n" );
-
-	return -1;
+	return true;
 }
