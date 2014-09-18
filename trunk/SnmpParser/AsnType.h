@@ -36,6 +36,7 @@
 #define ASN_TYPE_GAUGE_32				0x42
 #define ASN_TYPE_COUNTER_64			0x46
 #define ASN_TYPE_NO_SUCH_OBJECT	0x80
+#define ASN_TYPE_NO_SUCH_INSTANCE	0x81
 
 /**
  * @ingroup SnmpParser
