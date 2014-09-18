@@ -76,6 +76,7 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 			break;
 		case ASN_TYPE_NULL:
 		case ASN_TYPE_NO_SUCH_OBJECT:
+		case ASN_TYPE_NO_SUCH_INSTANCE:
 			pclsValue = new CAsnNull();
 			break;
 		case ASN_TYPE_COMPLEX:
