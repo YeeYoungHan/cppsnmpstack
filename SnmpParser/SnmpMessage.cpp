@@ -35,6 +35,7 @@ CSnmpMessage::CSnmpMessage() : m_cVersion(SNMP_VERSION_2C), m_cCommand(SNMP_CMD_
 	, m_iMsgId(0), m_iMsgMaxSize(0), m_cMsgFlags(0), m_iMsgSecurityModel(0)
 	, m_iMsgAuthEngineBoots(0), m_iMsgAuthEngineTime(0)
 	, m_pszPacket(NULL), m_iPacketLen(0)
+	, m_iDestPort(0)
 {
 }
 

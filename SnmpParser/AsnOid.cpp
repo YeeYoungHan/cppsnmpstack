@@ -180,7 +180,7 @@ void CAsnOid::SetOidEntry( char * pszPacket, int iPacketSize, int iValue, int & 
 
 		while( iValue > 0 )
 		{
-			if( clsList.size() > 0 )
+			if( clsList.empty() == false )
 			{
 				clsList.push_back( ( iValue % 0x80 ) | 0x80 );
 			}
