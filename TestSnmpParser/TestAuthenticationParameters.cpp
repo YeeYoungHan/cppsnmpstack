@@ -81,7 +81,6 @@ static bool TestKey( )
 {
 	unsigned char szResult[16];
 	char szKey[33];
-	int iKeyLen = 0;
 
 	GetKey( "apassword", szResult );
 
@@ -110,7 +109,6 @@ static bool TestHmac( )
 {
 	const char * pszHexPacket = "3074020103300f02020522020300ffe3040105020103042f302d040d80001f88809b26630b890ed3530201090202031804057573657231040c0000000000000000000000000400302d040d80001f88809b26630b890ed3530400a01a02022cf1020100020100300e300c06082b060102010101000500";
 	const char * pszEngineId = "80001f88809b26630b890ed353";
-	int iHexLen = strlen(pszHexPacket);
 	unsigned char szPacket[1500], szEngineId[51];
 	int iIndex = 0, iEngineIdLen = 0;
 
@@ -149,7 +147,6 @@ static bool TestHmac2( )
 {
 	const char * pszHexPacket = "308180020103300f02022905020300ffe304010702010304383036040d80001f88809b26630b890ed353020109020302d7dc04057573657231040c000000000000000000000000040800000001166d411204305a06d0740666bc6dac3e93518b6afd5487784cf5c58b2d338ef8b05a368838d107d9409ba135bb1be39b9c0c78e48cc9";
 	const char * pszEngineId = "80001f88809b26630b890ed353";
-	int iHexLen = strlen(pszHexPacket);
 	unsigned char szPacket[1500], szEngineId[51];
 	int iIndex = 0, iEngineIdLen = 0;
 
