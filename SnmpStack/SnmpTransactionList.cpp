@@ -22,7 +22,7 @@
 #include "AutoRelease.h"
 #include "MemoryDebug.h"
 
-CSnmpTransactionList::CSnmpTransactionList()
+CSnmpTransactionList::CSnmpTransactionList() : m_pclsStack(NULL)
 {
 }
 
