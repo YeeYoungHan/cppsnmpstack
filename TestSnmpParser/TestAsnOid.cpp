@@ -38,5 +38,37 @@ bool TestAsnOid()
 		return false;
 	}
 
+	char szValue[100];
+
+	for( int a = 0; a <= 2; ++a )
+	{
+		for( int b = 0; b <= 39; ++b )
+		{
+			for( int c = 0; c <= 1000; ++c )
+			{
+				snprintf( szValue, sizeof(szValue), "%d.%d.%d", a, b, c );
+				clsOid.m_strValue = szValue;
+				iPacketLen = clsOid.MakePacket( szPacket, sizeof(szPacket) );
+				if( iPacketLen <= 0 )
+				{
+					printf( "%s oid(%s) make packet error\n", __FUNCTION__, szValue );
+					return false;
+				}
+
+				if( clsOid.ParsePacket( szPacket, iPacketLen ) != iPacketLen )
+				{
+					printf( "%s oid(%s) parse packet error\n", __FUNCTION__, szValue );
+					return false;
+				}
+
+				if( strcmp( clsOid.m_strValue.c_str(), szValue ) )
+				{
+					printf( "%s oid(%s) != oid(%s)\n", __FUNCTION__, clsOid.m_strValue.c_str(), szValue );
+					return false;
+				}
+			}
+		}
+	}
+
 	return true;
 }
