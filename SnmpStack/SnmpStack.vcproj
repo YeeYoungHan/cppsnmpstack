@@ -171,6 +171,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SnmpSessionThread.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SnmpStack.cpp"
 				>
 			</File>

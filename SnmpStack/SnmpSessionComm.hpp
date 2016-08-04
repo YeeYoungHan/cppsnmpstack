@@ -35,15 +35,11 @@ bool CSnmpSession::SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsR
 		{
 			pclsSecondRequest->m_iMsgId = ++m_iRequestId;
 			pclsSecondRequest->m_iRequestId = pclsSecondRequest->m_iMsgId;
-			pclsSecondRequest->m_strOid = pclsSecondRequest->m_strReqOid;
-
 			pclsSecondRequest->m_strMsgAuthEngineId = pclsResponse->m_strMsgAuthEngineId;
 			pclsSecondRequest->m_iMsgAuthEngineBoots = pclsResponse->m_iMsgAuthEngineBoots;
 			pclsSecondRequest->m_iMsgAuthEngineTime = pclsResponse->m_iMsgAuthEngineTime;
 			pclsSecondRequest->m_strMsgUserName = pclsSecondRequest->m_strUserId;
-
 			pclsSecondRequest->m_strContextEngineId = pclsResponse->m_strContextEngineId;
-			pclsSecondRequest->m_pclsValue = new CAsnNull();
 
 			pclsSecondRequest->SetPrivParams( );
 			pclsSecondRequest->SetAuthParams( );
@@ -76,19 +72,43 @@ bool CSnmpSession::SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsR
 
 /**
  * @ingroup SnmpStack
- * @brief SNMP 요청 메시지를 전송한 후, 이에 대한 응답 메시지를 수신한다.
- * @param pclsRequest		SNMP 요청 메시지
- * @param pclsResponse	SNMP 응답 메시지
+ * @brief SNMP trap 과 같은 단방향 SNMP 메시지를 전송한다.
+ * @param pclsRequest SNMP 메시지
  * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
  */
-bool CSnmpSession::SendRecv( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse )
+bool CSnmpSession::SendRequest( CSnmpMessage * pclsRequest )
 {
-	char szSend[SNMP_MAX_PACKET_SIZE], szRecv[SNMP_MAX_PACKET_SIZE];
-	int iSendLen, iRecvLen, n;
-	struct pollfd arrPoll[1];
-	uint32_t	iIp;
-	uint16_t	sPort;
-	bool	bRes = false;
+	char szSend[SNMP_MAX_PACKET_SIZE];
+	int iSendLen;
+
+	if( m_hSocket == INVALID_SOCKET )
+	{
+		if( Open() == false ) return false;
+	}
+
+	if( m_strUserName.empty() == false )
+	{
+		static uint8_t szEngineId[] = { 0x80, 0x00, 0x00, 0x04, 0x80, 0x00 };
+
+		pclsRequest->m_cVersion = SNMP_VERSION_3;
+		pclsRequest->m_iMsgId = ++m_iRequestId;
+		pclsRequest->m_iRequestId = pclsRequest->m_iMsgId;
+		pclsRequest->m_strMsgAuthEngineId = m_strAuthEngineId;
+		pclsRequest->m_strMsgUserName = m_strUserName;
+		pclsRequest->m_strUserId = m_strUserName;
+		pclsRequest->m_strAuthPassWord = m_strAuthPassWord;
+		pclsRequest->m_strPrivPassWord = m_strPrivPassWord;
+
+		pclsRequest->m_strContextEngineId.append( (char *)szEngineId, sizeof(szEngineId) );
+
+		pclsRequest->SetPrivParams( );
+		pclsRequest->SetAuthParams( );
+	}
+	else
+	{
+		pclsRequest->m_strCommunity = m_strCommunity;
+		pclsRequest->m_iRequestId = ++m_iRequestId;
+	}
 
 	iSendLen = pclsRequest->MakePacket( szSend, sizeof(szSend) );
 	if( iSendLen == -1 )
@@ -97,34 +117,139 @@ bool CSnmpSession::SendRecv( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResp
 		return false;
 	}
 
-	for( int iSend = 0; iSend <= m_iReSendCount; ++iSend )
+	if( m_bTcp )
+	{
+		if( TcpSend( m_hSocket, szSend, iSendLen ) == false )
+		{
+			CLog::Print( LOG_ERROR, "%s TcpSend error", __FUNCTION__ );
+			return false;
+		}
+	}
+	else
 	{
 		if( UdpSend( m_hSocket, szSend, iSendLen, m_iIp, m_sPort ) == false )
 		{
 			CLog::Print( LOG_ERROR, "%s UdpSend error", __FUNCTION__ );
 			return false;
 		}
+	}
 
-		TcpSetPollIn( arrPoll[0], m_hSocket );
+	return true;
+}
 
-		n = poll( arrPoll, 1, m_iMiliTimeout );
-		if( n > 0 )
+/**
+ * @ingroup SnmpStack
+ * @brief SNMP 요청 메시지를 전송한 후, 이에 대한 응답 메시지를 수신한다.
+ * @param pclsRequest		SNMP 요청 메시지
+ * @param pclsResponse	SNMP 응답 메시지
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
+bool CSnmpSession::SendRecv( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse )
+{
+	int iSendLen, iRecvLen = 0, n;
+	bool	bRes = false;
+
+	if( m_hSocket == INVALID_SOCKET )
+	{
+		if( Open() == false ) return false;
+	}
+
+	if( m_bTcp )
+	{
+		char szSend[SNMP_MAX_PACKET_SIZE], szRecv[SNMP_MAX_PACKET_SIZE];
+		int iWantRecvLen = 0;
+
+		iSendLen = pclsRequest->MakePacket( szSend, sizeof(szSend) );
+		if( iSendLen == -1 )
 		{
-			iRecvLen = sizeof(szRecv);
-			if( UdpRecv( m_hSocket, szRecv, &iRecvLen, &iIp, &sPort ) )
-			{
-				if( pclsResponse->ParsePacket( szRecv, iRecvLen ) > 0 )
-				{
-					if( m_bDebug )
-					{
-						LogPacket( szRecv, iRecvLen );
-					}
+			CLog::Print( LOG_ERROR, "%s MakePacket error", __FUNCTION__ );
+			return false;
+		}
 
-					if( pclsRequest->m_iRequestId == pclsResponse->m_iRequestId ||
-							( pclsRequest->m_iMsgId > 0 && pclsRequest->m_iMsgId == pclsResponse->m_iMsgId ) )
+		if( TcpSend( m_hSocket, szSend, iSendLen ) == false )
+		{
+			CLog::Print( LOG_ERROR, "%s TcpSend error", __FUNCTION__ );
+			return false;
+		}
+
+		while( 1 )
+		{
+			n = TcpRecv( m_hSocket, szRecv + iRecvLen, sizeof(szRecv) - iRecvLen, m_iMiliTimeout / 1000 ); 
+			if( n <= 0 )
+			{
+				CLog::Print( LOG_ERROR, "%s recv error(%d)", __FUNCTION__, GetError() );
+				return false;
+			}
+
+			iRecvLen += n;
+			if( iWantRecvLen <= 0 )
+			{
+				iWantRecvLen = pclsResponse->GetPacketLen( szRecv, iRecvLen );
+			}
+
+			if( iWantRecvLen > 0 )
+			{
+				if( iRecvLen == iWantRecvLen ) break;
+			}
+		}
+
+		if( pclsResponse->ParsePacket( szRecv, iRecvLen ) > 0 )
+		{
+			if( m_bDebug )
+			{
+				LogPacket( szRecv, iRecvLen );
+			}
+
+			if( pclsRequest->m_iRequestId == pclsResponse->m_iRequestId ||
+					( pclsRequest->m_iMsgId > 0 && pclsRequest->m_iMsgId == pclsResponse->m_iMsgId ) )
+			{
+				bRes = true;
+			}
+		}
+	}
+	else
+	{
+		char szSend[SNMP_MAX_PACKET_SIZE], szRecv[SNMP_MAX_PACKET_SIZE];
+		struct pollfd arrPoll[1];
+		uint32_t	iIp;
+		uint16_t	sPort;
+
+		iSendLen = pclsRequest->MakePacket( szSend, sizeof(szSend) );
+		if( iSendLen == -1 )
+		{
+			CLog::Print( LOG_ERROR, "%s MakePacket error", __FUNCTION__ );
+			return false;
+		}
+
+		for( int iSend = 0; iSend <= m_iReSendCount; ++iSend )
+		{
+			if( UdpSend( m_hSocket, szSend, iSendLen, m_iIp, m_sPort ) == false )
+			{
+				CLog::Print( LOG_ERROR, "%s UdpSend error", __FUNCTION__ );
+				return false;
+			}
+
+			TcpSetPollIn( arrPoll[0], m_hSocket );
+
+			n = poll( arrPoll, 1, m_iMiliTimeout );
+			if( n > 0 )
+			{
+				iRecvLen = sizeof(szRecv);
+				if( UdpRecv( m_hSocket, szRecv, &iRecvLen, &iIp, &sPort ) )
+				{
+					if( pclsResponse->ParsePacket( szRecv, iRecvLen ) > 0 )
 					{
-						bRes = true;
-						break;
+						if( m_bDebug )
+						{
+							LogPacket( szRecv, iRecvLen );
+						}
+
+						if( pclsRequest->m_iRequestId == pclsResponse->m_iRequestId ||
+								( pclsRequest->m_iMsgId > 0 && pclsRequest->m_iMsgId == pclsResponse->m_iMsgId ) )
+						{
+							bRes = true;
+							break;
+						}
 					}
 				}
 			}

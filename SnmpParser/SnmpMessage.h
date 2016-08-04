@@ -21,8 +21,8 @@
 
 #include "SnmpPlatformDefine.h"
 #include "SnmpDefine.h"
-#include "AsnComplex.h"
 #include "AsnString.h"
+#include "SnmpOidValueList.h"
 
 /**
  * @ingroup SnmpParser
@@ -38,14 +38,28 @@ public:
 
 	bool MakeGetRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
 	bool MakeGetNextRequest( const char * pszCommunity, uint32_t iRequestId, const char * pszOid );
+	bool MakeTrapRequest( const char * pszTrapOid );
 
 	bool MakeGetRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid );
 	bool MakeGetNextRequest( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, uint32_t iRequestId, const char * pszOid );
+
+	const char * GetOid();
+
+	bool AddOidValue( const char * pszOid, CAsnType * pclsValue );
+	bool AddOidValue( const char * pszOid, int32_t iValue );
+	bool AddOidValue( const char * pszOid, uint32_t iValue );
+	bool AddOidValue( const char * pszOid, time_t iValue );
+	bool AddOidValue( const char * pszOid, const char * pszValue );
+	bool AddOidValueOid( const char * pszOid, const char * pszValue );
+	bool AddOidValueCounter( const char * pszOid, uint32_t iValue );
+
+	CSnmpMessage * CreateResponse();
 
 	static CSnmpMessage * Create( CSnmpMessage * pclsMessage );
 
 	// SnmpMessageParse.hpp
 	int ParsePacket( const char * pszPacket, int iPacketLen );
+	int GetPacketLen( const char * pszPacket, int iPacketLen );
 
 	// SnmpMessageMake.hpp
 	int MakePacket( char * pszPacket, int iPacketSize );
@@ -68,8 +82,7 @@ public:
 	uint32_t		m_iRequestId;
 	uint32_t		m_iErrorStatus;
 	uint32_t		m_iErrorIndex;
-	std::string	m_strOid;
-	CAsnType    * m_pclsValue;
+	CSnmpOidValueList * m_pclsOidValueList;
 
 	// SNMPv3
 	uint32_t		m_iMsgId;

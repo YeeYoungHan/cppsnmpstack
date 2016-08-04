@@ -40,7 +40,7 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 		return;
 	}
 	
-	if( pclsResponse->m_pclsValue == NULL )
+	if( pclsResponse->m_pclsOidValueList == NULL )
 	{
 		printf( "respose error\n" );
 #ifndef USE_SNMP_SESSION
@@ -52,22 +52,25 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 	uint32_t iValue;
 	std::string strValue;
 
-	printf( "[%s] ", pclsRequest->m_strOid.c_str() );
+	SNMP_OID_VALUE_LIST::iterator itOL;
 
-	if( pclsResponse->m_pclsValue->GetInt( iValue ) )
+	for( itOL = pclsResponse->m_pclsOidValueList->m_clsList.begin(); itOL != pclsResponse->m_pclsOidValueList->m_clsList.end(); ++itOL )
 	{
-		printf( "[%u] (type=int)\n", iValue );
-	}
-	else if( pclsResponse->m_pclsValue->GetString( strValue ) )
-	{
-		printf( "[%s] (type=string)\n", strValue.c_str() );
-	}
-	else
-	{
-		printf( "(type=no_such_object)\n" );
+		if( (*itOL)->m_pclsValue->GetInt( iValue ) )
+		{
+			printf( "%s [%u] (type=int)\n", (*itOL)->m_strOid.c_str(), iValue );
+		}
+		else if( (*itOL)->m_pclsValue->GetString( strValue ) )
+		{
+			printf( "%s [%s] (type=string)\n", (*itOL)->m_strOid.c_str(), strValue.c_str() );
+		}
+		else
+		{
+			printf( "%s (type=no_such_object)\n", (*itOL)->m_strOid.c_str() );
+		}
 	}
 
-	if( strncmp( gstrOid.c_str(), pclsResponse->m_strOid.c_str(), gstrOid.length() ) )
+	if( strncmp( gstrOid.c_str(), pclsResponse->GetOid(), gstrOid.length() ) )
 	{
 #ifndef USE_SNMP_SESSION
 		gclsMutex.signal();
@@ -82,7 +85,7 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 	{
 		if( gstrUserId.empty() == false )
 		{
-			if( pclsMessage->MakeGetNextRequest( gstrUserId.c_str(), gstrAuthPassWord.c_str(), NULL, gclsStack.GetNextRequestId(), pclsResponse->m_strOid.c_str() ) )
+			if( pclsMessage->MakeGetNextRequest( gstrUserId.c_str(), gstrAuthPassWord.c_str(), NULL, gclsStack.GetNextRequestId(), pclsResponse->GetOid() ) )
 			{
 				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsMessage ) )
 				{
@@ -92,7 +95,7 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 		}
 		else
 		{
-			if( pclsMessage->MakeGetNextRequest( "public", gclsStack.GetNextRequestId(), pclsResponse->m_strOid.c_str() ) )
+			if( pclsMessage->MakeGetNextRequest( "public", gclsStack.GetNextRequestId(), pclsResponse->GetOid() ) )
 			{
 				if( gclsStack.SendRequest( gstrDestIp.c_str(), 161, pclsMessage ) )
 				{

@@ -24,6 +24,16 @@ CAsnString::CAsnString()
 	m_cType = ASN_TYPE_OCTET_STR;
 }
 
+CAsnString::CAsnString( const char * pszValue )
+{
+	m_cType = ASN_TYPE_OCTET_STR;
+
+	if( pszValue )
+	{
+		m_strValue = pszValue;
+	}
+}
+
 CAsnString::~CAsnString()
 {
 }

@@ -26,6 +26,7 @@
 #define SNMP_CMD_GET			0xA0
 #define SNMP_CMD_GET_NEXT	0xA1
 #define SNMP_CMD_RESPONSE	0xA2
+#define SNMP_CMD_TRAP			0xA7
 #define SNMP_CMD_REPORT		0xA8
 
 #define SNMP_SECURITY_MODEL_USM	3
@@ -34,7 +35,9 @@
 #define SNMP_MSG_FLAG_ENCRYPT	0x02
 #define SNMP_MSG_FLAG_AUTH		0x01
 
-#define SNMP_MAX_PACKET_SIZE	1480
+#define SNMP_MAX_PACKET_SIZE		14800
+
+#define SNMP_MAX_MSG_SIZE			12000
 
 /**
  * @defgroup SnmpParser SnmpParser

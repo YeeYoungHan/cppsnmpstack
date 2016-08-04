@@ -173,7 +173,7 @@ int CAsnType::ParseInt( const char * pszPacket, int iPacketLen, uint8_t cLength,
 	{
 		int32_t iTemp;
 
-		memcpy( &iTemp, pszPacket + 1, 4 );
+		memcpy( &iTemp, pszPacket + 1, cLength - 1 );
 		iValue = ntohl( iTemp );
 		return 5;
 	}

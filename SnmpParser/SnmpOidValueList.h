@@ -16,25 +16,52 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _ASN_NULL_H_
-#define _ASN_NULL_H_
+#ifndef _SNMP_OID_VALUE_LIST_H_
+#define _SNMP_OID_VALUE_LIST_H_
 
-#include "AsnType.h"
+#include "AsnComplex.h"
+#include <list>
 
 /**
  * @ingroup SnmpParser
- * @brief ASN NULL 타입 클래스
+ * @brief OID 와 OID 의 값을 저장하는 클래스
  */
-class CAsnNull : public CAsnType
+class CSnmpOidValue
 {
 public:
-	CAsnNull();
-	CAsnNull( uint8_t cType );
-	virtual ~CAsnNull();
+	CSnmpOidValue();
+	~CSnmpOidValue();
 
-	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
-	virtual int MakePacket( char * pszPacket, int iPacketSize );
-	virtual CAsnType * Copy( );
+	void Clear();
+	CSnmpOidValue * Copy();
+
+	/** OID */
+	std::string	m_strOid;
+
+	/** OID 의 값 */
+	CAsnType    * m_pclsValue;
+};
+
+typedef std::list< CSnmpOidValue * > SNMP_OID_VALUE_LIST;
+
+/**
+ * @ingroup SnmpParser
+ * @brief OID 와 OID 의 값들을 리스트에 저장하여서 관리하는 클래스
+ */
+class CSnmpOidValueList
+{
+public:
+	CSnmpOidValueList();
+	~CSnmpOidValueList();
+
+	bool Add( const char * pszOid, CAsnType * pclsValue );
+	void Clear();
+	CSnmpOidValue * GetFirst();
+
+	CSnmpOidValueList * Copy();
+	CAsnComplex * GetComplex();
+
+	SNMP_OID_VALUE_LIST m_clsList;
 };
 
 #endif

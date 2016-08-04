@@ -69,15 +69,11 @@ static void SnmpRecvProcess( CSnmpStack * pclsSnmpStack, char * pszPacket, int i
 				{
 					pclsRequest->m_iMsgId = pclsSnmpStack->GetNextRequestId();
 					pclsRequest->m_iRequestId = pclsRequest->m_iMsgId;
-					pclsRequest->m_strOid = pclsRequest->m_strReqOid;
-
 					pclsRequest->m_strMsgAuthEngineId = clsMessage.m_strMsgAuthEngineId;
 					pclsRequest->m_iMsgAuthEngineBoots = clsMessage.m_iMsgAuthEngineBoots;
 					pclsRequest->m_iMsgAuthEngineTime = clsMessage.m_iMsgAuthEngineTime;
 					pclsRequest->m_strMsgUserName = pclsRequest->m_strUserId;
-
 					pclsRequest->m_strContextEngineId = clsMessage.m_strContextEngineId;
-					pclsRequest->m_pclsValue = new CAsnNull();
 
 					pclsRequest->SetPrivParams( );
 					pclsRequest->SetAuthParams( );

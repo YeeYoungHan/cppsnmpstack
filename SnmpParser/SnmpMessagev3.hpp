@@ -126,6 +126,11 @@ bool CSnmpMessage::ParseEncryptedPdu( )
 	return true;
 }
 
+/**
+ * @ingroup SnmpParser
+ * @brief 인증 정보가 유효한지 검사한다.
+ * @returns 인증 정보가 유효하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
 bool CSnmpMessage::CheckAuth( )
 {
 	if( ( m_cMsgFlags & SNMP_MSG_FLAG_AUTH ) == 0 ) return true;

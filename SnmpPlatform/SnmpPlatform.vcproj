@@ -177,6 +177,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\StringUtility.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TimeUtility.cpp"
 				>
 			</File>
@@ -224,6 +228,10 @@
 			</File>
 			<File
 				RelativePath=".\SnmpUdp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StringUtility.h"
 				>
 			</File>
 			<File

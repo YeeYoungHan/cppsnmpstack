@@ -19,7 +19,7 @@
 #ifndef _SNMP_SESSION_H_
 #define _SNMP_SESSION_H_
 
-#include "SnmpUdp.h"
+#include "SnmpTcp.h"
 #include "SnmpMessage.h"
 
 /**
@@ -32,19 +32,33 @@ public:
 	CSnmpSession();
 	~CSnmpSession();
 
-	bool SetDestination( const char * pszIp, int iPort = 161 );
+	bool SetDestination( const char * pszIp, int iPort = 161, bool bTcp = false, bool bTrapOnly = false );
 	bool SetSnmpv2( const char * pszCommunity );
-	bool SetSnmpv3( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord );
+	bool SetSnmpv3( const char * pszUserName, const char * pszAuthPassWord, const char * pszPrivPassWord, const char * pszAuthEngineId = NULL );
 	bool SetTimeout( int iMiliSecond );
 	bool SetReSendCount( int iReSendCount );
 	void SetDebug( bool bDebug );
 
 	bool Open();
 	void Close();
+	bool Check();
 
+	const char * GetIp();
+
+	// SnmpSessionComm.hpp
 	bool SendRequest( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse );
+	bool SendRequest( CSnmpMessage * pclsRequest );
 	bool SendGetRequest( const char * pszOid, CAsnType ** ppclsAsnType );
 	bool SendGetNextRequest( const char * pszOid, std::string ** ppstrResponseOid, CAsnType ** ppclsAsnType );
+
+	bool SendGetRequest( const char * pszOid, std::string & strValue );
+	bool SendGetRequest( const char * pszOid, uint32_t & iValue );
+
+	bool SendGetNextRequest( const char * pszOid, std::string ** ppstrResponseOid, std::string & strValue );
+	bool SendGetNextRequest( const char * pszOid, std::string ** ppstrResponseOid, uint32_t & iValue );
+
+	bool				m_bStop;
+	Socket			m_hSocket;
 
 private:
 	std::string	m_strIp;
@@ -57,6 +71,7 @@ private:
 	std::string	m_strUserName;
 	std::string	m_strAuthPassWord;
 	std::string	m_strPrivPassWord;
+	std::string m_strAuthEngineId;
 
 	int					m_iMiliTimeout;
 	int					m_iReSendCount;
@@ -64,8 +79,8 @@ private:
 	uint32_t		m_iRequestId;
 	CSnmpMessage	m_clsResponse;
 
-	Socket			m_hSocket;
-
+	bool				m_bTcp;
+	bool				m_bTrapOnly;
 	bool				m_bDebug;
 
 	bool SendRecv( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResponse );

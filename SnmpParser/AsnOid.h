@@ -30,6 +30,7 @@ class CAsnOid : public CAsnType
 {
 public:
 	CAsnOid();
+	CAsnOid( const char * pszValue );
 	virtual ~CAsnOid();
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );

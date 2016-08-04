@@ -23,12 +23,18 @@
 
 typedef std::list< int > INT_LIST;
 
-CAsnOid::CAsnOid(void)
+CAsnOid::CAsnOid()
 {
 	m_cType = ASN_TYPE_OID;
 }
 
-CAsnOid::~CAsnOid(void)
+CAsnOid::CAsnOid( const char * pszValue )
+{
+	m_cType = ASN_TYPE_OID;
+	m_strValue = pszValue;
+}
+
+CAsnOid::~CAsnOid()
 {
 }
 
@@ -104,7 +110,7 @@ int CAsnOid::MakePacket( char * pszPacket, int iPacketSize )
 			}
 			else if( iNumPos == 2 )
 			{
-				pszPacket[iPos] |= iValue;
+				pszPacket[iPos] += iValue;
 				++iPos;
 			}
 			else

@@ -22,7 +22,7 @@
 
 /**
  * @ingroup SnmpStack
- * @brief 패킷을 HEX 문자열로 로그 출력한다.
+ * @brief 패킷을 HEX 문자열로 로그에 출력한다.
  * @param pszPacket		패킷
  * @param iPacketLen	패킷 길이
  */
@@ -33,7 +33,7 @@ void LogPacket( const char * pszPacket, int iPacketLen )
 
 	for( int i = 0; i < iPacketLen; ++i )
 	{
-		if( ( iLen + 2 ) >= sizeof(szHex) ) break;
+		if( ( iLen + 2 ) >= (int)sizeof(szHex) ) break;
 
 		iLen += snprintf( szHex + iLen, sizeof(szHex) - iLen, "%02x", (uint8_t)pszPacket[i] );
 	}

@@ -54,7 +54,7 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 	iPos = ParseHeader( pszPacket, iPacketLen );
 	if( iPos == -1 ) return -1;
 
-	for( uint8_t i = 0; i < m_iLen; )
+	for( uint32_t i = 0; i < m_iLen; )
 	{
 		cType = pszPacket[iPos];
 
@@ -63,6 +63,7 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 		case ASN_TYPE_INT:
 		case ASN_TYPE_COUNTER_32:
 		case ASN_TYPE_GAUGE_32:
+		case ASN_TYPE_TIMETICKS:
 			pclsValue = new CAsnInt( cType );
 			break;
 		case ASN_TYPE_COUNTER_64:
@@ -82,6 +83,7 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 		case ASN_TYPE_COMPLEX:
 		case SNMP_CMD_GET:
 		case SNMP_CMD_GET_NEXT:
+		case SNMP_CMD_TRAP:
 		case SNMP_CMD_RESPONSE:
 		case SNMP_CMD_REPORT:
 			pclsValue = new CAsnComplex();

@@ -147,6 +147,24 @@ int CSnmpMessage::ParsePacket( const char * pszPacket, int iPacketLen )
 
 /**
  * @ingroup SnmpParser
+ * @brief 수신해야 하는 패킷 길이를 리턴한다.
+ * @param pszPacket		패킷
+ * @param iPacketLen	패킷 길이
+ * @returns 성공하면 수신해야 할 패킷 길이를 리턴하고 그렇지 않으면 -1 을 리턴한다.
+ */
+int CSnmpMessage::GetPacketLen( const char * pszPacket, int iPacketLen )
+{
+	CAsnComplex clsComplex;
+	int n;
+	
+	n = clsComplex.ParseHeader( pszPacket, iPacketLen );
+	if( n == -1 ) return -1;
+
+	return clsComplex.m_iLen + n;
+}
+
+/**
+ * @ingroup SnmpParser
  * @brief msgGlobalData 정보를 저장한다.
  * @param pclsComplex msgGlobalData 를 저장한 ASN 변수
  * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
@@ -426,8 +444,26 @@ bool CSnmpMessage::SetCommand( CAsnComplex * pclsComplex )
 		else if( cType == 4 )
 		{
 			CAsnComplex * pclsBodyFrame = (CAsnComplex *)(*itList);
-			CAsnComplex * pclsBody = (CAsnComplex *)(*pclsBodyFrame->m_clsList.begin());
-			ASN_TYPE_LIST::iterator	itBody;
+			if( pclsBodyFrame->m_iLen > 0 )
+			{
+				CAsnComplex * pclsBody;
+				ASN_TYPE_LIST::iterator	itBody, itBodyFrame;
+				CAsnOid * pclsValue = NULL;
+				cType = 0;
+
+				if( m_pclsOidValueList == NULL )
+				{
+					m_pclsOidValueList = new CSnmpOidValueList();
+					if( m_pclsOidValueList == NULL ) return false;
+				}
+				else
+				{
+					m_pclsOidValueList->Clear();
+				}
+
+				for( itBodyFrame = pclsBodyFrame->m_clsList.begin(); itBodyFrame != pclsBodyFrame->m_clsList.end(); ++itBodyFrame )
+				{
+					pclsBody = (CAsnComplex *)(*itBodyFrame);
 			cType = 0;
 
 			for( itBody = pclsBody->m_clsList.begin(); itBody != pclsBody->m_clsList.end(); ++itBody )
@@ -436,12 +472,13 @@ bool CSnmpMessage::SetCommand( CAsnComplex * pclsComplex )
 
 				if( cType == 1 )
 				{
-					CAsnOid * pclsValue = (CAsnOid *)(*itBody);
-					m_strOid = pclsValue->m_strValue;
+							pclsValue = (CAsnOid *)(*itBody);
 				}
 				else if( cType == 2 )
 				{
-					m_pclsValue = (*itBody)->Copy();
+							m_pclsOidValueList->Add( pclsValue->m_strValue.c_str(), *itBody );
+						}
+					}
 				}
 			}
 		}

@@ -24,6 +24,11 @@ CAsnNull::CAsnNull()
 	m_cType = ASN_TYPE_NULL;
 }
 
+CAsnNull::CAsnNull( uint8_t cType )
+{
+	m_cType = cType;
+}
+
 CAsnNull::~CAsnNull()
 {
 }

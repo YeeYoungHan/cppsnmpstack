@@ -35,22 +35,27 @@ void CCallBack::RecvResponse( CSnmpMessage * pclsRequest, CSnmpMessage * pclsRes
 	{
 		printf( "timeout\n" );
 	}
-	else if( pclsResponse->m_pclsValue )
+	else if( pclsResponse->m_pclsOidValueList )
 	{
-		uint32_t iValue;
-		std::string strValue;
+		SNMP_OID_VALUE_LIST::iterator itOL;
 
-		if( pclsResponse->m_pclsValue->GetInt( iValue ) )
+		for( itOL = pclsResponse->m_pclsOidValueList->m_clsList.begin(); itOL != pclsResponse->m_pclsOidValueList->m_clsList.end(); ++itOL )
 		{
-			printf( "[%u] (type=int)\n", iValue );
-		}
-		else if( pclsResponse->m_pclsValue->GetString( strValue ) )
-		{
-			printf( "[%s] (type=string)\n", strValue.c_str() );
-		}
-		else
-		{
-			printf( "(type=no_such_object)\n" );
+			uint32_t iValue;
+			std::string strValue;
+
+			if( (*itOL)->m_pclsValue->GetInt( iValue ) )
+			{
+				printf( "[%u] (type=int)\n", iValue );
+			}
+			else if( (*itOL)->m_pclsValue->GetString( strValue ) )
+			{
+				printf( "[%s] (type=string)\n", strValue.c_str() );
+			}
+			else
+			{
+				printf( "(type=no_such_object)\n" );
+			}
 		}
 	}
 

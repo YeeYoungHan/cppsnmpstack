@@ -30,6 +30,12 @@ CAsnInt::CAsnInt( uint8_t cType ) : m_iValue(0)
 	m_cType = cType;
 }
 
+CAsnInt::CAsnInt( uint8_t cType, uint32_t iValue )
+{
+	m_cType = cType;
+	m_iValue = iValue;
+}
+
 CAsnInt::~CAsnInt()
 {
 }
@@ -121,6 +127,7 @@ CAsnType * CAsnInt::Copy( )
 	CAsnInt * pclsValue = new CAsnInt();
 	if( pclsValue == NULL ) return NULL;
 
+	pclsValue->m_cType = m_cType;
 	pclsValue->m_iValue = m_iValue;
 	return pclsValue;
 }

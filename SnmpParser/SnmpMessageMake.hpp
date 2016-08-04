@@ -153,7 +153,7 @@ FUNC_ERROR:
  */
 CAsnComplex * CSnmpMessage::CreateCommand( )
 {
-	CAsnComplex * pclsCommand = NULL, *pclsBodyFrame = NULL, *pclsBody = NULL;
+	CAsnComplex * pclsCommand = NULL, *pclsBody = NULL;
 
 	pclsCommand = new CAsnComplex();
 	if( pclsCommand == NULL ) return NULL;
@@ -163,32 +163,17 @@ CAsnComplex * CSnmpMessage::CreateCommand( )
 	if( pclsCommand->AddInt( m_iErrorStatus ) == false ) goto FUNC_ERROR;
 	if( pclsCommand->AddInt( m_iErrorIndex ) == false ) goto FUNC_ERROR;
 
-	pclsBodyFrame = new CAsnComplex();
-	if( pclsBodyFrame == NULL ) goto FUNC_ERROR;
-
-	if( m_strOid.empty() == false )
+	if( m_pclsOidValueList )
 	{
-		pclsBody = new CAsnComplex();
+		pclsBody = m_pclsOidValueList->GetComplex();
 		if( pclsBody == NULL ) goto FUNC_ERROR;
-
-		if( pclsBody->AddOid( m_strOid.c_str() ) == false ) goto FUNC_ERROR;
-
-		{
-			CAsnType * pclsValue = m_pclsValue->Copy();
-			if( pclsValue == NULL ) goto FUNC_ERROR;
-			if( pclsBody->AddValue( pclsValue ) == false ) goto FUNC_ERROR;
+		pclsCommand->AddComplex( pclsBody );
 		}
-
-		pclsBodyFrame->AddComplex( pclsBody );
-	}
-	
-	pclsCommand->AddComplex( pclsBodyFrame );
 
 	return pclsCommand;
 
 FUNC_ERROR:
 	if( pclsCommand ) delete pclsCommand;
-	if( pclsBodyFrame ) delete pclsBodyFrame;
 	if( pclsBody ) delete pclsBody;
 
 	return NULL;

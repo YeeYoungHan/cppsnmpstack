@@ -30,6 +30,7 @@ class CAsnString : public CAsnType
 {
 public:
 	CAsnString();
+	CAsnString( const char * pszValue );
 	virtual ~CAsnString();
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );

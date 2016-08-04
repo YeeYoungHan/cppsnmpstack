@@ -20,7 +20,7 @@
 #include "SnmpUdp.h"
 #include "MemoryDebug.h"
 
-CAsnLong::CAsnLong() : m_iValue(0)
+CAsnLong::CAsnLong()
 {
 	m_cType = ASN_TYPE_COUNTER_64;
 }

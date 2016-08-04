@@ -16,25 +16,35 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _ASN_NULL_H_
-#define _ASN_NULL_H_
-
-#include "AsnType.h"
-
 /**
- * @ingroup SnmpParser
- * @brief ASN NULL 타입 클래스
+ * @ingroup SnmpStack
+ * @brief 
+ * @param lpParameter 
+ * @returns 
  */
-class CAsnNull : public CAsnType
+THREAD_API SnmpSessionThread( LPVOID lpParameter )
 {
-public:
-	CAsnNull();
-	CAsnNull( uint8_t cType );
-	virtual ~CAsnNull();
+	CSnmpSession * pclsSession = (CSnmpSession *)lpParameter;
+	pollfd sttPoll[1];
+	int n;
+	char szPacket[1480];
 
-	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
-	virtual int MakePacket( char * pszPacket, int iPacketSize );
-	virtual CAsnType * Copy( );
-};
+	CLog::Print( LOG_INFO, "SnmpSessionThread is started" );
 
-#endif
+	TcpSetPollIn( sttPoll[0], pclsSession->m_hSocket );
+
+	while( pclsSession->m_bStop == false )
+	{
+		n = poll( sttPoll, 1, 1000 );
+		if( n <= 0 ) continue;
+
+		n = recv( pclsSession->m_hSocket, szPacket, sizeof(szPacket), 0 );
+		if( n <= 0 ) break;
+	}
+
+	CLog::Print( LOG_INFO, "SnmpSessionThread is terminated" );
+
+	pclsSession->Close();
+
+	return 0;
+}

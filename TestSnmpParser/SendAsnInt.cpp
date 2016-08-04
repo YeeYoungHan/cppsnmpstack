@@ -32,9 +32,8 @@ static void SendInt( Socket hSocket, uint32_t iValue )
 	clsInt.m_iValue = iValue;
 
 	clsMessage.MakeGetRequest( "public", 1, "1.3.6.1.2.1" );
-	delete clsMessage.m_pclsValue;
+	clsMessage.AddOidValue( "1.3.6.1.2.1", 0 );
 
-	clsMessage.m_pclsValue = clsInt.Copy();
 	iPacketLen = clsMessage.MakePacket( szPacket, sizeof(szPacket) );
 
 	UdpSend( hSocket, szPacket, iPacketLen, "192.168.0.1", 161 );
@@ -50,9 +49,7 @@ static void SendLong( Socket hSocket, uint64_t iValue )
 	clsLong.m_iValue = iValue;
 
 	clsMessage.MakeGetRequest( "public", 1, "1.3.6.1.2.1" );
-	delete clsMessage.m_pclsValue;
 
-	clsMessage.m_pclsValue = clsLong.Copy();
 	iPacketLen = clsMessage.MakePacket( szPacket, sizeof(szPacket) );
 
 	UdpSend( hSocket, szPacket, iPacketLen, "192.168.0.1", 161 );
