@@ -151,6 +151,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\SnmpAgent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpAgent.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SnmpDebug.cpp"
 				>
 			</File>
@@ -196,6 +204,18 @@
 			</File>
 			<File
 				RelativePath=".\SnmpStackSetup.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpTcpAgent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpTcpAgent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SnmpTcpAgentThread.hpp"
 				>
 			</File>
 		</Filter>

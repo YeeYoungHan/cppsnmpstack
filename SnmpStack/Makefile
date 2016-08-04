@@ -17,7 +17,8 @@ all: libsnmpstack.a
 LIB_OBJ=SnmpStack.o SnmpStackSetup.o \
 	SnmpTransaction.o SnmpTransactionList.o \
 	SnmpStackThread.o SnmpUdpThread.o \
-	SnmpSession.o SnmpDebug.o
+	SnmpSession.o SnmpDebug.o \
+	SnmpAgent.o SnmpTcpAgent.o
 
 libsnmpstack.a: $(LIB_OBJ)
 	ar crv $@ $(LIB_OBJ)
