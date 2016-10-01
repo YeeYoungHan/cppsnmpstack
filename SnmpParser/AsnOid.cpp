@@ -19,6 +19,7 @@
 #include "AsnOid.h"
 #include <stdlib.h>
 #include <list>
+#include "Log.h"
 #include "MemoryDebug.h"
 
 typedef std::list< int > INT_LIST;
@@ -123,7 +124,14 @@ int CAsnOid::MakePacket( char * pszPacket, int iPacketSize )
 		}
 		else
 		{
-			szValue[iValuePos++] = pszValue[i];
+			if( iValuePos < ( sizeof(szValue) - 1 ) )
+			{
+				szValue[iValuePos++] = pszValue[i];
+			}
+			else
+			{
+				CLog::Print( LOG_ERROR, "%s iValuePos(%d) is invalid - oid(%s)", __FUNCTION__, iValuePos, m_strValue.c_str() );
+			}
 		}
 	}
 
