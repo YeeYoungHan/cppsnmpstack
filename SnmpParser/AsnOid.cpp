@@ -124,7 +124,7 @@ int CAsnOid::MakePacket( char * pszPacket, int iPacketSize )
 		}
 		else
 		{
-			if( iValuePos < ( sizeof(szValue) - 1 ) )
+			if( iValuePos < (int)( sizeof(szValue) - 1 ) )
 			{
 				szValue[iValuePos++] = pszValue[i];
 			}

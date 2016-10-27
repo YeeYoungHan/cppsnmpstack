@@ -95,7 +95,7 @@ int main( int argc, char * argv[] )
 		}
 		else if( pclsValue->GetLong( iValue64 ) )
 		{
-			printf( "[%llu] (type=long)\n", iValue64 );
+			printf( "[" LONG_LONG_FORMAT "] (type=long)\n", iValue64 );
 		}
 		else if( pclsValue->GetString( strValue ) )
 		{
