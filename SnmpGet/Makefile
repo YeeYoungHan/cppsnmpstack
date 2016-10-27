@@ -10,7 +10,7 @@ INC=-I../SnmpStack -I../SnmpParser -I../SnmpPlatform
 LIB=-L../SnmpStack -lsnmpstack \
 	-L../SnmpParser -lsnmpparser \
 	-L../SnmpPlatform -lsnmpplatform \
-	-lssl -lpthread
+	-lssl -lcrypto -lpthread
 
 .SUFFIXES: .o .cpp
 %.o : %.cpp
