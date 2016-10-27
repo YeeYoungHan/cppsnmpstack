@@ -9,12 +9,14 @@ all:
 	cd SnmpParser && make
 	cd SnmpStack && make
 	cd SnmpGet && make
+	cd SnmpWalk && make
 
 clean:
 	cd SnmpPlatform && make clean
 	cd SnmpParser && make clean
 	cd SnmpStack && make clean
 	cd SnmpGet && make clean
+	cd SnmpWalk && make clean
 
 install:
 
