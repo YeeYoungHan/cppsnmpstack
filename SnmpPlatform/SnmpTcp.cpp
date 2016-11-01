@@ -111,7 +111,7 @@ bool GetIpByName( const char * szHostName, char * szIp, int iLen )
 
 	if( (hptr = gethostbyname(szHostName)) == NULL ) return false;
 	
-	snprintf( szIp, iLen, "%s", inet_ntoa( *(struct in_addr *)hptr->h_addr_list[0] ));
+	inet_ntop( AF_INET, (struct in_addr *)hptr->h_addr_list[0], szIp, iLen );
 	
 	return true;
 }
@@ -338,7 +338,7 @@ Socket TcpAccept( Socket hListenFd, char * pszIp, int iIpSize, int * piPort )
 
 		if( pszIp && iIpSize > 0 )
 		{
-			snprintf( pszIp, iIpSize, "%s", inet_ntoa( sttAddr.sin_addr ) );
+			inet_ntop( AF_INET, &sttAddr.sin_addr, pszIp, iIpSize );
 		}
 	}
 
@@ -359,10 +359,13 @@ bool GetLocalIpPort( Socket hSocket, std::string & strIp, int & iPort )
 
 	struct sockaddr_in sttAddr;
 	int iAddrSize = sizeof(sttAddr);
+	char szIp[INET6_ADDRSTRLEN];
 
 	if( getsockname( hSocket, (struct sockaddr *)&sttAddr, (socklen_t*)&iAddrSize ) == SOCKET_ERROR ) return false;
 
-	strIp = inet_ntoa( sttAddr.sin_addr );
+	inet_ntop( AF_INET, &sttAddr.sin_addr, szIp, sizeof(szIp) );
+
+	strIp = szIp;
 	iPort = ntohs( sttAddr.sin_port );
 
 	return true;
