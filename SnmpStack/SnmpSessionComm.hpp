@@ -231,6 +231,7 @@ bool CSnmpSession::SendRecv( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResp
 
 			TcpSetPollIn( arrPoll[0], m_hSocket );
 
+POLL_START:
 			n = poll( arrPoll, 1, m_iMiliTimeout );
 			if( n > 0 )
 			{
@@ -251,6 +252,9 @@ bool CSnmpSession::SendRecv( CSnmpMessage * pclsRequest, CSnmpMessage * pclsResp
 							break;
 						}
 					}
+
+					// 원하는 응답이 수신되지 않으면 다시 수신 대기로 진입한다.
+					goto POLL_START;
 				}
 			}
 		}
