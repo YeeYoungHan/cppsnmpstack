@@ -17,6 +17,7 @@
  */
 
 #include "SnmpMessage.h"
+#include "SnmpUdp.h"
 #include "SnmpAuth.h"
 #include "AsnInt.h"
 #include "AsnOid.h"
@@ -344,7 +345,9 @@ bool CSnmpMessage::AddOidValueIpAddress( const char * pszOid, const char * pszIp
 {
 	char szValue[5];
 	
-	uint32_t iValue = inet_addr( pszIp );
+	uint32_t iValue;
+
+	inet_pton( AF_INET, pszIp, &iValue );
 
 	memset( szValue, 0, sizeof(szValue) );
 	memcpy( szValue, &iValue, 4 );
