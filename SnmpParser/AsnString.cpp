@@ -17,11 +17,18 @@
  */
 
 #include "AsnString.h"
+#include "SnmpUdp.h"
+#include "Log.h"
 #include "MemoryDebug.h"
 
 CAsnString::CAsnString()
 {
 	m_cType = ASN_TYPE_OCTET_STR;
+}
+
+CAsnString::CAsnString( uint8_t cType )
+{
+	m_cType = cType;
 }
 
 CAsnString::CAsnString( const char * pszValue )
@@ -31,6 +38,16 @@ CAsnString::CAsnString( const char * pszValue )
 	if( pszValue )
 	{
 		m_strValue = pszValue;
+	}
+}
+
+CAsnString::CAsnString( uint8_t cType, const char * pszValue, int iValueLen )
+{
+	m_cType = cType;
+
+	if( pszValue )
+	{
+		m_strValue.append( pszValue, iValueLen );
 	}
 }
 
@@ -103,6 +120,7 @@ CAsnType * CAsnString::Copy( )
 	CAsnString * pclsValue = new CAsnString();
 	if( pclsValue == NULL ) return NULL;
 
+	pclsValue->m_cType = m_cType;
 	pclsValue->m_strValue = m_strValue;
 
 	return pclsValue;
@@ -116,7 +134,25 @@ CAsnType * CAsnString::Copy( )
  */
 bool CAsnString::GetString( std::string & strValue )
 {
+	if( m_cType == ASN_TYPE_IP_ADDRESS )
+	{
+		if( m_strValue.length() != 4 )
+		{
+			CLog::Print( LOG_ERROR, "%s value type is not IP", __FUNCTION__ );
+			return false;
+		}
+
+		uint32_t iValue;
+		char szIp[21];
+
+		memcpy( &iValue, m_strValue.c_str(), 4 );
+		inet_ntop( AF_INET, &iValue, szIp, sizeof(szIp) );
+		strValue = szIp;
+	}
+	else
+	{
 	strValue = m_strValue;
+	}
 
 	return true;
 }

@@ -70,7 +70,8 @@ int CAsnComplex::ParsePacket( const char * pszPacket, int iPacketLen )
 			pclsValue = new CAsnLong( cType );
 			break;
 		case ASN_TYPE_OCTET_STR:
-			pclsValue = new CAsnString();
+		case ASN_TYPE_IP_ADDRESS:
+			pclsValue = new CAsnString( cType );
 			break;
 		case ASN_TYPE_OID:
 			pclsValue = new CAsnOid();

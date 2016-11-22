@@ -32,6 +32,7 @@
 #define ASN_TYPE_CONSTRUCTOR	0x20
 
 #define ASN_TYPE_COMPLEX				0x30
+#define ASN_TYPE_IP_ADDRESS			0x40
 #define ASN_TYPE_COUNTER_32			0x41
 #define ASN_TYPE_GAUGE_32				0x42
 #define ASN_TYPE_TIMETICKS			0x43
@@ -48,7 +49,10 @@ class CAsnType
 public:
 	virtual ~CAsnType(){ };
 
+	/** 타입 */
 	uint8_t		m_cType;
+
+	/** 길이 */
 	uint32_t	m_iLen;
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen ) = 0;

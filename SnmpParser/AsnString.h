@@ -30,7 +30,9 @@ class CAsnString : public CAsnType
 {
 public:
 	CAsnString();
+	CAsnString( uint8_t cType );
 	CAsnString( const char * pszValue );
+	CAsnString( uint8_t cType, const char * pszValue, int iValueLen );
 	virtual ~CAsnString();
 
 	virtual int ParsePacket( const char * pszPacket, int iPacketLen );
@@ -39,6 +41,7 @@ public:
 
 	virtual bool GetString( std::string & strValue );
 
+	/** ASN °ª */
 	std::string m_strValue;
 };
 

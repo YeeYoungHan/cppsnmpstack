@@ -49,6 +49,7 @@ public:
 
 	void Clear();
 
+	/** ASN ¸®½ºÆ® */
 	ASN_TYPE_LIST m_clsList;
 };
 

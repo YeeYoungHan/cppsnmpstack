@@ -52,6 +52,7 @@ public:
 	bool AddOidValue( const char * pszOid, const char * pszValue );
 	bool AddOidValueOid( const char * pszOid, const char * pszValue );
 	bool AddOidValueCounter( const char * pszOid, uint32_t iValue );
+	bool AddOidValueIpAddress( const char * pszOid, const char * pszIp );
 
 	CSnmpMessage * CreateResponse();
 

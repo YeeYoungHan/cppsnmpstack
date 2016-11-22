@@ -335,6 +335,26 @@ bool CSnmpMessage::AddOidValueCounter( const char * pszOid, uint32_t iValue )
 
 /**
  * @ingroup SnmpParser
+ * @brief OID 와 IP 주소를 저장한다.
+ * @param pszOid	OID
+ * @param pszIp		IPv4 IP 주소
+ * @returns 성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
+ */
+bool CSnmpMessage::AddOidValueIpAddress( const char * pszOid, const char * pszIp )
+{
+	char szValue[5];
+	
+	uint32_t iValue = inet_addr( pszIp );
+
+	memset( szValue, 0, sizeof(szValue) );
+	memcpy( szValue, &iValue, 4 );
+	CAsnString clsValue( ASN_TYPE_IP_ADDRESS, szValue, 4 );
+	
+	return AddOidValue( pszOid, &clsValue );
+}
+
+/**
+ * @ingroup SnmpParser
  * @brief SNMP 응답 메시지를 생성한다.
  * @returns SNMP 응답 메시지를 리턴한다.
  */

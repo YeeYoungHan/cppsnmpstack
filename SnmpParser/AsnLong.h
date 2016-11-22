@@ -21,6 +21,10 @@
 
 #include "AsnType.h"
 
+/**
+ * @ingroup SnmpParser
+ * @brief ASN long 타입 클래스
+ */
 class CAsnLong : public CAsnType
 {
 public:
@@ -36,6 +40,7 @@ public:
 
 	int ParseLong( const char * pszPacket, int iPacketLen, uint8_t cLength, uint64_t & iValue );
 
+	/** ASN 값 */
 	uint64_t	m_iValue;
 };
 

@@ -39,6 +39,7 @@ public:
 
 	virtual bool GetInt( uint32_t & iValue );
 
+	/** ASN °ª */
 	uint32_t	m_iValue;
 };
 

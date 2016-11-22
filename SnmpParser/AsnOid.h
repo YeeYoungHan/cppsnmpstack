@@ -39,10 +39,11 @@ public:
 
 	virtual bool GetString( std::string & strValue );
 
+	/** OID */
 	std::string m_strValue;
 
 private:
-	static void SetOidEntry( char * pszPacket, int iPacketSize, int iValue, int & iPos );
+	static void SetOidEntry( char * pszPacket, int iPacketSize, uint64_t iValue, int & iPos );
 };
 
 #endif

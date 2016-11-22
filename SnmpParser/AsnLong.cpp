@@ -153,6 +153,7 @@ CAsnType * CAsnLong::Copy( )
 	CAsnLong * pclsValue = new CAsnLong();
 	if( pclsValue == NULL ) return NULL;
 
+	pclsValue->m_cType = m_cType;
 	pclsValue->m_iValue = m_iValue;
 	return pclsValue;
 }
