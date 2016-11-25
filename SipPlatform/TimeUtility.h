@@ -16,31 +16,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
+#ifndef _TIME_UTILITY_H_
+#define _TIME_UTILITY_H_
+
 #include "SipPlatformDefine.h"
-#include "TestSnmpParser.h"
-#include "SnmpMessage.h"
-#include "MemoryDebug.h"
+#include <time.h>
 
-bool TestSnmpMessage()
-{
-	const char * pszHex = "303002010104067075626c6963a2230202021f02010002010030173015060c2b060102011f0101010aa70f46051a00be371d";
-	char szPacket[1500];
-	int iPacketLen, n;
-	CSnmpMessage clsMessage;
+#ifdef WIN32
+int gettimeofday( struct timeval *tv, struct timezone *tz );
+#endif
 
-	iPacketLen = HexToString( pszHex, (char *)szPacket, sizeof(szPacket) );
-	if( iPacketLen == -1 ) 
-	{
-		printf( "%s HexToString error\n", __FUNCTION__ );
-		return false;
-	}
+int DiffTimeval( struct timeval * psttOld, struct timeval * psttNew );
+void MiliSleep( int iMiliSecond );
+uint64_t GetCurrentMiliSecond();
 
-	n = clsMessage.ParsePacket( szPacket, iPacketLen );
-	if( n == -1 ) 
-	{
-		printf( "%s clsMessage.ParsePacket error\n", __FUNCTION__ );
-		return false;
-	}
-
-	return true;
-}
+#endif

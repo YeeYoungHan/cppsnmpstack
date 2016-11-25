@@ -16,10 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpPlatformDefine.h"
+#include "SipPlatformDefine.h"
 #include "SnmpStackDefine.h"
 #include "SnmpStack.h"
-#include "SnmpUdp.h"
+#include "SipUdp.h"
 #include "SnmpThread.h"
 #include "TimeUtility.h"
 #include "Log.h"

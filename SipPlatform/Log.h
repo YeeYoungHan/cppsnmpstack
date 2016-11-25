@@ -19,9 +19,10 @@
 #ifndef _LOG_H_
 #define _LOG_H_
 
-#include "SnmpPlatformDefine.h"
+#include "SipPlatformDefine.h"
 #include <stdio.h>
-#include "SnmpMutex.h"
+#include "SipMutex.h"
+#include "Directory.h"
 
 #define LOG_MAX_SIZE								1024*8
 #define FULLPATH_FILENAME_MAX_SIZE	1024
@@ -31,7 +32,7 @@
 #define DEFAULT_LOG_FOLDER_SIZE			3145728000UL
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그 레벨 관련 ENUM
  *	CLog 에서 사용하는 ENUM 이다.
  */
@@ -52,7 +53,7 @@ enum EnumLogLevel
 };
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그 메시지를 프로그램에서 처리하고 싶은 경우에 사용한다.
  */
 class ILogCallBack
@@ -64,7 +65,7 @@ public:
 };
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그 관련 클래스
  */
 class CLog
@@ -74,7 +75,7 @@ private:
 	static char				m_szDate[9];		// 현재 저장중인 로그 파일 이름
 	static FILE				* m_sttFd;			// 로그 파일 지정자
 
-	static CSnmpMutex	* m_pThreadMutex;	// Thread Mutex
+	static CSipMutex	* m_pThreadMutex;	// Thread Mutex
 	
 	static int				m_iLevel;				// 로그 파일에 저장할 레벨
 	static int				m_iMaxLogSize;	// 하나의 로그 파일에 저장할 수 있는 최대 크기
@@ -92,6 +93,9 @@ public:
 	static void SetCallBack( ILogCallBack * pclsCallBack );
 
 	static int Print( EnumLogLevel iLevel, const char * fmt, ... );
+	static void Print( void (* func)( FILE * fd ) );
+
+	static int GetLevel( );
 	static void SetLevel( int iLevel );
 	static void SetNullLevel();
 
@@ -101,6 +105,8 @@ public:
 	static void SetMaxFolderSize( int64_t iSize );
 	static int GetLogIndex();
 	static void DeleteOldFile( );
+
+	static void SortFileList( FILE_LIST & clsFileList );
 };
 
 #endif

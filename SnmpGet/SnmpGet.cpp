@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpPlatformDefine.h"
-#include "SnmpUdp.h"
+#include "SipPlatformDefine.h"
+#include "SipUdp.h"
 #include "SnmpStack.h"
 #include "SnmpSession.h"
 #include "CallBack.h"
@@ -26,7 +26,7 @@
 #include "MemoryDebug.h"
 
 #ifndef USE_SNMP_SESSION
-CSnmpMutexSignal gclsMutex;
+CSipMutexSignal gclsMutex;
 #endif
 
 int main( int argc, char * argv[] )

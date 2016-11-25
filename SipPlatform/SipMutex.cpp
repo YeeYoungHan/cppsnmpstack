@@ -16,14 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpMutex.h"
+#include "SipMutex.h"
 #include "MemoryDebug.h"
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 생성자
  */
-CSnmpMutex::CSnmpMutex( )
+CSipMutex::CSipMutex( )
 {
 #ifdef WIN32
 	InitializeCriticalSection( &m_sttMutex );
@@ -33,10 +33,10 @@ CSnmpMutex::CSnmpMutex( )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 소멸자
  */
-CSnmpMutex::~CSnmpMutex()
+CSipMutex::~CSipMutex()
 {
 #ifdef WIN32
 	DeleteCriticalSection( &m_sttMutex );
@@ -46,11 +46,11 @@ CSnmpMutex::~CSnmpMutex()
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief mutex lock 한다.
  * @return true 를 리턴한다.
  */
-bool CSnmpMutex::acquire()
+bool CSipMutex::acquire()
 {
 #ifdef WIN32
 	EnterCriticalSection( &m_sttMutex );
@@ -65,11 +65,11 @@ bool CSnmpMutex::acquire()
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief mutex unlock 한다.
  * @return true 를 리턴한다.
  */
-bool CSnmpMutex::release()
+bool CSipMutex::release()
 {
 #ifdef WIN32
 	LeaveCriticalSection( &m_sttMutex );
@@ -84,10 +84,10 @@ bool CSnmpMutex::release()
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 생성자
  */
-CSnmpMutexSignal::CSnmpMutexSignal()
+CSipMutexSignal::CSipMutexSignal()
 {
 #ifdef WIN32
 	InitializeConditionVariable( &m_sttCond );
@@ -97,10 +97,10 @@ CSnmpMutexSignal::CSnmpMutexSignal()
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 소멸자
  */
-CSnmpMutexSignal::~CSnmpMutexSignal()
+CSipMutexSignal::~CSipMutexSignal()
 {
 #ifdef WIN32
 #else
@@ -109,11 +109,11 @@ CSnmpMutexSignal::~CSnmpMutexSignal()
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief signal 또는 broadcast 메소드가 호출될 때까지 대기한다.
  * @return true 를 리턴한다.
  */
-bool CSnmpMutexSignal::wait()
+bool CSipMutexSignal::wait()
 {
 #ifdef WIN32
 	SleepConditionVariableCS( &m_sttCond, &m_sttMutex, INFINITE );
@@ -131,11 +131,11 @@ bool CSnmpMutexSignal::wait()
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief signal 또는 broadcast 메소드가 호출될 때까지 대기하는 쓰레드 1개를 대기 중지시킨다.
  * @return true 를 리턴한다.
  */
-bool CSnmpMutexSignal::signal()
+bool CSipMutexSignal::signal()
 {
 #ifdef WIN32
 	WakeConditionVariable( &m_sttCond );
@@ -151,11 +151,11 @@ bool CSnmpMutexSignal::signal()
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief signal 또는 broadcast 메소드가 호출될 때까지 대기하는 모든 쓰레드를 대기 중지시킨다.
  * @return true 를 리턴한다.
  */
-bool CSnmpMutexSignal::broadcast()
+bool CSipMutexSignal::broadcast()
 {
 #ifdef WIN32
 	WakeAllConditionVariable( &m_sttCond );

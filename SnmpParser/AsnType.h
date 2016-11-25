@@ -19,7 +19,7 @@
 #ifndef _ASN_TYPE_H_
 #define _ASN_TYPE_H_
 
-#include "SnmpPlatformDefine.h"
+#include "SipPlatformDefine.h"
 #include <string>
 
 #define ASN_TYPE_BOOL					0x01

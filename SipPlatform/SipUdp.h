@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_UDP_H_
-#define _SNMP_UDP_H_
+#ifndef _SIP_UDP_H_
+#define _SIP_UDP_H_
 
 #include <string>
 
@@ -50,6 +50,8 @@ int poll( struct pollfd *fds, unsigned int nfds, int timeout );
 #include <poll.h>
 
 typedef int Socket;
+typedef struct in6_addr IN6_ADDR;
+
 #define INVALID_SOCKET	-1
 #define SOCKET_ERROR		-1
 
@@ -60,19 +62,27 @@ inline int GetError() { return errno; }
 
 #include <errno.h>
 
-Socket UdpSocket();
-Socket UdpListen( unsigned short iPort, const char * pszIp );
+Socket UdpSocket( bool bIpv6 = false );
+Socket UdpListen( unsigned short iPort, const char * pszIp, bool bIpv6 = false );
+
 bool UdpRecv( Socket iFd, char * pszBuf, int * piLen, unsigned int * piIp, unsigned short* piPort );
-bool UdpRecv( Socket iFd, char * pszBuf, int * piLen, char * pszIp, int iIpSize, unsigned short* piPort );
+bool UdpRecv( Socket iFd, char * pszBuf, int * piLen, IN6_ADDR * psttIp, unsigned short* piPort );
+bool UdpRecv( Socket iFd, char * pszBuf, int * piLen, char * pszIp, int iIpSize, unsigned short* piPort, bool bIpv6 = false );
 bool UdpSend( Socket iFd, const char * pszBuf, int iBufLen, const char * pszIp, unsigned short iPort );
 bool UdpSend( Socket iFd, const char * pszBuf, int iBufLen, unsigned int iIp, unsigned short iPort );
+bool UdpSend( Socket iFd, const char * pszBuf, int iBufLen, IN6_ADDR * psttIp, unsigned short iPort );
 void TcpSetPollIn( struct pollfd & sttPollFd, Socket hSocket );
 void InitNetwork();
 
 bool GetLocalIp( std::string & strIp );
 
 // bigendian system 인 경우, 아래의 소스 코드를 수정해야 한다.
+#ifndef htonll
 #define htonll(x)   ((((uint64_t)htonl((uint32_t)x)) << 32) + htonl(x >> 32))
+#endif
+
+#ifndef ntohll
 #define ntohll(x)   ((((uint64_t)ntohl((uint32_t)x)) << 32) + ntohl(x >> 32))
+#endif
 
 #endif

@@ -16,31 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SipPlatformDefine.h"
-#include "TestSnmpParser.h"
-#include "SnmpMessage.h"
-#include "MemoryDebug.h"
+#ifndef _MD5_H_
+#define _MD5_H_
 
-bool TestSnmpMessage()
-{
-	const char * pszHex = "303002010104067075626c6963a2230202021f02010002010030173015060c2b060102011f0101010aa70f46051a00be371d";
-	char szPacket[1500];
-	int iPacketLen, n;
-	CSnmpMessage clsMessage;
+void SipMd5String( const char * pszPlainText, char result[33] );
+void SipMd5Byte( const char * pszPlainText, unsigned char digest[16] );
 
-	iPacketLen = HexToString( pszHex, (char *)szPacket, sizeof(szPacket) );
-	if( iPacketLen == -1 ) 
-	{
-		printf( "%s HexToString error\n", __FUNCTION__ );
-		return false;
-	}
-
-	n = clsMessage.ParsePacket( szPacket, iPacketLen );
-	if( n == -1 ) 
-	{
-		printf( "%s clsMessage.ParsePacket error\n", __FUNCTION__ );
-		return false;
-	}
-
-	return true;
-}
+#endif

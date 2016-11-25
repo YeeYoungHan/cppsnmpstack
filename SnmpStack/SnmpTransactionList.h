@@ -20,7 +20,7 @@
 #define _SNMP_TRANSACTION_LIST_H_
 
 #include "SnmpTransaction.h"
-#include "SnmpMutex.h"
+#include "SipMutex.h"
 #include <map>
 
 class CSnmpStack;
@@ -52,7 +52,7 @@ public:
 
 private:
 	SNMP_TRANSACTION_MAP	m_clsMap;
-	CSnmpMutex						m_clsMutex;
+	CSipMutex						m_clsMutex;
 	CSnmpStack						* m_pclsStack;
 };
 

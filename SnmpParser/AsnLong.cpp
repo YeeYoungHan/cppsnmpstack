@@ -17,7 +17,7 @@
  */
 
 #include "AsnLong.h"
-#include "SnmpUdp.h"
+#include "SipUdp.h"
 #include "MemoryDebug.h"
 
 CAsnLong::CAsnLong()

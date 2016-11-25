@@ -1,8 +1,8 @@
-# Makefile for SnmpPlatform
+# Makefile for SipPlatform
 #
 # programmer : yee young han ( websearch@naver.com )
 #            : http://blog.naver.com/websearch
-# start date : 2014/07/29
+# start date : 2012/11/22
 
 include ../Makefile.mk
 
@@ -12,17 +12,17 @@ INC=
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< $(INC)
 
-all: libsnmpplatform.a
+all: libsipplatform.a
 
-LIB_OBJ=Directory.o Log.o \
-	SnmpMutex.o \
-	SnmpTcp.o SnmpUdp.o \
-	TimeUtility.o \
+LIB_OBJ=Directory.o Log.o FileLog.o ServerUtility.o \
+	SipMd5.o SipMutex.o \
+	SipTcp.o SipUdp.o \
+	StringUtility.o StringMap.o \
+	TimeString.o TimeUtility.o \
 	FileUtility.o \
-	ServerUtility.o \
-	StringUtility.o
+	Random.o
 
-libsnmpplatform.a: $(LIB_OBJ)
+libsipplatform.a: $(LIB_OBJ)
 	ar crv $@ $(LIB_OBJ)
 
 clean:

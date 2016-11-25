@@ -16,56 +16,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_MUTEX_H_
-#define _SNMP_MUTEX_H_
+#ifndef _STRING_MAP_H_
+#define _STRING_MAP_H_
 
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <pthread.h>
-#endif
+#include <string>
+#include <map>
+#include "SipMutex.h"
 
-/** 
- * @ingroup SnmpPlatform
- * @brief mutex 기능을 수행하는 클래스
+typedef std::map< std::string, std::string > STRING_MAP;
+
+/**
+ * @ingroup SipPlatform
+ * @brief 문자열 맵 자료구조 클래스
  */
-class CSnmpMutex
+class CStringMap
 {
 public:
-	CSnmpMutex();
-	~CSnmpMutex();
-	
-	bool acquire();
-	bool release();
+	CStringMap();
+	~CStringMap();
 
-protected:
-#ifdef WIN32
-	CRITICAL_SECTION m_sttMutex;
-#else
-	pthread_mutex_t	 m_sttMutex;
-#endif
-};
-
-/** 
- * @ingroup SnmpPlatform
- * @brief mutex 기능 및 wait/signal 기능을 수행하는 클래스. 리눅스에 최적화되어 있고 윈도우에는 최적화되어 있지 않음.
- */
-class CSnmpMutexSignal : public CSnmpMutex
-{
-public:
-	CSnmpMutexSignal();
-	~CSnmpMutexSignal();
-	
-	bool wait();
-	bool signal();
-	bool broadcast();
+	bool Insert( const char * pszKey, const char * pszValue );
+	bool Select( const char * pszKey );
+	int GetCount( );
+	void DeleteAll( );
 
 private:
-#ifdef WIN32
-	CONDITION_VARIABLE		m_sttCond;
-#else
-	pthread_cond_t		m_sttCond;
-#endif
+	CSipMutex	m_clsMutex;
+	STRING_MAP	m_clsMap;
 };
 
 #endif

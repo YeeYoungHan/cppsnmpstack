@@ -20,7 +20,7 @@
 #include "AsnInt.h"
 #include "AsnLong.h"
 #include "SnmpMessage.h"
-#include "SnmpUdp.h"
+#include "SipUdp.h"
 
 static void SendInt( Socket hSocket, uint32_t iValue )
 {

@@ -16,18 +16,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _TIME_UTILITY_H_
-#define _TIME_UTILITY_H_
+#ifndef _TIME_STRING_H_
+#define _TIME_STRING_H_
 
-#include "SnmpPlatformDefine.h"
 #include <time.h>
 
-#ifdef WIN32
-int gettimeofday( struct timeval *tv, struct timezone *tz );
-#endif
+void LocalTime( time_t iTime, struct tm & sttTm );
 
-int DiffTimeval( struct timeval * psttOld, struct timeval * psttNew );
-void MiliSleep( int iMiliSecond );
-uint64_t GetCurrentMiliSecond();
+void GetDateTimeString( time_t iTime, char * pszTime, int iTimeSize );
+void GetDateTimeString( char * pszTime, int iTimeSize );
+
+void GetDateString( time_t iTime, char * pszDate, int iDateSize );
+void GetDateString( char * pszDate, int iDateSize );
+
+void GetTimeString( time_t iTime, char * pszTime, int iTimeSize );
+void GetTimeString( char * pszTime, int iTimeSize );
 
 #endif

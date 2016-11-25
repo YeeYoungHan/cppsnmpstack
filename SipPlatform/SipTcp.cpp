@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpPlatformDefine.h"
-#include "SnmpTcp.h"
+#include "SipPlatformDefine.h"
+#include "SipTcp.h"
 #include "MemoryDebug.h"
 
 #ifndef WIN32
@@ -98,7 +98,7 @@ done:
 #endif
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 호스트 이름으로 IP 주소를 검색한다.
  * @param szHostName	호스트 이름
  * @param szIp				IP 주소를 저장할 변수
@@ -111,13 +111,17 @@ bool GetIpByName( const char * szHostName, char * szIp, int iLen )
 
 	if( (hptr = gethostbyname(szHostName)) == NULL ) return false;
 	
+#ifdef WINXP
+	snprintf( szIp, iLen, "%s", inet_ntoa( *(struct in_addr *)hptr->h_addr_list[0] ));
+#else
 	inet_ntop( AF_INET, (struct in_addr *)hptr->h_addr_list[0], szIp, iLen );
-	
+#endif
+
 	return true;
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief TCP 서버에 연결한다.
  * @param pszIp			TCP 서버 IP 주소
  * @param iPort			TCP 서버 포트 번호
@@ -126,11 +130,9 @@ bool GetIpByName( const char * szHostName, char * szIp, int iLen )
  */
 Socket TcpConnect( const char * pszIp, int iPort, int iTimeout )
 {
-	char		szIp[16];
+	char		szIp[INET6_ADDRSTRLEN];
 	Socket	fd;
 
-	struct	sockaddr_in	addr;		
-	
 	memset( szIp, 0, sizeof(szIp) );
 	if( isdigit(pszIp[0]) == 0 )
 	{
@@ -142,20 +144,34 @@ Socket TcpConnect( const char * pszIp, int iPort, int iTimeout )
 		snprintf( szIp, sizeof(szIp), "%s", pszIp );
 	}
 
-	// connect server.
-	if( ( fd = socket( AF_INET, SOCK_STREAM, 0 )) == INVALID_SOCKET )
+#ifndef WINXP
+	if( strstr( szIp, ":" ) )
 	{
-		return INVALID_SOCKET;
-	}
+		struct	sockaddr_in6	addr;		
 
-	addr.sin_family = AF_INET;
-	addr.sin_port   = htons(iPort);
-	addr.sin_addr.s_addr = inet_addr( szIp );	
+		// connect server.
+		if( ( fd = socket( AF_INET, SOCK_STREAM, 0 )) == INVALID_SOCKET )
+		{
+			return INVALID_SOCKET;
+		}
+
+		addr.sin6_family = AF_INET6;
+		addr.sin6_port   = htons(iPort);
+
+		inet_pton( AF_INET6, szIp, &addr.sin6_addr );
 
 #ifndef WIN32
-	if( iTimeout > 0 )
-	{
-		if( ConnectTimeout( fd, (struct sockaddr *)&addr, sizeof(addr), iTimeout ) != 0 )
+		if( iTimeout > 0 )
+		{
+			if( ConnectTimeout( fd, (struct sockaddr *)&addr, sizeof(addr), iTimeout ) != 0 )
+			{
+				closesocket( fd );
+				return INVALID_SOCKET;
+			}
+		}
+		else
+#endif
+		if( connect( fd, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR )
 		{
 			closesocket( fd );
 			return INVALID_SOCKET;
@@ -163,17 +179,47 @@ Socket TcpConnect( const char * pszIp, int iPort, int iTimeout )
 	}
 	else
 #endif
-	if( connect( fd, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR )
 	{
-		closesocket( fd );
-		return INVALID_SOCKET;
+		struct	sockaddr_in	addr;		
+
+		// connect server.
+		if( ( fd = socket( AF_INET, SOCK_STREAM, 0 )) == INVALID_SOCKET )
+		{
+			return INVALID_SOCKET;
+		}
+	
+		addr.sin_family = AF_INET;
+		addr.sin_port   = htons(iPort);
+	
+#ifdef WINXP
+		addr.sin_addr.s_addr = inet_addr( szIp );
+#else
+		inet_pton( AF_INET, szIp, &addr.sin_addr.s_addr );
+#endif
+
+#ifndef WIN32
+		if( iTimeout > 0 )
+		{
+			if( ConnectTimeout( fd, (struct sockaddr *)&addr, sizeof(addr), iTimeout ) != 0 )
+			{
+				closesocket( fd );
+				return INVALID_SOCKET;
+			}
+		}
+		else
+#endif
+		if( connect( fd, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR )
+		{
+			closesocket( fd );
+			return INVALID_SOCKET;
+		}
 	}
 
 	return fd;
 }
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 네트워크 전송 함수
  * @param	fd			소켓 핸들
  * @param	szBuf		전송 버퍼
@@ -198,7 +244,7 @@ int TcpSend( Socket fd, const char * szBuf, int iBufLen )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief timeout 을 가진 TCP 수신 메소드
  * @param fd			소켓 핸들
  * @param szBuf		수신 버퍼
@@ -225,7 +271,7 @@ int TcpRecv( Socket fd, char * szBuf, int iBufLen, int iSecond )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 수신 버퍼가 가득 찰 때까지 데이터를 수신한다.
  * @param fd			소켓 핸들
  * @param szBuf		수신 버퍼
@@ -260,49 +306,94 @@ int TcpRecvSize( Socket fd, char * szBuf, int iBufLen, int iSecond )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief TCP 서버 소켓을 생성한다.
  * @param	iPort			TCP 포트 번호
  * @param	iListenQ	queue number to listen
  * @param	pszIp			수신 IP 주소
+ * @param bIpv6			IPv6 인가?
  * @return 성공하면 소켓 핸들을 리턴하고 실패하면 INVALID_SOCKET 를 리턴한다.
  */
-Socket TcpListen( int iPort, int iListenQ, const char * pszIp )
+Socket TcpListen( int iPort, int iListenQ, const char * pszIp, bool bIpv6 )
 {
 	Socket	fd;
-
-	struct	sockaddr_in	addr;
 	const 	int		on = 1;
 
-	// create socket.
-	if( ( fd = socket( AF_INET, SOCK_STREAM, 0 )) == INVALID_SOCKET )
+#ifndef WINXP
+	if( bIpv6 )
 	{
-		return INVALID_SOCKET;
-	}
-	
-	memset( &addr, 0, sizeof(addr));
-	
-	addr.sin_family = AF_INET;
-	addr.sin_port   = htons(iPort);
+		struct	sockaddr_in6	addr;
 
-	if( pszIp )
-	{
-		addr.sin_addr.s_addr = inet_addr(pszIp);
+		// create socket.
+		if( ( fd = socket( AF_INET6, SOCK_STREAM, 0 )) == INVALID_SOCKET )
+		{
+			return INVALID_SOCKET;
+		}
+		
+		memset( &addr, 0, sizeof(addr));
+		
+		addr.sin6_family = AF_INET6;
+		addr.sin6_port   = htons(iPort);
+
+		if( pszIp )
+		{
+			inet_pton( AF_INET6, pszIp, &addr.sin6_addr );
+		}
+		else
+		{
+			addr.sin6_addr = in6addr_any;	
+		}
+
+		if( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) == -1 )
+		{
+			
+		}
+
+		if( bind( fd, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR )
+		{
+			closesocket( fd );
+			return INVALID_SOCKET;
+		}
 	}
 	else
+#endif
 	{
-		addr.sin_addr.s_addr = INADDR_ANY;	
-	}
-
-	if( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) == -1 )
-	{
+		struct	sockaddr_in	addr;
+	
+		// create socket.
+		if( ( fd = socket( AF_INET, SOCK_STREAM, 0 )) == INVALID_SOCKET )
+		{
+			return INVALID_SOCKET;
+		}
 		
-	}
-
-	if( bind( fd, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR )
-	{
-		closesocket( fd );
-		return INVALID_SOCKET;
+		memset( &addr, 0, sizeof(addr));
+		
+		addr.sin_family = AF_INET;
+		addr.sin_port   = htons(iPort);
+	
+		if( pszIp )
+		{
+#ifdef WINXP
+			addr.sin_addr.s_addr = inet_addr(pszIp);
+#else
+			inet_pton( AF_INET, pszIp, &addr.sin_addr.s_addr );
+#endif
+		}
+		else
+		{
+			addr.sin_addr.s_addr = INADDR_ANY;	
+		}
+	
+		if( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on)) == -1 )
+		{
+			
+		}
+	
+		if( bind( fd, (struct sockaddr *)&addr, sizeof(addr)) == SOCKET_ERROR )
+		{
+			closesocket( fd );
+			return INVALID_SOCKET;
+		}
 	}
 
 	if( listen( fd, iListenQ ) == SOCKET_ERROR )
@@ -315,30 +406,55 @@ Socket TcpListen( int iPort, int iListenQ, const char * pszIp )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief TCP accept wrapper function
  * @param hListenFd TCP 서버 소켓
  * @param pszIp			연결된 클라이언트 IP 주소가 저장될 변수
  * @param iIpSize		pszIp 변수의 크기
  * @param piPort		연결된 클라이언트 포트가 저장될 변수
+ * @param bIpv6			IPv6 인가?
  * @returns 성공하면 연결된 클라이언트 소켓 핸들을 리턴한다.
  *					실패하면 INVALID_SOCKET 를 리턴한다.
  */
-Socket TcpAccept( Socket hListenFd, char * pszIp, int iIpSize, int * piPort )
+Socket TcpAccept( Socket hListenFd, char * pszIp, int iIpSize, int * piPort, bool bIpv6 )
 {
-	struct sockaddr_in sttAddr;
 	socklen_t		iAddrLen;
 	Socket			hConnFd;
 
-	iAddrLen = sizeof(sttAddr);
-	hConnFd = accept( hListenFd, (struct sockaddr *)&sttAddr, &iAddrLen );
-	if( hConnFd != INVALID_SOCKET )
+#ifndef WINXP
+	if( bIpv6 )
 	{
-		if( piPort ) *piPort = ntohs( sttAddr.sin_port );
-
-		if( pszIp && iIpSize > 0 )
+		struct sockaddr_in6 sttAddr;
+		iAddrLen = sizeof(sttAddr);
+		hConnFd = accept( hListenFd, (struct sockaddr *)&sttAddr, &iAddrLen );
+		if( hConnFd != INVALID_SOCKET )
 		{
-			inet_ntop( AF_INET, &sttAddr.sin_addr, pszIp, iIpSize );
+			if( piPort ) *piPort = ntohs( sttAddr.sin6_port );
+
+			if( pszIp && iIpSize > 0 )
+			{
+				inet_ntop( AF_INET6, &sttAddr.sin6_addr, pszIp, iIpSize );
+			}
+		}
+	}
+	else
+#endif
+	{
+		struct sockaddr_in sttAddr;
+		iAddrLen = sizeof(sttAddr);
+		hConnFd = accept( hListenFd, (struct sockaddr *)&sttAddr, &iAddrLen );
+		if( hConnFd != INVALID_SOCKET )
+		{
+			if( piPort ) *piPort = ntohs( sttAddr.sin_port );
+	
+			if( pszIp && iIpSize > 0 )
+			{
+#ifdef WINXP
+				snprintf( pszIp, iIpSize, "%s", inet_ntoa( sttAddr.sin_addr ) );
+#else
+				inet_ntop( AF_INET, &sttAddr.sin_addr, pszIp, iIpSize );
+#endif
+			}
 		}
 	}
 
@@ -346,7 +462,7 @@ Socket TcpAccept( Socket hListenFd, char * pszIp, int iIpSize, int * piPort )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 소켓의 로컬 IP 주소와 포트 번호를 리턴한다.
  * @param hSocket 소켓
  * @param strIp		로컬 IP 주소 저장 변수
@@ -363,7 +479,11 @@ bool GetLocalIpPort( Socket hSocket, std::string & strIp, int & iPort )
 
 	if( getsockname( hSocket, (struct sockaddr *)&sttAddr, (socklen_t*)&iAddrSize ) == SOCKET_ERROR ) return false;
 
+#ifdef WINXP
+	snprintf( szIp, sizeof(szIp), "%s", inet_ntoa( sttAddr.sin_addr ) );
+#else
 	inet_ntop( AF_INET, &sttAddr.sin_addr, szIp, sizeof(szIp) );
+#endif
 
 	strIp = szIp;
 	iPort = ntohs( sttAddr.sin_port );
@@ -402,7 +522,11 @@ static Socket TcpListenNotReuse( int iPort, int iListenQ, const char * pszIp )
 
 	if( pszIp )
 	{
+#ifdef WINXP
 		addr.sin_addr.s_addr = inet_addr(pszIp);
+#else
+		inet_pton( AF_INET, pszIp, &addr.sin_addr.s_addr );
+#endif
 	}
 	else
 	{

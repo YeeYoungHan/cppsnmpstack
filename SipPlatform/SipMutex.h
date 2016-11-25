@@ -16,39 +16,56 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _DIRECTORY_H_
-#define _DIRECTORY_H_
-
-#include "SnmpPlatformDefine.h"
-#include <string>
-#include <list>
+#ifndef _SIP_MUTEX_H_
+#define _SIP_MUTEX_H_
 
 #ifdef WIN32
-# include <windows.h>
-# define DIR_SEP	'\\'
+#include <windows.h>
 #else
-# include <sys/stat.h>
-# define DIR_SEP	'/'
-# define DIR_MODE		S_IRWXU
+#include <pthread.h>
 #endif
 
-typedef std::list< std::string > FILE_LIST;
-
 /** 
- * @ingroup SnmpPlatform
- * @brief 디렉토리 관련 연산을 수행하는 클래스
+ * @ingroup SipPlatform
+ * @brief mutex 기능을 수행하는 클래스
  */
-class CDirectory
+class CSipMutex
 {
 public:
-	static int Create( const char * szDirName );
-	static int IsDirectory( const char * szDirName );
-	static void AppendName( std::string & strFileName, const char * pszAppend );
-	static bool List( const char * pszDirName, FILE_LIST & clsFileList );
-	static bool FileList( const char * pszDirName, FILE_LIST & clsFileList );
-	static char * GetProgramDirectory( );
-	static int64_t GetSize( const char * pszDirName );
-	static void DeleteAllFile( const char * pszDirName );
+	CSipMutex();
+	~CSipMutex();
+	
+	bool acquire();
+	bool release();
+
+protected:
+#ifdef WIN32
+	CRITICAL_SECTION m_sttMutex;
+#else
+	pthread_mutex_t	 m_sttMutex;
+#endif
+};
+
+/** 
+ * @ingroup SipPlatform
+ * @brief mutex 기능 및 wait/signal 기능을 수행하는 클래스. 리눅스에 최적화되어 있고 윈도우에는 최적화되어 있지 않음.
+ */
+class CSipMutexSignal : public CSipMutex
+{
+public:
+	CSipMutexSignal();
+	~CSipMutexSignal();
+	
+	bool wait();
+	bool signal();
+	bool broadcast();
+
+private:
+#ifdef WIN32
+	CONDITION_VARIABLE		m_sttCond;
+#else
+	pthread_cond_t		m_sttCond;
+#endif
 };
 
 #endif

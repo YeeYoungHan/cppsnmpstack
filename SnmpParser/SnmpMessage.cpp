@@ -17,7 +17,7 @@
  */
 
 #include "SnmpMessage.h"
-#include "SnmpUdp.h"
+#include "SipUdp.h"
 #include "SnmpAuth.h"
 #include "AsnInt.h"
 #include "AsnOid.h"

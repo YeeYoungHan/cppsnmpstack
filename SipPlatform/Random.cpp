@@ -16,22 +16,54 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _SNMP_TCP_H_
-#define _SNMP_TCP_H_
+#include "Random.h"
 
-#include "SnmpUdp.h"
+#define _CRT_RAND_S
+#include <stdlib.h>
+#include "TimeUtility.h"
 
-bool GetIpByName( const char * szHostName, char * szIp, int iLen );
-Socket TcpConnect( const char * pszIp, int iPort, int iTimeout = 0 );
-int TcpSend( Socket fd, const char * szBuf, int iBufLen );
-int TcpRecv( Socket fd, char * szBuf, int iBufLen, int iSecond );
-int TcpRecvSize( Socket fd, char * szBuf, int iBufLen, int iSecond );
-Socket TcpListen( int iPort, int iListenQ, const char * pszIp = NULL );
-Socket TcpAccept( Socket hListenFd, char * pszIp, int iIpSize, int * piPort );
-bool GetLocalIpPort( Socket hSocket, std::string & strIp, int & iPort );
+static CRandom gclsRandom;
+
+CRandom::CRandom()
+{
+#ifndef WIN32
+	m_iSeed = time(NULL);
+#endif
+}
+
+CRandom::~CRandom()
+{
+}
+
+/**
+ * @ingroup SipPlatform
+ * @brief random 정수를 리턴한다.
+ * @returns random 정수를 리턴한다.
+ */
+int CRandom::Get()
+{
+	unsigned int iRand;
 
 #ifdef WIN32
-int pipe( Socket filedes[2] );
+	rand_s( &iRand );
+#else
+	iRand = rand_r( &m_iSeed );
 #endif
 
-#endif
+	if( iRand > 2000000000 )
+	{
+		iRand = iRand % 2000000000;
+	}
+
+	return iRand;
+}
+
+/**
+ * @ingroup SipPlatform
+ * @brief random 정수를 리턴한다.
+ * @returns random 정수를 리턴한다.
+ */
+int RandomGet()
+{
+	return gclsRandom.Get();
+}

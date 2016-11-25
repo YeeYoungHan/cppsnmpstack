@@ -19,8 +19,8 @@
 #include "FileUtility.h"
 #include <string.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include "Log.h"
-#include "Directory.h"
 #include "TimeUtility.h"
 
 #ifdef WIN32
@@ -36,7 +36,7 @@
 char * CLog::m_pszDirName = NULL;
 char CLog::m_szDate[9] = { '\0' };
 FILE * CLog::m_sttFd = NULL;
-CSnmpMutex * CLog::m_pThreadMutex = NULL;
+CSipMutex * CLog::m_pThreadMutex = NULL;
 int CLog::m_iLevel = LOG_ERROR;
 int CLog::m_iMaxLogSize = DEFAULT_LOG_FILE_SIZE;
 int CLog::m_iLogSize = 0;
@@ -46,7 +46,7 @@ int CLog::m_iIndex = 1;
 ILogCallBack * CLog::m_pclsCallBack = NULL;
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그 파일을 저장할 디렉토리를 설정한다. 만약 thread mutex 가 설정되어 있지 않으면 쓰레드 mutex 를 생성한다.
  * @param	pszDirName	[in] 로그 파일을 저장할 디렉토리
  * @return	성공하면 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
@@ -57,7 +57,7 @@ bool CLog::SetDirectory( const char * pszDirName )
 
 	if( m_pThreadMutex == NULL )
 	{
-		m_pThreadMutex = new CSnmpMutex();
+		m_pThreadMutex = new CSipMutex();
 		if( m_pThreadMutex == NULL ) return false;
 	}
 
@@ -82,7 +82,7 @@ bool CLog::SetDirectory( const char * pszDirName )
 
 	m_pThreadMutex->release();
 
-	if( CDirectory::Create( m_pszDirName ) != 0 ) return false;
+	if( CDirectory::Create( m_pszDirName ) == false ) return false;
 
 	m_iFolderSize = CDirectory::GetSize( m_pszDirName );
 
@@ -90,26 +90,26 @@ bool CLog::SetDirectory( const char * pszDirName )
 }
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 클래스 변수를 초기화시킨다.
  */
 void CLog::Release()
 {
 	if( CLog::m_pszDirName )
 	{
-		delete [] CLog::m_pszDirName;
-		CLog::m_pszDirName = NULL;
+		delete [] m_pszDirName;
+		m_pszDirName = NULL;
 	}
 
-	if( CLog::m_pThreadMutex )
+	if( m_pThreadMutex )
 	{
 		delete CLog::m_pThreadMutex;
-		CLog::m_pThreadMutex = NULL;
+		m_pThreadMutex = NULL;
 	}
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그 출력 callback 인터페이스를 등록한다.
  * @param pclsCallBack 로그 출력 callback 인터페이스
  */
@@ -119,7 +119,7 @@ void CLog::SetCallBack( ILogCallBack * pclsCallBack )
 }
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그 파일에 로그를 저장한다.
  * @param	iLevel	[in] 로그 파일 레벨
  * @param	fmt		[in] 로그 파일에 저장할 포맷 문자열
@@ -276,54 +276,80 @@ OPEN_FILE:
 	return iResult;
 }
 
+/**
+ * @ingroup SipPlatform
+ * @brief 응용에서 로그를 출력하는 경우, FILE 핸들을 응용 함수로 전달한다.
+ * @param func 로그 출력 함수
+ */
+void CLog::Print( void (* func)( FILE * fd ) )
+{
+	if( m_sttFd == NULL ) return;
+
+	if( m_pThreadMutex && m_pThreadMutex->acquire() == false ) return;
+
+	func( m_sttFd );
+	fflush( m_sttFd );
+
+	if( m_pThreadMutex ) m_pThreadMutex->release();
+}
+
 /**	
- * @ingroup SnmpPlatform
- * @brief  로그 파일에 저장할 로그 레벨을 설정한다. 
- *	여러 로그를 저장할 경우, '|' 연산자를 이용하여서 여러 로그 레벨을 설정할 수 있다.
- *	@param	iLevel	[in] 디버그 로그를 저장할 경우, LOG_DEBUG 를 설정한다.
- *					정보 로그를 저장할 경우, LOG_INFO 를 설정한다.
- *					에러 로그를 저장할 경우, LOG_ERROR 를 설정한다.
+ * @ingroup SipPlatform
+ * @brief	로그 레벨을 가져온다.
+ * @return 로그 레벨을 리턴한다.
+ */
+int CLog::GetLevel( )
+{
+	return m_iLevel;
+}
+
+/**	
+ * @ingroup SipPlatform
+ * @brief 로그 파일에 저장할 로그 레벨을 설정한다. 여러 로그를 저장할 경우, '|' 연산자를 이용하여서 여러 로그 레벨을 설정할 수 있다.
+ * @param	iLevel	[in] 디버그 로그를 저장할 경우, LOG_DEBUG 를 설정한다.
+ *				정보 로그를 저장할 경우, LOG_INFO 를 설정한다.
+ *				에러 로그를 저장할 경우, LOG_ERROR 를 설정한다.
  */
 void CLog::SetLevel( int iLevel )
 {
-	CLog::m_iLevel = LOG_ERROR | LOG_SYSTEM;
-	CLog::m_iLevel |= iLevel;
+	m_iLevel = LOG_ERROR | LOG_SYSTEM;
+	m_iLevel |= iLevel;
 }
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그 파일에 저장할 로그 레벨을 모두 삭제한다.
  *	- 로그 파일에 로그가 저장되지 않는다.
  */
 void CLog::SetNullLevel()
 {
-	CLog::m_iLevel = 0;
+	m_iLevel = 0;
 }
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 디버그 로그 레벨을 설정한다.
  */
 void CLog::SetDebugLevel( )
 {
-	CLog::m_iLevel |= LOG_DEBUG;
+	m_iLevel |= LOG_DEBUG;
 }
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 입력한 로그 레벨이 현재 출력할 수 있는 로그 레벨인지 분석하여 준다.
  * @param	iLevel	[in] 로그 레벨
  * @return	현재 출력할 수 있는 로그 레벨인 경우에는 true 를 리턴하고 그렇지 않으면 false 를 리턴한다.
  */
 bool CLog::IsPrintLogLevel( EnumLogLevel iLevel )
 {
-	if( ( CLog::m_iLevel & iLevel ) == 0 ) return false;
+	if( ( m_iLevel & iLevel ) == 0 ) return false;
 
 	return true;
 }
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그를 저장할 최대 파일 크기를 설정한다. 
  * @param iSize	로그를 저장할 최대 파일 크기
  */
@@ -341,7 +367,7 @@ void CLog::SetMaxLogSize( int iSize )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그 폴더 최대 크기를 설정한다.
  * @param iSize 로그 폴더 최대 크기
  */
@@ -367,7 +393,7 @@ void CLog::SetMaxFolderSize( int64_t iSize )
 }
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그파일의 인덱스 번호를 리턴한다.
  * @return 로그파일의 인덱스 번호를 리턴한다.
  */
@@ -376,35 +402,27 @@ int CLog::GetLogIndex()
 	return m_iIndex;
 }
 
-static bool LogFileCompare( const std::string & strFirst, const std::string & strSecond )
+bool LogFileCompare( const std::string & strFirst, const std::string & strSecond )
 {
 	int iFirstLen = (int)strFirst.length();
 	int iSecondLen = (int)strSecond.length();
 
-	if( iFirstLen == iSecondLen )
-	{
-		for( int i = 0; i < iFirstLen; ++i )
-		{
-			if( strFirst[i] < strSecond[i] ) 
-			{
-				return true;
-			}
-			else if( strFirst[i] > strSecond[i] )
-			{
-				return false;
-			}
-		}
-	}
-	else if( iFirstLen > iSecondLen )
-	{
-		return false;
-	}
+	if( iFirstLen < 10 ) return true;
+	if( iSecondLen < 10 ) return false;
 
-  return true;
+	int n = strncmp( strFirst.c_str(), strSecond.c_str(), 8 );
+
+	if( n < 0 ) return true;
+	if( n > 0 ) return false;
+
+	int iFirstIndex = atoi( strFirst.c_str() + 9 );
+	int iSecondIndex = atoi( strSecond.c_str() + 9 );
+
+	return ( iFirstIndex < iSecondIndex );
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 로그 폴더의 크기가 설정된 크기보다 큰 경우, 오래된 로그 파일을 삭제한다.
  */
 void CLog::DeleteOldFile( )
@@ -442,4 +460,14 @@ void CLog::DeleteOldFile( )
 			if( m_iFolderSize < iWantSize ) break;
 		}
 	}
+}
+
+/**
+ * @ingroup SipPlatform
+ * @brief 로그 파일 리스트를 오래된 날짜에서 최근 날짜로 정렬한다.
+ * @param clsFileList 로그 파일 리스트
+ */
+void CLog::SortFileList( FILE_LIST & clsFileList )
+{
+	clsFileList.sort( LogFileCompare );
 }

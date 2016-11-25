@@ -19,7 +19,7 @@
 #ifndef _SNMP_TCP_AGENT_H_
 #define _SNMP_TCP_AGENT_H_
 
-#include "SnmpTcp.h"
+#include "SipTcp.h"
 #include "SnmpMessage.h"
 
 class ISnmpTcpAgentCallBack

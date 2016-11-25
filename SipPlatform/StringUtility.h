@@ -19,38 +19,23 @@
 #ifndef _STRING_UTILITY_H_
 #define _STRING_UTILITY_H_
 
-#include "SnmpPlatformDefine.h"
+#include "SipPlatformDefine.h"
 #include <string>
 #include <list>
-#include <vector>
 
 typedef std::list< std::string > STRING_LIST;
-typedef std::vector< std::string > STRING_VECTOR;
 
 void ReplaceString( std::string & strCallId, const char * pszBefore, const char * pszAfter );
-void ReplaceStringFirst( std::string & strCallId, const char * pszBefore, const char * pszAfter );
 bool SearchValue( std::string & strText, const char * pszKey, char cSep, std::string & strValue );
 bool SearchValue( std::string & strText, const char * pszKey, char cSep, int & iValue );
-bool SearchString( std::string & strText, const char * pszValue );
-bool SearchString( std::string & strText, char cValue );
 void LeftTrimString( std::string & strText );
 void RightTrimString( std::string & strText );
 void TrimString( std::string & strText );
-char ** ParseCommandString( const char * pszCommand );
-void FreeCommandArg( char ** ppszArg );
-bool IsStringAllDigit( std::string & strText );
-
-#ifdef WIN32
-bool Utf8ToAnsi( const char * pszUtf8, std::string & strOutput );
-bool AnsiToUtf8( const char * pszAnsi, std::string & strOutput );
-#endif
+void SplitString( const char * pszText, STRING_LIST & clsList, char cSep );
 
 uint32_t GetUInt32( const char * pszText );
 uint64_t GetUInt64( const char * pszText );
 
-int GetInt( const char * pszText, int TextLen );
-
 bool HexToString( const char * pszInput, std::string & strOutput );
-void StringAppend( std::string & strBuf, const char * fmt, ... );
 
 #endif

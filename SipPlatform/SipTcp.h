@@ -16,31 +16,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SipPlatformDefine.h"
-#include "TestSnmpParser.h"
-#include "SnmpMessage.h"
-#include "MemoryDebug.h"
+#ifndef _SIP_TCP_H_
+#define _SIP_TCP_H_
 
-bool TestSnmpMessage()
-{
-	const char * pszHex = "303002010104067075626c6963a2230202021f02010002010030173015060c2b060102011f0101010aa70f46051a00be371d";
-	char szPacket[1500];
-	int iPacketLen, n;
-	CSnmpMessage clsMessage;
+#include "SipUdp.h"
 
-	iPacketLen = HexToString( pszHex, (char *)szPacket, sizeof(szPacket) );
-	if( iPacketLen == -1 ) 
-	{
-		printf( "%s HexToString error\n", __FUNCTION__ );
-		return false;
-	}
+bool GetIpByName( const char * szHostName, char * szIp, int iLen );
+Socket TcpConnect( const char * pszIp, int iPort, int iTimeout = 0 );
+int TcpSend( Socket fd, const char * szBuf, int iBufLen );
+int TcpRecv( Socket fd, char * szBuf, int iBufLen, int iSecond );
+int TcpRecvSize( Socket fd, char * szBuf, int iBufLen, int iSecond );
+Socket TcpListen( int iPort, int iListenQ, const char * pszIp = NULL, bool bIpv6 = false );
+Socket TcpAccept( Socket hListenFd, char * pszIp, int iIpSize, int * piPort, bool bIpv6 = false );
+bool GetLocalIpPort( Socket hSocket, std::string & strIp, int & iPort );
 
-	n = clsMessage.ParsePacket( szPacket, iPacketLen );
-	if( n == -1 ) 
-	{
-		printf( "%s clsMessage.ParsePacket error\n", __FUNCTION__ );
-		return false;
-	}
+#ifdef WIN32
+int pipe( Socket filedes[2] );
+#endif
 
-	return true;
-}
+#endif

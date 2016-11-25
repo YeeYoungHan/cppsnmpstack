@@ -19,7 +19,7 @@
 #ifndef _SNMP_MESSAGE_H_
 #define _SNMP_MESSAGE_H_
 
-#include "SnmpPlatformDefine.h"
+#include "SipPlatformDefine.h"
 #include "SnmpDefine.h"
 #include "AsnString.h"
 #include "SnmpOidValueList.h"

@@ -19,7 +19,7 @@
 #ifndef _SNMP_AGENT_H_
 #define _SNMP_AGENT_H_
 
-#include "SnmpUdp.h"
+#include "SipUdp.h"
 #include "SnmpMessage.h"
 
 class CSnmpAgent

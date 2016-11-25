@@ -16,12 +16,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#ifndef _FILE_UTILITY_H_
-#define _FILE_UTILITY_H_
+#ifndef _RANDOM_H_
+#define _RANDOM_H_
 
-#include "SnmpPlatformDefine.h"
+/**
+ * @ingroup SipPlatform
+ * @brief random 번호 생성 클래스
+ */
+class CRandom
+{
+public:
+	CRandom();
+	~CRandom();
 
-bool IsExistFile( const char * pszFileName );
-int64_t GetFileSize( const char * pszFileName );
+	int Get();
+
+#ifndef WIN32
+private:
+	unsigned int m_iSeed;
+#endif
+};
+
+int RandomGet();
 
 #endif

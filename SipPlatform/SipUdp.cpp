@@ -16,9 +16,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpPlatformDefine.h"
+#include "SipPlatformDefine.h"
 #include <time.h>
-#include "SnmpUdp.h"
+#include "SipUdp.h"
+#include "Log.h"
 
 #ifndef WIN32
 #include <sys/ioctl.h>
@@ -28,15 +29,16 @@
 #include "MemoryDebug.h"
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief		UDP 소켓을 생성한다.
+ * @param	bIpv6	IPv6 소켓을 생성할 것인가?
  * @return	성공하면 socket handle 을 리턴한다. 그렇지 않으면 INVALID_SOCKET 를 리턴한다.
  */
-Socket UdpSocket()
+Socket UdpSocket( bool bIpv6 )
 {
 	Socket iFd;
 	
-	iFd = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
+	iFd = socket( bIpv6 ? AF_INET6 : AF_INET, SOCK_DGRAM, IPPROTO_UDP );
 	if( iFd == INVALID_SOCKET )
 	{
 		return INVALID_SOCKET;
@@ -46,13 +48,14 @@ Socket UdpSocket()
 }
 
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief UDP listen 소켓을 생성한다. 
  * @param	iPort	UDP 포트
  * @param	pszIp	UDP IP 주소. NULL 을 입력하면 any ip 주소를 사용한다.
+ * @param	bIpv6	IPv6 소켓을 생성할 것인가?
  * @return	성공하면 socket handle 을 리턴한다. 그렇지 않으면 INVALID_SOCKET 를 리턴한다.
  */
-Socket UdpListen( unsigned short iPort, const char * pszIp )
+Socket UdpListen( unsigned short iPort, const char * pszIp, bool bIpv6 )
 {
 	if( iPort == 0 )
 	{
@@ -60,28 +63,58 @@ Socket UdpListen( unsigned short iPort, const char * pszIp )
 	}
 	
 	Socket iFd;
+	int n;
 	
-	iFd = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
+	iFd = socket( bIpv6 ? AF_INET6 : AF_INET, SOCK_DGRAM, IPPROTO_UDP );
 	if( iFd == INVALID_SOCKET )
 	{
 		return INVALID_SOCKET;
 	}
 	
-	struct sockaddr_in addr;
-	memset((char*) &(addr),0, sizeof((addr)));
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(iPort);
-	
-	if( pszIp )
+#ifndef WINXP
+	if( bIpv6 )
 	{
-	  addr.sin_addr.s_addr = inet_addr(pszIp);
+		struct sockaddr_in6 addr;
+		memset((char*) &(addr),0, sizeof((addr)));
+		addr.sin6_family = AF_INET6;
+		addr.sin6_port = htons(iPort);
+		
+		if( pszIp )
+		{
+			inet_pton( AF_INET6, pszIp, &addr.sin6_addr );
+		}
+		else
+		{
+			addr.sin6_addr = in6addr_any;
+		}
+
+		n = bind( iFd,(struct sockaddr*)&addr, sizeof(addr));
 	}
 	else
+#endif
 	{
-		addr.sin_addr.s_addr = htonl(INADDR_ANY);
+		struct sockaddr_in addr;
+		memset((char*) &(addr),0, sizeof((addr)));
+		addr.sin_family = AF_INET;
+		addr.sin_port = htons(iPort);
+		
+		if( pszIp )
+		{
+#ifdef WINXP
+			addr.sin_addr.s_addr = inet_addr(pszIp);
+#else
+		  inet_pton( AF_INET, pszIp, &addr.sin_addr.s_addr );
+#endif
+		}
+		else
+		{
+			addr.sin_addr.s_addr = htonl(INADDR_ANY);
+		}
+	
+		n = bind( iFd,(struct sockaddr*)&addr, sizeof(addr));
 	}
 	
-	if( bind( iFd,(struct sockaddr*)&addr, sizeof(addr)) != 0 )
+	if( n != 0 )
 	{
 	  closesocket( iFd );
 	  return INVALID_SOCKET;
@@ -91,7 +124,7 @@ Socket UdpListen( unsigned short iPort, const char * pszIp )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief UDP 메시지를 수신한다.
  * @param iFd			소켓 핸들
  * @param pszBuf	수신 버퍼
@@ -99,28 +132,55 @@ Socket UdpListen( unsigned short iPort, const char * pszIp )
  * @param pszIp		IP 주소
  * @param iIpSize IP 주소 변수 크기
  * @param piPort	포트 번호
+ * @param	bIpv6		IPv6 소켓인가?
  * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
  */
-bool UdpRecv( Socket iFd, char * pszBuf, int * piLen, char * pszIp, int iIpSize, unsigned short* piPort )
+bool UdpRecv( Socket iFd, char * pszBuf, int * piLen, char * pszIp, int iIpSize, unsigned short* piPort, bool bIpv6 )
 {
 	if( iFd == INVALID_SOCKET ) return false;
 	
 	int iBufSize = *piLen;
 	if( iBufSize <= 0 ) return false;
 	
-	struct sockaddr_in sttAddr;
-	int iAddrSize = sizeof(sttAddr);
-	
-	*piLen = recvfrom( iFd, pszBuf, iBufSize, 0, (struct sockaddr *)&sttAddr, (socklen_t*)&iAddrSize );
-	if( *piLen <= 0 )
+#ifndef WINXP
+	if( bIpv6 )
 	{
-	  return false;
+		struct sockaddr_in6 sttAddr;
+		int iAddrSize = sizeof(sttAddr);
+		
+		*piLen = recvfrom( iFd, pszBuf, iBufSize, 0, (struct sockaddr *)&sttAddr, (socklen_t*)&iAddrSize );
+		if( *piLen <= 0 )
+		{
+			return false;
+		}
+		
+		if( piPort ) *piPort = ntohs( sttAddr.sin6_port );
+		if( pszIp )
+		{
+			inet_ntop( AF_INET6, &sttAddr.sin6_addr, pszIp, iIpSize );
+		}
 	}
-	
-	if( piPort ) *piPort = ntohs( sttAddr.sin_port );
-	if( pszIp )
+	else
+#endif
 	{
-		inet_ntop( AF_INET, &sttAddr.sin_addr, pszIp, iIpSize );
+		struct sockaddr_in sttAddr;
+		int iAddrSize = sizeof(sttAddr);
+		
+		*piLen = recvfrom( iFd, pszBuf, iBufSize, 0, (struct sockaddr *)&sttAddr, (socklen_t*)&iAddrSize );
+		if( *piLen <= 0 )
+		{
+		  return false;
+		}
+		
+		if( piPort ) *piPort = ntohs( sttAddr.sin_port );
+		if( pszIp )
+		{
+#ifdef WINXP
+			snprintf( pszIp, iIpSize, "%s", inet_ntoa( sttAddr.sin_addr ) );
+#else
+			inet_ntop( AF_INET, &sttAddr.sin_addr, pszIp, iIpSize );
+#endif
+		}
 	}
 
 	if( (*piLen)+1 >= iBufSize )
@@ -133,8 +193,8 @@ bool UdpRecv( Socket iFd, char * pszBuf, int * piLen, char * pszIp, int iIpSize,
 }
 
 /**
- * @ingroup SnmpPlatform
- * @brief UDP 메시지를 수신한다.
+ * @ingroup SipPlatform
+ * @brief IPv4 로 UDP 메시지를 수신한다.
  * @param iFd			소켓 핸들
  * @param pszBuf	수신 버퍼
  * @param piLen		수신 패킷 크기
@@ -171,7 +231,45 @@ bool UdpRecv( Socket iFd, char * pszBuf, int * piLen, unsigned int * piIp, unsig
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
+ * @brief IPv6 로 UDP 메시지를 수신한다.
+ * @param iFd			소켓 핸들
+ * @param pszBuf	수신 버퍼
+ * @param piLen		수신 패킷 크기
+ * @param psttIp	IP 주소
+ * @param piPort	포트 번호
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
+bool UdpRecv( Socket iFd, char * pszBuf, int * piLen, IN6_ADDR * psttIp, unsigned short* piPort )
+{
+	if( iFd == INVALID_SOCKET ) return false;
+	
+	int iBufSize = *piLen;
+	if( iBufSize <= 0 ) return false;
+	
+	struct sockaddr_in6 sttAddr;
+	int iAddrSize = sizeof(sttAddr);
+	
+	*piLen = recvfrom( iFd, pszBuf, iBufSize-1, 0, (struct sockaddr *)&sttAddr, (socklen_t*)&iAddrSize );
+	if( *piLen <= 0 )
+	{
+	  return false;
+	}
+	
+	if( piPort ) *piPort = sttAddr.sin6_port;
+	if( psttIp ) memcpy( psttIp, &sttAddr.sin6_addr, sizeof(IN6_ADDR) );
+
+	if( (*piLen)+1 > iBufSize )
+	{
+	  return false;
+	}
+	pszBuf[*piLen] = 0;
+	
+	return true;
+}
+
+/**
+ * @ingroup SipPlatform
  * @brief UDP 메시지를 전송한다.
  * @param iFd			소캣 핸들
  * @param pszBuf	전송 버퍼
@@ -184,15 +282,41 @@ bool UdpSend( Socket iFd, const char * pszBuf, int iBufLen, const char * pszIp, 
 {
 	if( iFd == INVALID_SOCKET || pszBuf == NULL || iBufLen <= 0 || pszIp == NULL || iPort == 0 ) return false;
 	
-  struct sockaddr_in sttAddr;
-  
-  memset( &sttAddr, 0, sizeof(sttAddr) );
-  sttAddr.sin_family = AF_INET;
-  sttAddr.sin_port = htons( iPort );
-  sttAddr.sin_addr.s_addr = inet_addr( pszIp );
-  
-  if( sendto( iFd, pszBuf, iBufLen, 0,(sockaddr*)&sttAddr, sizeof(sttAddr) ) != iBufLen )
+	int n;
+
+#ifndef WINXP
+	if( strstr( pszIp, ":" ) )
 	{
+		struct sockaddr_in6 sttAddr;
+	  
+		memset( &sttAddr, 0, sizeof(sttAddr) );
+		sttAddr.sin6_family = AF_INET6;
+		sttAddr.sin6_port = htons( iPort );
+		inet_pton( AF_INET6, pszIp, &sttAddr.sin6_addr );
+
+		n = sendto( iFd, pszBuf, iBufLen, 0, (sockaddr*)&sttAddr, sizeof(sttAddr) );
+	}
+	else
+#endif
+	{
+	  struct sockaddr_in sttAddr;
+	  
+	  memset( &sttAddr, 0, sizeof(sttAddr) );
+	  sttAddr.sin_family = AF_INET;
+	  sttAddr.sin_port = htons( iPort );
+
+#ifdef WINXP
+		sttAddr.sin_addr.s_addr = inet_addr( pszIp );
+#else
+		inet_pton( AF_INET, pszIp, &sttAddr.sin_addr.s_addr );
+#endif
+  
+		n = sendto( iFd, pszBuf, iBufLen, 0, (sockaddr*)&sttAddr, sizeof(sttAddr) );
+	}
+  
+  if( n != iBufLen )
+	{
+		CLog::Print( LOG_ERROR, "%s sendto error(%d)", __FUNCTION__, GetError() );
 	  return false;
 	}
 	
@@ -200,8 +324,8 @@ bool UdpSend( Socket iFd, const char * pszBuf, int iBufLen, const char * pszIp, 
 }
 
 /**
- * @ingroup SnmpPlatform
- * @brief UDP 메시지를 전송한다.
+ * @ingroup SipPlatform
+ * @brief IPv4 로 UDP 메시지를 전송한다.
  * @param iFd			소캣 핸들
  * @param pszBuf	발신 버퍼
  * @param iBufLen 발신 버퍼 길이
@@ -229,7 +353,36 @@ bool UdpSend( Socket iFd, const char * pszBuf, int iBufLen, unsigned int iIp, un
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
+ * @brief IPv6 로 UDP 메시지를 전송한다.
+ * @param iFd			소캣 핸들
+ * @param pszBuf	발신 버퍼
+ * @param iBufLen 발신 버퍼 길이
+ * @param psttIp	목적지 IP 주소
+ * @param iPort		목적지 포트 번호
+ * @returns 성공하면 true 를 리턴하고 실패하면 false 를 리턴한다.
+ */
+bool UdpSend( Socket iFd, const char * pszBuf, int iBufLen, IN6_ADDR * psttIp, unsigned short iPort )
+{
+	if( iFd == INVALID_SOCKET || pszBuf == NULL || iBufLen <= 0 || iPort == 0 ) return false;
+	
+  struct sockaddr_in6 sttAddr;
+  
+  memset( &sttAddr, 0, sizeof(sttAddr) );
+  sttAddr.sin6_family = AF_INET6;
+  sttAddr.sin6_port = iPort;
+	memcpy( &sttAddr.sin6_addr, psttIp, sizeof(sttAddr.sin6_addr) );
+  
+  if( sendto( iFd, pszBuf, iBufLen, 0,(sockaddr*)&sttAddr, sizeof(sttAddr) ) != iBufLen )
+	{
+	  return false;
+	}
+	
+	return true;
+}
+
+/**
+ * @ingroup SipPlatform
  * @brief 네트워크 API 를 초기화시킨다.
  */
 void InitNetwork()
@@ -266,7 +419,7 @@ void TcpSetPollIn( struct pollfd & sttPollFd, Socket hSocket )
 
 #ifdef WIN32
 /** 
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 윈도우용 poll 메소드
  *	- 현재는 read event 만 처리할 수 있다.
  */
@@ -310,7 +463,7 @@ int poll( struct pollfd *fds, unsigned int nfds, int timeout )
 #endif
 
 /**  
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief localhost IP 주소를 제외한 호스트에 연결된 IP 주소를 가져온다.
  * @param	strIp	IP 주소를 저장할 변수
  * @return 성공하면 true 를 리턴한다. 실패하면 false 를 리턴한다.
@@ -318,7 +471,7 @@ int poll( struct pollfd *fds, unsigned int nfds, int timeout )
 bool GetLocalIp( std::string & strIp )
 {
 #ifdef WIN32
-	char szHostName[128], szIpAddr[16];
+	char szHostName[128], szIpAddr[INET6_ADDRSTRLEN];
 	struct sockaddr_in sttAddr;
 	struct hostent     *psttHost = NULL;
 
@@ -333,7 +486,13 @@ bool GetLocalIp( std::string & strIp )
 	for( int i = 0; psttHost->h_addr_list[i]; i++ )
 	{
 		memcpy( &sttAddr.sin_addr, psttHost->h_addr_list[i], psttHost->h_length );
+
+#ifdef WINXP
+		snprintf( szIpAddr, sizeof(szIpAddr), "%s", inet_ntoa(sttAddr.sin_addr) );
+#else
 		inet_ntop( AF_INET, &sttAddr.sin_addr, szIpAddr, sizeof(szIpAddr) );
+#endif
+
 		if( strcmp( szIpAddr, "127.0.0.1" ) )
 		{
 			strIp = szIpAddr;
@@ -357,7 +516,7 @@ bool GetLocalIp( std::string & strIp )
 
 	char *ptr = buf;
 	int tl = ifc.ifc_len;
-	char	szIpAddr[16];
+	char	szIpAddr[INET6_ADDRSTRLEN];
 	
 	while ( tl > 0 )
 	{

@@ -24,7 +24,7 @@
 #define USE_SNMP_SESSION
 
 #ifndef USE_SNMP_SESSION
-extern CSnmpMutexSignal gclsMutex;
+extern CSipMutexSignal gclsMutex;
 #endif
 
 extern CSnmpStack gclsStack;

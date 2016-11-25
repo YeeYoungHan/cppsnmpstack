@@ -16,15 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
 
-#include "SnmpPlatformDefine.h"
-#include "SnmpUdp.h"
+#include "SipPlatformDefine.h"
+#include "SipUdp.h"
 #include "CallBack.h"
 #include "TimeUtility.h"
 #include "SnmpWalk.h"
 #include "SnmpSession.h"
 #include "MemoryDebug.h"
 
-CSnmpMutexSignal gclsMutex;
+CSipMutexSignal gclsMutex;
 CSnmpStack gclsStack;
 std::string gstrDestIp;
 std::string gstrOid;

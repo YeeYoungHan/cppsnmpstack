@@ -26,7 +26,7 @@
 
 #include "SnmpStackSetup.h"
 #include "SnmpTransactionList.h"
-#include "SnmpUdp.h"
+#include "SipUdp.h"
 #include "SnmpStackCallBack.h"
 
 /**
@@ -57,7 +57,7 @@ public:
 
 private:
 	uint32_t		m_iRequestId;
-	CSnmpMutex	m_clsMutex;
+	CSipMutex	m_clsMutex;
 };
 
 #endif

@@ -17,7 +17,7 @@
  */
 
 #include "AsnString.h"
-#include "SnmpUdp.h"
+#include "SipUdp.h"
 #include "Log.h"
 #include "MemoryDebug.h"
 

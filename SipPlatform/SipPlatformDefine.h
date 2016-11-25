@@ -22,6 +22,9 @@
 #ifdef WIN32
 #define _CRT_SECURE_NO_WARNINGS
 
+// Window XP 에서 빌드할 때에는 아래의 주석을 해제하라.
+//#define WINXP
+
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 
@@ -44,6 +47,7 @@ typedef __int16 int16_t;
 typedef char int8_t;
 
 #define THREAD_API	DWORD WINAPI
+#define atoll(x) _atoi64(x)
 
 #else
 
@@ -71,14 +75,14 @@ typedef char int8_t;
 #endif
 
 #if defined LINUX_64
-#define LONG_LONG_FORMAT	"%ld"
 #define UNSIGNED_LONG_LONG_FORMAT	"%lu"
+#define LONG_LONG_FORMAT	"%ld"
 #else
-#define LONG_LONG_FORMAT	"%lld"
 #define UNSIGNED_LONG_LONG_FORMAT	"%llu"
+#define LONG_LONG_FORMAT	"%lld"
 #endif
 
 /**
- * @defgroup SnmpPlatform SnmpPlatform
- * SNMP stack 프로젝트에서 사용되는 OS independent 라이브러리
+ * @defgroup SipPlatform SipPlatform
+ * SIP stack 프로젝트에서 사용되는 OS independent 라이브러리
  */

@@ -38,7 +38,7 @@ int gettimeofday( struct timeval *tv, struct timezone *tz )
 #endif
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 두 개의 시간의 차이를 리턴한다.
  * @param psttOld 시작 시간
  * @param psttNew 종료 시간
@@ -63,7 +63,7 @@ int DiffTimeval( struct timeval * psttOld, struct timeval * psttNew )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief ms 동안 대기한다.
  * @param iMiliSecond ms
  */
@@ -83,7 +83,7 @@ void MiliSleep( int iMiliSecond )
 }
 
 /**
- * @ingroup SnmpPlatform
+ * @ingroup SipPlatform
  * @brief 현재 시간을 ms 단위로 리턴한다.
  * @returns 현재 시간을 ms 단위로 리턴한다.
  */

@@ -17,7 +17,7 @@
  */
 
 #include "AsnType.h"
-#include "SnmpUdp.h"
+#include "SipUdp.h"
 #include <stdlib.h>
 #include "MemoryDebug.h"
 

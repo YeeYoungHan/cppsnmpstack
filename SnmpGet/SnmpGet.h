@@ -19,12 +19,12 @@
 #ifndef _SNMP_GET_H_
 #define _SNMP_GET_H_
 
-#include "SnmpMutex.h"
+#include "SipMutex.h"
 
 #define USE_SNMP_SESSION
 
 #ifndef USE_SNMP_SESSION
-extern CSnmpMutexSignal gclsMutex;
+extern CSipMutexSignal gclsMutex;
 #endif
 
 #endif
