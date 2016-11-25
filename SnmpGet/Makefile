@@ -6,10 +6,10 @@
 
 include ../Makefile.mk
 
-INC=-I../SnmpStack -I../SnmpParser -I../SnmpPlatform
+INC=-I../SnmpStack -I../SnmpParser -I../SipPlatform
 LIB=-L../SnmpStack -lsnmpstack \
 	-L../SnmpParser -lsnmpparser \
-	-L../SnmpPlatform -lsnmpplatform \
+	-L../SipPlatform -lsipplatform \
 	-lssl -lcrypto -lpthread
 
 .SUFFIXES: .o .cpp

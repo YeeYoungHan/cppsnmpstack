@@ -6,7 +6,7 @@
 
 include ../Makefile.mk
 
-INC=-I../SnmpPlatform
+INC=-I../SipPlatform
 
 .SUFFIXES: .o .cpp
 %.o : %.cpp
