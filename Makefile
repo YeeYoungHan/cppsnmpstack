@@ -5,14 +5,14 @@
 # start date : 2014/07/29
 
 all:
-	cd SnmpPlatform && make
+	cd SipPlatform && make
 	cd SnmpParser && make
 	cd SnmpStack && make
 	cd SnmpGet && make
 	cd SnmpWalk && make
 
 clean:
-	cd SnmpPlatform && make clean
+	cd SipPlatform && make clean
 	cd SnmpParser && make clean
 	cd SnmpStack && make clean
 	cd SnmpGet && make clean
