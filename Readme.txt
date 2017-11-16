@@ -19,6 +19,9 @@ C++ SNMP stack 프로젝트
  * SnmpGet
    - SnmpStack 과 SnmpParser 라이브러리를 이용한 SNMP get 프로그램
 
+ * SnmpWalk
+   - SnmpStack 과 SnmpParser 라이브러리를 이용한 SNMP get next 프로그램
+
  * SnmpStack
    - SNMP 메시지 전송/수신 라이브러리
 
