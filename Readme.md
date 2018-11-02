@@ -36,7 +36,7 @@ C++ STL 기반으로 SNMP stack 을 개발하는 프로젝트입니다.
 ### 컴파일 방법
 
 * VC++ 2008
-  * SipStack.sln 더블클릭한 후, 빌드한다.
+  * SnmpStack.sln 더블클릭한 후, 빌드한다.
 
 * 리눅스 / OSX
   * make 를 실행한다.
