@@ -30,7 +30,7 @@ typedef std::map< uint32_t, CSnmpTransaction * > SNMP_TRANSACTION_MAP;
 
 /**
  * @ingroup SnmpStack
- * @brief 
+ * @brief SNMP 트랙젠션 리스트를 저장하는 클래스
  */
 class CSnmpTransactionList
 {
@@ -52,7 +52,7 @@ public:
 
 private:
 	SNMP_TRANSACTION_MAP	m_clsMap;
-	CSipMutex						m_clsMutex;
+	CSipMutex							m_clsMutex;
 	CSnmpStack						* m_pclsStack;
 };
 

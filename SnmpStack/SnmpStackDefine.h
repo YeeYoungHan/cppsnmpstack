@@ -19,5 +19,14 @@
 #ifndef _SNMP_STACK_DEFINE_H_
 #define _SNMP_STACK_DEFINE_H_
 
+/**
+@mainpage C++ SNMP Stack
+@section intro 소개
+	- C++ STL 기반 SNMP stack 개발
+	- 프로젝트 홈페이지 : https://github.com/YeeYoungHan/cppsnmpstack
+@section  CREATEINFO 작성정보
+  - 작성자 : 이영한
+	- 홈페이지 : http://blog.naver.com/websearch
+*/
 
 #endif
