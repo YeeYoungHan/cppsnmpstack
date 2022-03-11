@@ -32,7 +32,8 @@
 #include <crtdbg.h>
 #endif
 
-#define snprintf		_snprintf
+#define VC2008_VERSION	1500
+
 #define strcasecmp	_stricmp
 #define sleep(x)		Sleep(x*1000)
 
@@ -44,10 +45,15 @@ typedef unsigned char uint8_t;
 typedef __int64 int64_t;
 typedef int int32_t;
 typedef __int16 int16_t;
+
+#if _MSC_VER == VC2008_VERSION
 typedef char int8_t;
 
-#define THREAD_API	DWORD WINAPI
+#define snprintf _snprintf
 #define atoll(x) _atoi64(x)
+#endif
+
+#define THREAD_API	DWORD WINAPI
 
 #else
 

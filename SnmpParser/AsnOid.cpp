@@ -93,7 +93,7 @@ int CAsnOid::MakePacket( char * pszPacket, int iPacketSize )
 	char szValue[21];
 	int	 iValuePos = 0, iNumPos = 0;
 	uint64_t iValue;
-	uint8_t cLength = m_strValue.length();
+	uint8_t cLength = (uint8_t)m_strValue.length();
 
 	pszPacket[iPos++] = m_cType;
 

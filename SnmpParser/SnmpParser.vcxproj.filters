@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="SNMP">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ASN">
+      <UniqueIdentifier>{aba8d0ee-dc0e-4156-8d4b-f2283f6dfbe2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="인증">
+      <UniqueIdentifier>{8b4d1120-aa8f-4b0e-8769-f380f6d1a08f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SnmpDefine.h">
+      <Filter>SNMP</Filter>
+    </ClInclude>
+    <ClInclude Include="SnmpMessage.h">
+      <Filter>SNMP</Filter>
+    </ClInclude>
+    <ClInclude Include="SnmpMessageMake.hpp">
+      <Filter>SNMP</Filter>
+    </ClInclude>
+    <ClInclude Include="SnmpMessageParse.hpp">
+      <Filter>SNMP</Filter>
+    </ClInclude>
+    <ClInclude Include="SnmpMessagev3.hpp">
+      <Filter>SNMP</Filter>
+    </ClInclude>
+    <ClInclude Include="SnmpOidValueList.h">
+      <Filter>SNMP</Filter>
+    </ClInclude>
+    <ClInclude Include="AsnComplex.h">
+      <Filter>ASN</Filter>
+    </ClInclude>
+    <ClInclude Include="AsnInt.h">
+      <Filter>ASN</Filter>
+    </ClInclude>
+    <ClInclude Include="AsnLong.h">
+      <Filter>ASN</Filter>
+    </ClInclude>
+    <ClInclude Include="AsnNull.h">
+      <Filter>ASN</Filter>
+    </ClInclude>
+    <ClInclude Include="AsnOid.h">
+      <Filter>ASN</Filter>
+    </ClInclude>
+    <ClInclude Include="AsnString.h">
+      <Filter>ASN</Filter>
+    </ClInclude>
+    <ClInclude Include="AsnType.h">
+      <Filter>ASN</Filter>
+    </ClInclude>
+    <ClInclude Include="SnmpAuth.h">
+      <Filter>인증</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SnmpMessage.cpp">
+      <Filter>SNMP</Filter>
+    </ClCompile>
+    <ClCompile Include="SnmpOidValueList.cpp">
+      <Filter>SNMP</Filter>
+    </ClCompile>
+    <ClCompile Include="AsnComplex.cpp">
+      <Filter>ASN</Filter>
+    </ClCompile>
+    <ClCompile Include="AsnInt.cpp">
+      <Filter>ASN</Filter>
+    </ClCompile>
+    <ClCompile Include="AsnLong.cpp">
+      <Filter>ASN</Filter>
+    </ClCompile>
+    <ClCompile Include="AsnNull.cpp">
+      <Filter>ASN</Filter>
+    </ClCompile>
+    <ClCompile Include="AsnOid.cpp">
+      <Filter>ASN</Filter>
+    </ClCompile>
+    <ClCompile Include="AsnString.cpp">
+      <Filter>ASN</Filter>
+    </ClCompile>
+    <ClCompile Include="AsnType.cpp">
+      <Filter>ASN</Filter>
+    </ClCompile>
+    <ClCompile Include="SnmpAuth.cpp">
+      <Filter>인증</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
