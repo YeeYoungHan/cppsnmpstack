@@ -18,6 +18,12 @@
 
 #include "TestGetSwitchPortIp.h"
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief 스위치 허브에 저장된 MAC 주소에 대한 IP 주소를 저장한다.
+ * @param clsSession SNMP 세션 객체
+ * @returns true 를 리턴한다.
+ */
 bool GetIpMac( CSnmpSession & clsSession )
 {
 	CAsnType * pclsValue;

@@ -22,6 +22,12 @@
 
 CPortMap gclsPortMap;
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief MAC 주소를 저장한다.
+ * @param pszMac MAC 주소
+ * @returns true 를 리턴한다.
+ */
 bool CPortInfo::InsertMac( const char * pszMac )
 {
 	MAC_IP_MAP::iterator itMap;
@@ -35,6 +41,13 @@ bool CPortInfo::InsertMac( const char * pszMac )
 	return true;
 }
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief MAC 주소에 해당하는 IP 주소를 저장한다.
+ * @param pszMac	MAC 주소
+ * @param pszIp		IP 주소
+ * @returns true 를 리턴한다.
+ */
 bool CPortInfo::UpdateMacIp( const char * pszMac, const char * pszIp )
 {
 	MAC_IP_MAP::iterator itMap;
@@ -48,6 +61,13 @@ bool CPortInfo::UpdateMacIp( const char * pszMac, const char * pszIp )
 	return true;
 }
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief MAC 주소가 저장된 OID 및 스위치 허브 포트 번호를 저장한다.
+ * @param pszOid	MAC 주소가 저장된 OID
+ * @param iPort		스위치 허브 포트 번호
+ * @returns MAC 주소가 저장된 OID 가 입력되지 않았다면 false 를 리턴하고 그렇지 않으면 true 를 리턴한다.
+ */
 bool CPortMap::InsertOidPort( const char * pszOid, uint32_t iPort )
 {
 	int iMacPortOidLen = strlen( MAC_PORT_OID );
@@ -78,6 +98,13 @@ bool CPortMap::InsertOidPort( const char * pszOid, uint32_t iPort )
 	return true;
 }
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief 스위치 허브 포트 번호에 연결된 MAC 주소를 저장한다.
+ * @param iPort		스위치 허브 포트 번호
+ * @param pszMac	MAC 주소
+ * @returns true 를 리턴한다.
+ */
 bool CPortMap::InsertPortMac( uint32_t iPort, const char * pszMac )
 {
 	PORT_MAP::iterator itMap;
@@ -96,6 +123,13 @@ bool CPortMap::InsertPortMac( uint32_t iPort, const char * pszMac )
 	return true;
 }
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief IP 주소가 저장된 OID 및 IP 주소의 MAC 주소를 저장한다.
+ * @param pszOid	IP 주소가 저장된 OID
+ * @param strMac	MAC 주소
+ * @returns IP 주소가 저장된 OID 가 아니거나 strMac 의 길이가 6 이 아니면 false 를 리턴하고 그렇지 않으면 true 를 리턴한다.
+ */
 bool CPortMap::InsertOidIp( const char * pszOid, std::string & strMac )
 {
 	int iIpMacOidLen = strlen( IP_MAC_OID );
@@ -129,6 +163,13 @@ bool CPortMap::InsertOidIp( const char * pszOid, std::string & strMac )
 	return true;
 }
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief MAC 주소에 대한 IP 주소를 저장한다.
+ * @param pszMac	MAC 주소
+ * @param pszIp		IP 주소
+ * @returns true 를 리턴한다.
+ */
 bool CPortMap::UpdateMacIp( const char * pszMac, const char * pszIp )
 {
 	PORT_MAP::iterator itMap;
@@ -141,6 +182,10 @@ bool CPortMap::UpdateMacIp( const char * pszMac, const char * pszIp )
 	return true;
 }
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief 스위치 허브의 포트별 연결된 IP 주소 리스트를 출력한다.
+ */
 void CPortMap::PrintAll( )
 {
 	PORT_MAP::iterator itMap;

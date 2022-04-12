@@ -30,6 +30,10 @@
 // value = ip address
 typedef std::map< std::string, std::string > MAC_IP_MAP;
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief MAC 주소에 대한 IP 주소를 저장하는 자료구조
+ */
 class CPortInfo
 {
 public:
@@ -42,6 +46,10 @@ public:
 // key = switch port number
 typedef std::map< uint32_t, CPortInfo > PORT_MAP;
 
+/**
+ * @ingroup TestGetSwitchPortIp
+ * @brief 스위치 허브의 포트별 IP 주소 및 MAC 주소 리스트를 저장하는 자료구조
+ */
 class CPortMap
 {
 public:

@@ -46,9 +46,13 @@ int main( int argc, char * argv[] )
 	clsSession.SetDestination( strDestIp.c_str(), 161 );
 	clsSession.SetSnmpv2( "public" );
 
+	// 스위치 허브의 포트 번호에 연결된 MAC 주소 리스트를 가져온다.
 	GetPortMac( clsSession );
+
+	// 스위치 허브에 저장된 MAC 주소에 대한 IP 주소를 가져온다.
 	GetIpMac( clsSession );
 
+	// 스위치 허브 포트별로 연결된 IP 주소를 출력한다.
 	gclsPortMap.PrintAll();
 
 	return 0;
